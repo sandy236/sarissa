@@ -1,3 +1,10 @@
+0.9.5.1: * Added Sarissa.escape and Sarissa.unescape, to convert 
+       from and to the fivepredefined XML entities
+      * Fixed a bug in Sarissa.xmlize (yup, added escaping ;-)
+      
+0.9.5: Added Sarissa.xmlize which produces XML out of any given 
+       ecmascript object and updated JSDoc version/documentation
+
 0.9.4.4: Fixed and deprecated Sarissa.IS_ENABLED_XSLTPROC bug in Moz 
        and added fixcrlf task in build. 
 

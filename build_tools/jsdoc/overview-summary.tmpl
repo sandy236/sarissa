@@ -75,29 +75,23 @@ parent.document.title="<TMPL_VAR NAME"project_name"> Overview";
    <H2>JSDoc Documentation</H2>
 </TMPL_IF>
 </CENTER>
-<table>
-	<tr>
-		<td valign="top">
-                        <TMPL_IF NAME="project_title">
-                            <TMPL_IF NAME="generic">
-                           <p>
-                           This document is the API Specification for 
-                           <TMPL_VAR NAME="project_title">.
-                           </p>
-                           </TMPL_IF>
-                        </TMPL_IF>
-			
-			<h4>Summary</h4>
-			<p>
-                        <TMPL_IF NAME="project_summary">
-                           <TMPL_VAR NAME="project_summary">
-                           <TMPL_ELSE>
-                              No summary generated for these documents.
-                        </TMPL_IF>
-			</p>
-		</td>
-	</tr>
-</table>
+        <TMPL_IF NAME="project_title">
+            <TMPL_IF NAME="generic">
+           <p>
+           This document is the API Specification for 
+           <TMPL_VAR NAME="project_title">.
+           </p>
+           </TMPL_IF>
+        </TMPL_IF>
+        
+        <h4>Summary</h4>
+        <p>
+        <TMPL_IF NAME="project_summary">
+           <TMPL_VAR NAME="project_summary">
+           <TMPL_ELSE>
+              No summary generated for these documents.
+        </TMPL_IF>
+        </p>
 
 <HR>
 

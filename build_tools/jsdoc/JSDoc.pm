@@ -282,34 +282,43 @@ sub fetch_funcs_and_classes {
         (?:(\w+(?:\.\w+)*?)\.(\$?\w+)\s*=\s*(.*?)\s*[;\n]))        
     !gsx){
     
-        my $doc;
-        $doc = $1 or $doc = "";
+        my ($doc, $fname1,  $arglist1, $cname1, $prototype, $fname2, $arglist2)
+            = ($1 || '', $2, $3, $4, $5, $6, $7);
+        my ($cname2, $propname1, $propval1) = ($8, $9, $10);
+        my ($cname3, $baseclass) = ($11, $12);
+        my ($cname4, $propname2, $propval2) = ($13, $14, $15);
+        next if $doc =~ /\@ignore\b/;
 
-
-        if ($2){
-            my ($func, $arglist, $post) = ($2, $3, $');
-            &add_function($doc, $func, $arglist);
+        if ($fname1){
+            &add_function($doc, $fname1, $arglist1);
             if ($doc =~ /\@(?:constructor|class)\b/){
                 # Add all @constructor and @class methods as classes
-                &add_class($func, $doc);
+                &add_class($fname1, $doc);
             } 
-        } elsif ($4 && $6 && $FUNCTIONS{$4}){
+        } elsif ($cname1 && $fname2 && $FUNCTIONS{$cname1}){
             # Anonymous functions added onto a class or class prototype
-            &add_anonymous_function($doc, $4, $6, $7, not defined($5));
-        } elsif ($4 && $6 && not defined($FUNCTIONS{$4})){
-            # Called for methods added to the prototype of core classes
-            &add_anonymous_function($doc, $4, $6, $7, not defined($5));
-        } elsif ($8 && $9 && defined($10)) {
-            &add_property($doc, $8, $9, $10, 0);
-        } elsif ($11 && $12){
-            &set_base_class($11, $12);
-        } elsif ($13 && $14 && defined($15) && $14 ne 'prototype' 
-                && $13 ne 'this'){
-            my ($classname, $prop, $val) = ($13, $14, $15);
-            if ($FUNCTIONS{$classname} 
-                || $CLASSES{$classname} 
-                || $js_src =~ /function\s*\Q$classname\E\b/){
-                    &add_property($doc, $classname, $prop, $val, 1);
+            &add_anonymous_function($doc, $cname1, $fname2, 
+                $arglist2, not defined($prototype));
+
+        } elsif ($cname1 && $fname2 && not defined($FUNCTIONS{$cname1})){
+            if ($doc =~ /\@addon/ || $prototype || $CLASSES{$cname1}){
+                # Called for methods added to the prototype of core classes
+                &add_anonymous_function($doc, $cname1, $fname2, 
+                    $arglist2, not defined($prototype));
+            }
+
+        } elsif ($cname2 && $propname1 && defined($propval1)) {
+            &add_property($doc, $cname2, $propname1, $propval1, 0);
+        } elsif ($cname3 && $baseclass){
+            &set_base_class($cname3, $baseclass);
+        } elsif ($cname4 && $propname2 && defined($propval2) 
+                    && $propname2 ne 'prototype' 
+                    && $cname4 ne 'this'){
+            
+            if ($FUNCTIONS{$cname4} 
+                || $CLASSES{$cname4} 
+                || $js_src =~ /function\s*\Q$cname4\E\b/){
+                    &add_property($doc, $cname4, $propname2, $propval2, 1);
             }
         }
     }
@@ -319,25 +328,25 @@ sub fetch_funcs_and_classes {
 # Add a function that is given as Class.prototype.blah = function(){...}
 #
 sub add_anonymous_function {
-   my ($doc, $class, $function_name, $arg_list, $is_class_prop) = @_;
+    my ($doc, $class, $function_name, $arg_list, $is_class_prop) = @_;
 
-   # Just get out if the class is called 'this'. Reason for this is that
-   # binding methods to 'this' should already be converted to binding methods
-   # to the prototype, therefore binding to 'this' is only possible in
-   # member functions, and is therefore not considered static or consistent
-   # enough to be documented.
-   return unless $class ne 'this';
-
-   &add_class($class);
-   my $fake_name = "__$class.$function_name";
+    # Just get out if the class is called 'this'. Reason for this is that
+    # binding methods to 'this' should already be converted to binding methods
+    # to the prototype, therefore binding to 'this' is only possible in
+    # member functions, and is therefore not considered static or consistent
+    # enough to be documented.
+    return unless $class ne 'this';
+    &add_class($class);
+    my $fake_name = "__$class.$function_name";
    
-   # This is dirty
-   my $is_private = $doc =~ /\@private\b/;
+    # This is dirty
+    my $is_private = $doc =~ /\@private\b/;
 
-   &add_function($doc, $fake_name, $arg_list, $is_private) and
-      &add_property($doc, $class, $function_name, $fake_name, $is_class_prop);
-   &add_class("$class.$function_name") if $doc =~ /\@(?:constructor|class)\b/;
-
+    &add_function($doc, $fake_name, $arg_list, $is_private) and
+        &add_property($doc, $class, $function_name, $fake_name, $is_class_prop);
+    
+    &add_class("$class.$function_name", $doc) 
+        if $doc =~ /\@(?:constructor|class)\b/;
 }
 
 
@@ -750,7 +759,7 @@ sub preprocess_source {
           (?:\w+(?:\.\w+)*\s*=\s*function\s*(?:\w+\s*)?$BAL_PAREN\s*)
        )$BAL_BRACE)
        /&mark_void_method($1, $2)/egx;
-
+    
     $src;
 }
 
@@ -806,12 +815,12 @@ sub remove_dynamic_bindings {
 #
 sub mark_void_method {
     my ($doc, $funcdef) = @_;
-    return "$doc\n$funcdef" if $doc =~ /\@constructor/ || $doc =~ /\@type/;    
+    return "$doc\n$funcdef" if $doc =~ /\@(constructor|type|returns?)\b/;    
     my ($fbody) = $funcdef =~ /^[^{]*($BAL_BRACE)/;
     $fbody =~ s/$FUNC_DEF/function x(){}/g;
     $fbody =~ s/$ANON_FUNCTION/function (){}/g;
     $doc = &annotate_comment($doc, '@type void') 
-        if $fbody !~ /\breturn\s+(?:(?:\w+)|(?:(["']).*?\1))/;
+        if $fbody !~ /\breturn\s+(?:(?:\w+)|(?:(["']).*?\1)|$BAL_PAREN)/;
     "$doc\n$funcdef";
 }
 

@@ -55,8 +55,16 @@ div.placeholder{border:1px solid black;}
 		<button onclick="runTestCases()">Run Testcases</button>
 		<button onclick="alert(document.body.innerHTML)">markup</button>
         <br />
-        <textarea id="parseError"  cols="80" rows="10"></textarea>
-		<div id="toc"> </div>
+        <fieldset>
+            <legend>Parse error text:</legend>
+            <textarea id="parseError" cols="80" rows="10"></textarea>
+        </fieldset>
+        <br />
+        <fieldset>
+            <legend>XMLized ECMAScript object:</legend>
+            <textarea id="xmlization" cols="80" rows="10"></textarea>
+        </fieldset>
+	<div id="toc"> </div>
         <hr />
 	</body>
 </html>

@@ -1,3 +1,30 @@
+JSDoc 1.9.2.1
+=============
+
+- Added @addon tag, which is used when adding static methods to core classes
+  or classes not defined within the files being documented
+
+- Fix for the base class of nested classes not being properly set
+
+- Fix for infinite recursion when all classes are private
+
+
+JSDoc 1.9.2
+===========
+
+- Removed unecessary table from overview-summary.tmpl
+
+- Added the @ignore tag to allow total hiding of functions 
+
+- Fix for incorrect marking of methods as void when the return value is
+  enclosed in parentheses
+
+- Fix so that methods with a @return tag but without a return statement
+  are not marked as void
+
+- Fixed issue with not all files being listed in the file listing
+
+
 JSDoc 1.9.1.3
 =============
 

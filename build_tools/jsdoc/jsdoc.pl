@@ -100,20 +100,17 @@ sub output_template {
 # Gather information for each class and output its template
 #
 sub output_class_templates {
-  
+    
     # Note the class name for later
-    @CLASSNAMES =  sort { lc $a->{classname} cmp lc $b->{classname}} 
+    @CLASSNAMES = sort { lc $a->{classname} cmp lc $b->{classname}} 
         map {classname => $_} ,
         grep { not defined $CLASSES->{$_}->{constructor_vars}->{private} 
                 or $OPTIONS{PRIVATE} }
         keys %$CLASSES;
+    die "Nothing to document, exiting\n" unless @CLASSNAMES; 
 
-    my %fnames = map { 
-        ($$CLASSES{$_}->{constructor_vars}->{filename} or '') => 1  
-    } keys %$CLASSES; 
-   
     @FILENAMES = map {filename => $_, mangledfilename => mangle($_)}, 
-        sort {lc($a) cmp lc($b)} grep {length $_} keys %fnames;
+        sort {lc($a) cmp lc($b)} grep {length $_} keys %FILE_OVERVIEWS;
     
     for (my $i = 0; $i < @CLASSNAMES; $i++){
         my $classname = $CLASSNAMES[$i]->{classname};
@@ -214,7 +211,6 @@ sub output_aux_templates(){
     $OPTIONS{LOGO} and copy $OPTIONS{LOGO}, $OPTIONS{OUTPUT};
 
     &process_file_overviews;
-  
     $DEFAULT_CLASSNAME = $CLASSNAMES[0]->{classname};
     my $summary = &get_overall_summary;
 

@@ -31,7 +31,7 @@
  *
  */
 /**
- * <p>Sarissa is the a utility class. Provides static methods for DOMDocument and 
+ * <p>Sarissa is a utility class. Provides static methods for DOMDocument and 
  * XMLHTTP objects, DOM Node serializatrion to XML strings and other goodies.</p>
  * @constructor
  */
@@ -52,7 +52,7 @@ Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
  */
 Sarissa.IS_ENABLED_XMLHTTP = false;
 /**
- * <b>Deprecated, will be remooved in 0.9.6</b>. Check for 
+ * <b>Deprecated, will be removed in 0.9.6</b>. Check for 
  * <code>window.XSLTProcessor</code> instead to see if 
  * XSLTProcessor is available.
  * @type boolean
@@ -68,9 +68,9 @@ var _SARISSA_IEPREFIX4XSLPARAM = "";
 var _SARISSA_HAS_DOM_IMPLEMENTATION = document.implementation && true;
 var _SARISSA_HAS_DOM_CREATE_DOCUMENT = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.createDocument;
 var _SARISSA_HAS_DOM_FEATURE = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.hasFeature;
-/** <b>Deprecated, will be remooved in 0.9.6</b>. @deprecated */
+/** <b>Deprecated, will be removed in 0.9.6</b>. @deprecated */
 var _SARISSA_IS_MOZ = _SARISSA_HAS_DOM_CREATE_DOCUMENT && _SARISSA_HAS_DOM_FEATURE;
-/** <b>Deprecated, will be remooved in 0.9.6</b>. @deprecated */
+/** <b>Deprecated, will be removed in 0.9.6</b>. @deprecated */
 var _SARISSA_IS_IE = document.all && window.ActiveXObject &&  (navigator.userAgent.toLowerCase().indexOf("msie") > -1);
 //==========================================
 // Implement Node constants if not available
@@ -392,7 +392,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
 //==========================================
 if(window.XMLHttpRequest){
     /**
-    * <p><b>Deprecated, will be remooved in 0.9.6</b>. Factory method to obtain a new XMLHTTP Request object</p>
+    * <p><b>Deprecated, will be removed in 0.9.6</b>. Factory method to obtain a new XMLHTTP Request object</p>
     * @returns a new XMLHTTP Request object
     * @deprecated
     */
@@ -532,5 +532,58 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
             nodeTo.appendChild(nodes[i].cloneNode(true));
         };
     };
+};
+
+/** 
+ * <p>Serialize any object to an XML string. All properties are serialized using the property name
+ * as the XML element name. Array elements are rendered as <code>array-item</code> elements, 
+ * using their index/key as the value of the <code>key</code> attribute.</p>
+ * @argument anyObject the object to serialize
+ * @argument objectName a name for that object
+ * @return the XML serializationj of the given object as a string
+ */
+Sarissa.xmlize = function(anyObject, objectName, indentSpace){
+    indentSpace = indentSpace?indentSpace:'';
+    var s = indentSpace  + '<' + objectName + '>';
+    var isLeaf = false;
+    if(!(anyObject instanceof Object) || anyObject instanceof Number || anyObject instanceof String 
+        || anyObject instanceof Boolean || anyObject instanceof Date){
+        s += Sarissa.escape(""+anyObject);
+        isLeaf = true;
+    }else{
+        s += "\n";
+        var itemKey = '';
+        var isArrayItem = anyObject instanceof Array;
+        for(var name in anyObject){
+            s += Sarissa.xmlize(anyObject[name], (isArrayItem?"array-item key=\""+name+"\"":name), indentSpace + "   ");
+        };
+        s += indentSpace;
+    };
+    return s += (objectName.indexOf(' ')!=-1?"</array-item>\n":"</" + objectName + ">\n");
+};
+
+/** 
+ * Escape the given string chacters that correspond to the five predefined XML entities
+ * @param sXml the string to escape
+ */
+Sarissa.escape = function(sXml){
+    return sXml.replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+};
+
+/** 
+ * Unescape the given string. This turns the occurences of the predefined XML 
+ * entities to become the characters they represent correspond to the five predefined XML entities
+ * @param sXml the string to unescape
+ */
+Sarissa.unescape = function(sXml){
+    return sXml.replace(/&apos;/g,"'")
+        .replace(/&quot;/g,"\"")
+        .replace(/&gt;/g,">")
+        .replace(/&lt;/g,"<")
+        .replace(/&amp;/g,"&");
 };
 //   EOF

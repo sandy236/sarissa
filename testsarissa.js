@@ -98,6 +98,23 @@ function SarissaTestCase() {
         this.assertEquals(Sarissa.getText(oDom.documentElement, false), "gfdsgf");
         this.assertEquals(Sarissa.getText(oDom, true), "hfyrhy 5h yfgfdsgf");
     };
+    
+    this.testXmlize = function(){
+        var book = new Object();
+        book.chapters = new Array();
+        book.chapters[0] = "Kingdom of fools";
+        book.chapters[1] = "Fall";
+        book.chapters[2] = "Final battle";
+        book.chapters[3] = "Characters that need to be escaped: << << \"' \"\"\"&&'' < > & ' \" ";
+        book.chapters[4] = "Epilogue";
+        book.editor = "Manos Batsis";
+        var publisher = new Object();
+        publisher.name = "Some Publisher";
+        book.publisher = publisher;
+
+        var s = Sarissa.xmlize(book, "book");
+        document.getElementById("xmlization").appendChild(document.createTextNode(s));
+    };
 };
 SarissaTestCase.prototype = new TestCase;
 
@@ -162,7 +179,6 @@ function XMLDocumentTestCase() {
     this.testLoad = function() {
         this.xmlDoc.async = false;
         this.xmlDoc.load("test.xml");
-        alert(Sarissa.serialize(this.xmlDoc));
         this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
     };
     

@@ -310,9 +310,20 @@ ok($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}->[0] eq 'void',
 reset_parser();
 $src = 'function A(c){ c.someFunc = function(){ return 2; }; return ""; }';
 $classes = parse_code_tree(\$src);
-ok(!defined($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}),
+ok(!defined($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}->[0]),
     "Ensure inner-function measures don't affect non-void functions");
 
+reset_parser();
+$src = '/** @return {int} Description */function f(){}';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}->[0]),
+    'Methods with a @return tag but no return statement are not marked void');
+
+reset_parser();
+$src = 'function f(){ return (true ? "t" : "f");}';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}->[0]),
+    "Non-void with non-trivial return statement is not marked as void");
 
 #
 # Try huge constructor input
@@ -555,4 +566,48 @@ function z(){}
 $classes = parse_code_tree(\$src);
 ok(!defined($classes->{GLOBALS}->{class_methods}->[0]),
     "Ignore JSDoc in extra JSDoc-comment blocks");
+
+
+#
+# Test the behaviour of the @ignore tag
+#
+reset_parser();
+$src = '
+/** This method is normal */
+function Normal(){}
+
+/** @ignore */
+function Hidden(){}
+';
+$classes = parse_code_tree(\$src);
+my %fnames = map { $_->{mapped_name} => 1 }
+    @{$classes->{GLOBALS}->{class_methods}};
+ok(defined $fnames{Normal}, "A normal method is picked up and documented");
+ok(!defined $fnames{Hidden}, 'An @ignored method is not picked up');
+
+#
+# Test the behaviour of the @addon tag
+#
+reset_parser();
+$src = '
+/** 
+ * Should be ignored
+ */
+ClassOne.funcOne = function(){};
+
+/**
+ * Should not be ignored
+ * @addon
+ */
+ClassTwo.funcOne = function(){};
+
+ClassThree.prototype = new Object();
+ClassThree.funcThree = function(){}';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{ClassOne}), 
+    'Extensions to undefined classes/objects without @addon are ignored');
+ok(defined($classes->{ClassTwo}),
+    'Extensions to undefined classes/objects with @addon are not ignored');
+ok($classes->{ClassThree}->{class_methods}->[0]->{mapped_name} eq 'funcThree',
+    'Class methods without @addon work on pre-defined classes');
 
