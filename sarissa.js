@@ -16,8 +16,18 @@
  * @constructor
  */
 function Sarissa(){}
+/**
+ * Boolean constant; tells you whether tranformNode and tranformNodeToObject are available
+ * @deprecated will be removed along with those methods
+ */
 Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
+/**
+ * Boolean constant; tells you whether Sarissa.getXmlHttpRequest is available
+ */
 Sarissa.IS_ENABLED_XMLHTTP = false;
+/**
+ * Boolean constant; tells you whether XSLTProcessor is available
+ */
 Sarissa.IS_ENABLED_XSLTPROC = false;
 Sarissa.IS_ENABLED_SELECT_NODES = false;
 Sarissa.IS_ENABLED_SERIALIZER = false;
@@ -506,12 +516,11 @@ if (_SARISSA_IS_MOZ){
         
 
 	/**
-	 * <p>Deletes all child Nodes of the Document. Internal use</p>
-	 * @private
+	 * <p>Deletes all child Nodes of the given node</p>
 	 */
-	XMLDocument.prototype._sarissa_clearDOM = function(){
-		while(this.hasChildNodes())
-			this.removeChild(this.firstChild);
+	Sarissa.clearChildNodes = function(oNode){
+		while(oNode.hasChildNodes())
+			oNode.removeChild(oNode.firstChild);
 	};
 	/**
 	 * <p>Replaces the childNodes of the Document object with the childNodes of
@@ -519,16 +528,17 @@ if (_SARISSA_IS_MOZ){
 	 * @private 
 	 * @argument oDoc the Document to copy the childNodes from
 	 */
-	XMLDocument.prototype._sarissa_copyDOM = function(oDoc){
-		this._sarissa_clearDOM();
-		if(oDoc.nodeType == Node.DOCUMENT_NODE || oDoc.nodeType == Node.DOCUMENT_FRAGMENT_NODE)
+    Sarissa.copyChildNodes = function(fromDoc, toDoc){
+        var isDoc = toDoc.nodeType == Node.DOCUMENT_NODE;
+		Sarissa.clearChildNodes(toDoc);
+		if(fromDoc.nodeType == Node.DOCUMENT_NODE || fromDoc.nodeType == Node.DOCUMENT_FRAGMENT_NODE)
 		{
-			var oNodes = oDoc.childNodes;
+			var oNodes = fromDoc.childNodes;
 			for(var i=0;i<oNodes.length;i++)
-				this.appendChild(this.importNode(oNodes[i], true));
+				toDoc.appendChild((isDoc?toDoc:toDoc.ownerDocument).importNode(oNodes[i], true));
 		}
-		else if(oDoc.nodeType == Node.ELEMENT_NODE)
-			this.appendChild(this.importNode(oDoc, true));
+		else if(fromDoc.nodeType == Node.ELEMENT_NODE)
+			toDoc.appendChild((isDoc?toDoc:toDoc.ownerDocument).importNode(fromDoc, true));
 	};
 	// used to normalise text nodes (for IE's innerText emulation)
 	// i'd appreciate any ideas, regexp is not my strong point
@@ -552,7 +562,7 @@ if (_SARISSA_IS_MOZ){
 		var sOldXML = this.xml;
 		var oDoc = (new DOMParser()).parseFromString(strXML, "text/xml");
 		_sarissa_setReadyState(this, 2);
-		this._sarissa_copyDOM(oDoc);
+		Sarissa.copyChildNodes(oDoc, this);
 		_sarissa_setReadyState(this, 3);
 		_sarissa_loadHandler(this);
 		return sOldXML;
@@ -617,7 +627,7 @@ if (_SARISSA_IS_MOZ){
 	 */
 	XMLDocument.prototype.load = function(sURI){
 		var oDoc = document.implementation.createDocument("", "", null);
-		oDoc._sarissa_copyDOM(this);    
+		Sarissa.copyChildNodes(this, oDoc);    
 		this.parseError = 0;
 		_sarissa_setReadyState(this, 1);
 		try{
