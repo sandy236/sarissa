@@ -39,6 +39,8 @@ data structure has the following form (for each class):
 
    Class
       |
+      +- classname
+      |
       +- constructor_args
       |
       +- extends  
@@ -73,6 +75,8 @@ data structure has the following form (for each class):
       |  |
       |  +- field_name
       |  |
+      |  +- field_value
+      |  |
       |  +- field_vars
       |
       +- instance_fields
@@ -80,6 +84,8 @@ data structure has the following form (for each class):
       |  +- field_description
       |  |
       |  +- field_name
+      |  |
+      |  +- field_value
       |  |
       |  +- field_vars
       |
@@ -113,6 +119,9 @@ use strict;
 use warnings;
 use Exporter;
 
+# Recursion limit for recursive regexes
+use constant RECURSION  => 10;
+
 use vars qw/ @ISA @EXPORT /;
 
 @ISA = qw(Exporter);
@@ -123,26 +132,28 @@ use vars qw/ %CLASSES %FUNCTIONS %CONFIG $CTX_FILE /;
 
 # Regexes
 use vars qw/ $BAL_PAREN $BAL_BRACE $SQUOTE $DQUOTE $NONQUOTE 
-               $FUNC_DEF $ANON_FUNCTION $LITERAL $FUNC_CALL $JSDOC_COMMENT 
-               $MLINE_COMMENT $SLINE_COMMENT /;
+               $FUNC_DEF $RET_FUNC_DEF $ANON_FUNCTION $LITERAL $FUNC_CALL 
+               $JSDOC_COMMENT $MLINE_COMMENT $SLINE_COMMENT /;
 
 # This limits nested braces to 30 levels, but is much more 
 # stable than using a dynamic regex
-$BAL_BRACE = qr/\{([^\{\}])*\}/x;
-for (1..30){
-    $BAL_BRACE = qr/\{(?:[^\{\}]|$BAL_BRACE)*\}/;
+$BAL_BRACE      = qr/\{(?:[^\{\}])*\}/;
+$BAL_PAREN      = qr/\((?:[^()])*\)/;
+for (1..RECURSION){
+    $BAL_BRACE  = qr/\{(?:[^\{\}]|$BAL_BRACE)*\}/;
+    $BAL_PAREN  = qr/\((?:[^()]|$BAL_PAREN)*\)/;
 }
-$BAL_PAREN = qr/\((?:[^()]|(??{$BAL_PAREN}))*\)/;
-$SQUOTE = qr{'[^'\\]*(?:\\.[^'\\]*)*'};
-$DQUOTE = qr{"[^"\\]*(?:\\.[^"\\]*)*"};
-$NONQUOTE = qr{[^"'/]};
-$FUNC_DEF = qr/function\s+\w+(?:\.\w+)*\s*$BAL_PAREN\s*$BAL_BRACE/;
-$ANON_FUNCTION = qr/function\s*$BAL_PAREN\s*$BAL_BRACE/;
-$LITERAL = qr/$DQUOTE|$SQUOTE|\d+/;
-$FUNC_CALL = qr/(?:new\s+)?\w+(?:\.\w+)*\s*$BAL_PAREN/;
-$JSDOC_COMMENT = qr{/\*\*[^*]*\*+(?:[^/*][^*]*\*+)*/};
-$MLINE_COMMENT = qr{/\*[^*]*\*+(?:[^/*][^*]*\*+)*/};
-$SLINE_COMMENT = qr{//[^\n]*};
+$SQUOTE         = qr{'[^'\\]*(?:\\.[^'\\]*)*'};
+$DQUOTE         = qr{"[^"\\]*(?:\\.[^"\\]*)*"};
+$NONQUOTE       = qr{[^"'/]};
+$FUNC_DEF       = qr/function\s+\w+(?:\.\w+)*\s*$BAL_PAREN\s*$BAL_BRACE/;
+$RET_FUNC_DEF   = qr/function\s+(\w+(?:\.\w+)*)\s*($BAL_PAREN)\s*($BAL_BRACE)/;
+$ANON_FUNCTION  = qr/function\s*$BAL_PAREN\s*$BAL_BRACE/;
+$LITERAL        = qr/$DQUOTE|$SQUOTE|\d+/;
+$FUNC_CALL      = qr/(?:new\s+)?\w+(?:\.\w+)*\s*$BAL_PAREN/;
+$JSDOC_COMMENT  = qr{/\*\*[^*]*\*+(?:[^/*][^*]*\*+)*/};
+$MLINE_COMMENT  = qr{/\*[^*]*\*+(?:[^/*][^*]*\*+)*/};
+$SLINE_COMMENT  = qr{//[^\n]*};
 
 
 #
@@ -179,9 +190,10 @@ sub parse_code_tree {
     &set_class_constructors();
     &filter_globals;
 
-    for my $class(values %CLASSES){
+    while (my ($classname, $class) = each %CLASSES){
         delete $class->{_class_properties};
         delete $class->{_instance_properties};
+        $class->{classname} = $classname unless $classname eq '__FILES__';
     }
     return \%CLASSES;
 }
@@ -280,7 +292,7 @@ sub fetch_funcs_and_classes {
             if ($doc =~ /\@(?:constructor|class)\b/){
                 # Add all @constructor and @class methods as classes
                 &add_class($func, $doc);
-            }
+            } 
         } elsif ($4 && $6 && $FUNCTIONS{$4}){
             # Anonymous functions added onto a class or class prototype
             &add_anonymous_function($doc, $4, $6, $7, not defined($5));
@@ -308,11 +320,19 @@ sub fetch_funcs_and_classes {
 #
 sub add_anonymous_function {
    my ($doc, $class, $function_name, $arg_list, $is_class_prop) = @_;
+
+   # Just get out if the class is called 'this'. Reason for this is that
+   # binding methods to 'this' should already be converted to binding methods
+   # to the prototype, therefore binding to 'this' is only possible in
+   # member functions, and is therefore not considered static or consistent
+   # enough to be documented.
+   return unless $class ne 'this';
+
    &add_class($class);
    my $fake_name = "__$class.$function_name";
    
    # This is dirty
-   my $is_private = $doc =~ /\@private/;
+   my $is_private = $doc =~ /\@private\b/;
 
    &add_function($doc, $fake_name, $arg_list, $is_private) and
       &add_property($doc, $class, $function_name, $fake_name, $is_class_prop);
@@ -363,13 +383,20 @@ sub add_property {
     my $key = $is_class_property ? '_class_properties' : '_instance_properties';
     for my $classref (@{$CLASSES{$class}->{$key}}){
         if ($classref->{property_name} eq $property){
-            warn "Already bound property '$property' to '$class'\n";
+            # Whine about rebinding functions to classes
+            if ($FUNCTIONS{$value}){
+                warn "Already bound property '$property' to '$class'\n";
+                return;
+            }
+            
+            # Only take on new attributes 
+            $classref->{property_doc} ||= $doc;
+            $classref->{property_vars} ||= $parsed_doc->{vars};
             return;
         }
     }
 
-    push @{$CLASSES{$class}->{$key}}, 
-    {
+    push @{$CLASSES{$class}->{$key}}, {
         property_doc => $doc,
         property_name => $property,
         property_value => $value,
@@ -397,7 +424,7 @@ sub add_function {
     }
 
     if ($FUNCTIONS{$function}){
-        warn "Function $function already declared\n";
+        warn "Function '$function' already declared\n";
         return 0;
     }
     $FUNCTIONS{$function} = {};
@@ -406,6 +433,12 @@ sub add_function {
         or $func->{argument_list} = "()";
 
     my $documentation = parse_jsdoc_comment($doc);
+    if ($documentation->{vars}->{member}){
+        my ($classname) = map { s/^\s*(\S*)\s*$/$1/; $_ } 
+            @{$documentation->{vars}->{member}};
+        &add_property($doc, $classname, $function, $function, 0)
+            if $classname =~ /\w+/;
+    }
     my $function_ref = $FUNCTIONS{$function};
 
     $function_ref->{documentation} = $documentation;
@@ -424,12 +457,12 @@ sub map_all_properties {
     for my $type (qw(_class_properties _instance_properties)){
         for my $class (keys %CLASSES){
             &map_single_property(
-            $class,
-            $_->{property_name},
-            $_->{property_value},
-            $_->{property_doc},
-            $_->{property_vars}, $type eq '_class_properties') 
-                for @{$CLASSES{$class}->{$type}}
+                $class,
+                $_->{property_name},
+                $_->{property_value},
+                $_->{property_doc},
+                $_->{property_vars}, $type eq '_class_properties') 
+                    for @{$CLASSES{$class}->{$type}}
         }
     }
 
@@ -469,19 +502,13 @@ sub map_single_property {
     my ($class, $prop_name, $prop_val, 
     $description, $vars, $is_class_prop) = @_;
     if (!$FUNCTIONS{$prop_val}){
-        unless ($is_class_prop){
-            push @{$CLASSES{$class}->{instance_fields}}, { 
-            field_name => $prop_name,
-            field_description => $description,
-            field_vars => $vars };
+        push @{$CLASSES{$class}->{$is_class_prop 
+                                    ? 'class_fields' : 'instance_fields'}}, { 
+            field_name          => $prop_name,
+            field_description   => $description,
+            field_value         => $prop_val,
+            field_vars          => $vars };
             return;
-        } else {
-            push @{$CLASSES{$class}->{class_fields}}, { 
-            field_name => $prop_name,
-            field_description => $description,
-            field_vars => $vars };
-            return;
-        }
     }
     my %method;
     my $function = $FUNCTIONS{$prop_val};
@@ -491,11 +518,9 @@ sub map_single_property {
     $method{$_} = $function->{$_} for 
         qw/ argument_list description vars /;
 
-    if (!$is_class_prop){
-        push @{$CLASSES{$class}->{instance_methods}}, \%method;
-    } else {
-        push @{$CLASSES{$class}->{class_methods}}, \%method;
-    }
+    push @{$CLASSES{$class}->{$is_class_prop 
+                            ? 'class_methods' 
+                            : 'instance_methods'}}, \%method;
 }
 
 
@@ -524,11 +549,7 @@ sub build_class_hierarchy {
                                     $class, \@instance_fields);
 
             $superclassname = $superclass->{extends};
-            if ($superclassname){
-                $superclass = $CLASSES{$superclassname}
-            } else {
-                $superclass = undef;
-            }
+            $superclass = $superclassname ? $CLASSES{$superclassname} : undef;
         }
     }
 }
@@ -586,7 +607,7 @@ sub handle_instance_fields {
             for my $field (@{$class->{instance_fields}}){
                 next INSTANCE_FIELDS if $field eq $base_field;
             }
-            push @$instance_fields, $base_field;
+            push @$instance_fields, $base_field->{field_name};
         }
         $class->{inherits}->{$superclassname}->{instance_fields} 
             = $instance_fields;
@@ -604,7 +625,6 @@ sub set_class_constructors {
         $CLASSES{$classname}->{constructor_detail} 
             = $constructor->{description};
 
-        $CLASSES{$classname}->{constructor_params} = $constructor->{args};
         $CLASSES{$classname}->{constructor_vars} = $constructor->{vars} || {};
     }
 }
@@ -694,26 +714,31 @@ sub preprocess_source {
        \s*=\s*($BAL_BRACE)/deconstruct_prototype($1, $2)/egx;
 
     # Mark all constructors based on 'new' statements
-    my @classnames = $src =~ /\bnew\s+(\w+(?:\.\w+)*)\s*\(/g;
+    my %seen;
+    my @classnames =  grep { not $seen{$_}++ } 
+        $src =~ /\bnew\s+(\w+(?:\.\w+)*)\s*\(/g;
     for my $cname (@classnames){
         $src =~ s/($JSDOC_COMMENT?)
                     (?=\s*function\s+\Q$cname\E\s*$BAL_PAREN
                     \s*$BAL_BRACE)
                 /&annotate_comment($1, '@constructor')/ex;
     }
-      
+
     $src =~ s/
        ($JSDOC_COMMENT?)\s*
        (function\s+\w+(?:\.\w+)*\s*$BAL_PAREN\s*)
        ($BAL_BRACE)
        /&deconstruct_constructor($1, "$2$3")/egx;
-   
+
     $src =~ s!
        (?:var\s+)?(\w+(?:\.\w+)*)
        \s*=\s*
        new\s+
        ($ANON_FUNCTION)!&deconstruct_singleton($1, $2)!egx;
 
+    $src = &remove_dynamic_bindings($src);
+
+    # Mark all void methods with "@type void"
     $src =~ s/($JSDOC_COMMENT?)\s*
        ((?:
           (?:function\s+\w+(?:\.\w+)*\s*$BAL_PAREN\s*)
@@ -726,14 +751,63 @@ sub preprocess_source {
 }
 
 #
+# Remove dynamic binding.
+# Change this:
+#
+#   function MyFunc(class){
+#       var x = 2;
+#       class.prototype.func = function(){};
+#       return x;
+#   }
+#
+# to:
+#
+#   function MyFunc(class){
+#       var x = 2;
+#
+#       return x;
+#   }
+#
+# and change this:
+#
+#   function BindMethod(obj){
+#       obj.someFunc = function(){ return null; };
+#       return obj;
+#   }
+#
+# to:
+#
+#   function BindMethod(obj){
+#
+#       return obj;
+#   }
+#
+sub remove_dynamic_bindings {
+    my ($src) = @_;
+    while ($src =~ /$RET_FUNC_DEF/g){
+        my ($fname, $params, $definition) = ($1, $2, $3);
+        next unless $definition =~ /\bfunction\b|\w+\.prototype\./;
+        my @params = split(/\s*,\s*/, substr($params, 1, length($params) - 2));
+        for my $param (@params){
+            $src =~ s/\b$param\.prototype\.[^;\n]*[;\n]//g;
+            $src =~ s/\b$param\.\w+ = $ANON_FUNCTION//g;
+        }
+    }
+    $src;
+}
+
+#
 # Annotate a method as being void if no @type can be found, and there is no
 # statement to return a value in the method itself.
 #
 sub mark_void_method {
     my ($doc, $funcdef) = @_;
     return "$doc\n$funcdef" if $doc =~ /\@constructor/ || $doc =~ /\@type/;    
+    my ($fbody) = $funcdef =~ /^[^{]*($BAL_BRACE)/;
+    $fbody =~ s/$FUNC_DEF/function x(){}/g;
+    $fbody =~ s/$ANON_FUNCTION/function (){}/g;
     $doc = &annotate_comment($doc, '@type void') 
-        if $funcdef !~ /\breturn\s+\w+/;
+        if $fbody !~ /\breturn\s+(?:(?:\w+)|(?:(["']).*?\1))/;
     "$doc\n$funcdef";
 }
 
@@ -846,7 +920,7 @@ sub deconstruct_inner_constructor {
 
 #
 # Deconstruct mozilla's __defineGetter__ and __defineSetter__
-# (Yes, I know this goes against my principals...)
+# (Yes, I know this goes against my principles...)
 #
 sub deconstruct_getset {
     my ($src) = @_;
@@ -928,14 +1002,17 @@ sub filter_globals {
 #
 sub parse_file_info {
     my ($src) = @_;
+    my %fileinfo = ( src => $src );
     while ($src =~ /($JSDOC_COMMENT)/g){
        local $_ = substr($1, 3, length($1) - 5); # Get the actual content 
        if (/\@fileoverview\b/){
           my $doc = parse_jsdoc_comment($_);
-          $CLASSES{__FILES__}->{$CTX_FILE} = $doc->{vars};
+          #$CLASSES{__FILES__}->{$CTX_FILE} = $doc->{vars};
+          %fileinfo = (%{$doc->{vars}}, %fileinfo);
           last;
        }
     }                        
+    $CLASSES{__FILES__}->{$CTX_FILE} = \%fileinfo if $CTX_FILE;
 }
 
 1;

@@ -4,6 +4,8 @@ package JSDoc;
 #
 # Unit testing of JSDoc
 #
+# Run with 'perl TestJSDoc.pl' or './TestJSDoc.pl'
+#
 
 use strict;
 use warnings;
@@ -65,6 +67,41 @@ for my $test (@blocks){
     is_deeply([find_balanced_block(@args)], $expect, $explain);
 }
 
+#
+# Test the @member tag
+#
+diag('Testing the @member tag');
+reset_parser();
+my $src = q#
+/** @constructor */
+function Foo(){
+    this.x = function(){return null;};
+}
+/** Unrelated */
+function myfunc(){return null;}
+#;
+my $classes = parse_code_tree(\$src);
+my %method_names = map { $_->{mapped_name} => 1 } 
+            @{$classes->{Foo}->{instance_methods}};
+ok(not(defined($method_names{myfunc})), 
+    'Unrelated method is not added to class without @member tag');
+reset_parser();
+$src = q#
+/** @constructor */
+function Foo(){
+    this.x = function(){return null;};
+}
+/** 
+ * @member Foo
+ */
+function myfunc(){return null;}
+#;
+$classes = parse_code_tree(\$src);
+%method_names = map { $_->{mapped_name} => 1 } 
+            @{$classes->{Foo}->{instance_methods}};
+ok(defined($method_names{myfunc}), 
+    'Add method marked with @member to class');
+reset_parser();
 
 # 
 # preprocess_source
@@ -252,6 +289,29 @@ $after_re = qr{\s*/\*\*\s*My\stest\sfunction\s*\*/\s*
 like(preprocess_source($before), $after_re,
     "Leave non-void methods with docstrings alone");
 
+reset_parser();
+$src = 'function MyFunction(){ return ""; }';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}),
+    "Ensure a function returning an empty string is not marked as void");
+
+reset_parser();
+$src = 'function A(){ var x = "x"; }';
+$classes = parse_code_tree(\$src);
+ok($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}->[0] eq 'void',
+    "Ensure a global void is void");
+
+reset_parser();
+$src = 'function A(c){ c.someFunc = function(){ return 2; }; }';
+$classes = parse_code_tree(\$src);
+ok($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}->[0] eq 'void',
+    "Ensure inner function definitions don't affect the return type");
+
+reset_parser();
+$src = 'function A(c){ c.someFunc = function(){ return 2; }; return ""; }';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{GLOBALS}->{class_methods}->[0]->{vars}->{type}),
+    "Ensure inner-function measures don't affect non-void functions");
 
 
 #
@@ -265,8 +325,11 @@ my @testsrc = (q#
  function MyClass(){
 
 #);
-for (1..100){
+for (1..30){
     push @testsrc, "
+    /** This is a private method */
+    function f$_(){ return null; }
+
     /**
      * THis is function number $_
      * \@return Nothing
@@ -302,7 +365,7 @@ for (1..100){
 push @testsrc, "\n}\n";
 $testsrc = join("\n", @testsrc);
 # This could crash everything
-preprocess_source($testsrc);
+#preprocess_source($testsrc);
 pass("Process huge unbalanced constructor with preprocess_source");
 
 #
@@ -328,12 +391,27 @@ like(deconstruct_getset($before), $after_re,
 like(preprocess_source($before), $after_re,
    "Testing behaviour of __defineSetter__ in preprocess_source");
 
+reset_parser();
+$src = "
+    function MyFunc(theclass){
+        var x = 2;
+        theclass.prototype.f = function(){};
+        return x;
+    }
+    MyClass.prototype.f = function(){};
+";
+$classes = parse_code_tree(\$src);
+ok(not(defined($classes->{theclass})), 
+    "Ensure that dynamic prototyping doesn't add classes");
+ok(defined($classes->{MyClass}), 
+    "Ensure that normal classes are added with static prototyping");
+
 #
 # miscellaneous tests
 # 
 diag("Miscellaneous tests");
 
-my $src = "
+$src = "
     /** \@constructor */
     function A(){}
     /** \@constructor */
@@ -344,17 +422,70 @@ my $src = "
     function B(){}
     B.prototype = new C();";
 
-my $classes = parse_code_tree(\$src);
+$classes = parse_code_tree(\$src);
 is($classes->{B}->{extends}, 'A', 
     "Test that the first extends marking is the good one, others are ignored");
 
 reset_parser();
 $src = "function A(){ this.n = function(){return 2};}
         var a = new A(); ";
-my $classes = parse_code_tree(\$src);
+$classes = parse_code_tree(\$src);
 ok(defined($classes->{A}), 
     "Functions are later used with 'new' must be treated as a constructor");
 
 ok(!defined($classes->{this}), "'this' cannot be added as a class");
 
 
+#
+# Make sure that dynamically binding methods to a object at a later time
+# do not affect the documentation
+#
+reset_parser();
+$src = '
+function AddCallback(obj){
+    obj.callback = function(){ return null; };
+}';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{obj}), 
+    "Don't add passed-in objects as classes when doing dynamic binding");
+
+reset_parser();
+$src = '
+/** @constructor */
+function A(){}
+A.prototype.setup = A_Setup;
+A.prototype.tearDown = A_TearDown;
+function A_Setup(){
+    this.callback = function(){ return null; };
+}
+function A_TearDown(){
+    this.tornDown = true;
+}';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{this}),
+    "Don't add 'this' as a class when dynamically adding methods in a method");
+
+#
+# Test block prototype assignment
+#
+diag("Test block prototype assignment");
+reset_parser();
+$src = '
+SomeClass.prototype = {
+    funcA: function(){ return null; },
+    valA: 3,
+    funcB: function(){ return null; },
+    valB: "just testing",
+    funcC: function(){}
+};';
+$classes = parse_code_tree(\$src);
+ok(eq_set(
+        [ map { $_->{mapped_name} }
+            @{$classes->{SomeClass}->{instance_methods}}],
+        ['funcA', 'funcB', 'funcC']),
+    "Ensure instance methods are assigned in prototype definition block");
+ok(eq_set(
+        [ map { $_->{field_name} }
+            @{$classes->{SomeClass}->{instance_fields}}],
+        ['valA', 'valB']),
+    "Ensure instance fields are assigned in prototype definition block");

@@ -18,23 +18,23 @@ use JSDoc;
 use JavaScript::Syntax::HTML qw(to_html);
 
 
-use constant LOCATION => dirname($0) . '/';
-use constant MAIN_TMPL => LOCATION . "main.tmpl";
-use constant ALLCLASSES_TMPL => LOCATION . 'allclasses-frame.tmpl';
-use constant ALLCLASSES_NOFRAME_TMPL => LOCATION . 'allclasses-noframe.tmpl';
-use constant OVERVIEW_FRAME_TMPL => LOCATION . 'overview-frame.tmpl';
-use constant TREE_TMPL => LOCATION . 'overview-tree.tmpl';
-use constant OVERVIEW_TMPL => LOCATION . 'overview-summary.tmpl';
-use constant INDEX_TMPL => LOCATION . 'index.tmpl';
-use constant DEFAULT_DEST_DIR => 'js_docs_out/';
-use constant STYLESHEET => 'stylesheet.css';
-use constant HELP_TMPL => LOCATION . 'help-doc.tmpl';
-use constant INDEX_ALL_TMPL => LOCATION . 'index-all.tmpl';
-use constant SRC_TMPL => LOCATION . 'overview-source.tmpl';
+use constant LOCATION           => dirname($0) . '/';
+use constant MAIN_TMPL          => LOCATION . "main.tmpl";
+use constant ALLCLASSES_TMPL    => LOCATION . 'allclasses-frame.tmpl';
+use constant ALLCLASSES_NOFRAME_TMPL    => LOCATION . 'allclasses-noframe.tmpl';
+use constant OVERVIEW_FRAME_TMPL        => LOCATION . 'overview-frame.tmpl';
+use constant TREE_TMPL          => LOCATION . 'overview-tree.tmpl';
+use constant OVERVIEW_TMPL      => LOCATION . 'overview-summary.tmpl';
+use constant INDEX_TMPL         => LOCATION . 'index.tmpl';
+use constant DEFAULT_DEST_DIR   => 'js_docs_out/';
+use constant STYLESHEET         => 'stylesheet.css';
+use constant HELP_TMPL          => LOCATION . 'help-doc.tmpl';
+use constant INDEX_ALL_TMPL     => LOCATION . 'index-all.tmpl';
+use constant CONSTANTS_TMPL     => LOCATION . 'constant-values.tmpl';
 
 use vars qw/ $CLASSES $DEFAULT_CLASSNAME @CLASSNAMES @INDEX %TMPL_CACHE
             %CLASS_ATTRS_MAP %METHOD_ATTRS_MAP %FILE_ATTRS_MAP %OPTIONS 
-            @FILENAMES %FILE_OVERVIEWS/;
+            @FILENAMES %FILE_OVERVIEWS $TIME/;
 
 #
 # Begin main execution
@@ -42,7 +42,7 @@ use vars qw/ $CLASSES $DEFAULT_CLASSNAME @CLASSNAMES @INDEX %TMPL_CACHE
 
 &parse_cmdline;
 &initialize_param_maps;
-
+$TIME = localtime();
 do '.jsdoc_config';
 warn "Error parsing config file: $@\n" if $@;
 
@@ -89,9 +89,9 @@ sub output_template {
     }
     my $tmpl = $TMPL_CACHE{$tmplname};
     $tmpl->param($params);
-    $outname = "$OPTIONS{OUTPUT}$outname";
+    $outname = sprintf('%s%s', $OPTIONS{OUTPUT}, mangle($outname));
     open FILE, ">$outname"
-        or die "Couldn't open '$outname' to write : $!\n";
+        or die "Couldn't open '$outname' to write template: $!\n";
     print FILE $tmpl->output;
     close FILE;
 }
@@ -102,16 +102,19 @@ sub output_template {
 sub output_class_templates {
   
     # Note the class name for later
-    @CLASSNAMES = sort { lc $a->{classname} cmp lc $b->{classname}} 
-        map {classname => $_}, keys %$CLASSES;
+    @CLASSNAMES =  sort { lc $a->{classname} cmp lc $b->{classname}} 
+        map {classname => $_} ,
+        grep { not defined $CLASSES->{$_}->{constructor_vars}->{private} 
+                or $OPTIONS{PRIVATE} }
+        keys %$CLASSES;
 
     my %fnames = map { 
         ($$CLASSES{$_}->{constructor_vars}->{filename} or '') => 1  
     } keys %$CLASSES; 
    
-    @FILENAMES = map {filename => $_}, 
+    @FILENAMES = map {filename => $_, mangledfilename => mangle($_)}, 
         sort {lc($a) cmp lc($b)} grep {length $_} keys %fnames;
-
+    
     for (my $i = 0; $i < @CLASSNAMES; $i++){
         my $classname = $CLASSNAMES[$i]->{classname};
 
@@ -147,33 +150,46 @@ sub output_class_templates {
                 @{&find_subclasses($classname)});
 
         my $superclass = $class->{extends} || '';
-        $superclass =~ s#^(.*)$#<a href="$1.html">$1</a># 
-            if $$CLASSES{$superclass}; 
-      
+
+        if ($$CLASSES{$superclass}){
+            $superclass = "<a href='$superclass.html'>$superclass</a>" 
+                unless (!$OPTIONS{PRIVATE} 
+                    && $$CLASSES{$superclass}->{constructor_vars}->{private});
+        }
+
+        my $file_overview = $class->{constructor_vars}->{filename} ?
+                sprintf('overview-summary-%s.html', 
+                    mangle($class->{constructor_vars}->{filename}))
+                : '';
+        
         &output_template(MAIN_TMPL, "$classname.html", {
-            next_class           => $next_class,
-            prev_class           => $prev_class,
-            superclass           => $superclass,
-            constructor_args     => $class->{constructor_args},
-            constructor_params   => \@constructor_params,
-            constructor_attrs    => $constructor_attrs,
-            constructor_returns  => 
+            next_class          => $next_class,
+            prev_class          => $prev_class,
+            file_overview       => $file_overview,
+            superclass          => $superclass,
+            constructor_args    => $class->{constructor_args},
+            constructor_params  => \@constructor_params,
+            constructor_attrs   => $constructor_attrs,
+            constructor_returns => 
                 ref($class->{constructor_vars}->{returns}[0]) eq 'ARRAY' 
                     ?  $class->{constructor_vars}->{returns}[0][0] 
                     : $class->{constructor_vars}->{returns}[0],
-            class_summary        => $class_summary,
-            constructor_detail   => $constructor_detail,
-            constructor_summary  => &get_summary($constructor_detail),
-            classname            => $classname,
-            subclasses           => $subclasses,
-            class_tree           => &build_class_tree($classname, $CLASSES),
-            fields               => &map_fields($class),
-            methods              => &map_methods($class), 
-            method_inheritance   => &map_method_inheritance($class),
-            field_inheritance    => &map_field_inheritance($class),
-            inner_classes        => $class->{inner_classes},
-            project_name         => $OPTIONS{PROJECT_NAME},
-            page_footer          => $OPTIONS{PAGE_FOOTER},
+            class_summary       => $class_summary,
+            class_attribs       => $class->{constructor_vars}->{private} ?
+                                    '&lt;private&gt;' : '',
+            constructor_detail  => $constructor_detail,
+            constructor_summary => &get_summary($constructor_detail),
+            classname           => $classname,
+            subclasses          => $subclasses,
+            class_tree          => &build_class_tree($classname, $CLASSES),
+            fields              => &map_fields($class),
+            methods             => &map_methods($class), 
+            method_inheritance  => &map_method_inheritance($class),
+            field_inheritance   => &map_field_inheritance($class),
+            inner_classes       => $class->{inner_classes},
+            project_name        => $OPTIONS{PROJECT_NAME},
+            page_footer         => $OPTIONS{PAGE_FOOTER},
+            ctime               => $TIME
         }, 1);
     }
 }
@@ -209,6 +225,7 @@ sub output_aux_templates(){
     &output_multiple_files_templates if @FILENAMES > 1;
     &output_index_and_help_templates($summary);
     &output_overview_summaries($summary);
+    &output_const_summary();
     copy (LOCATION . STYLESHEET, $OPTIONS{OUTPUT} . STYLESHEET);
 }
 
@@ -226,7 +243,7 @@ sub get_overall_summary {
     } elsif (@FILENAMES == 1) {
         # If we only have one file and it has an overview, use that overview
         my $filename = $FILENAMES[0]->{filename};
-        if ($FILE_OVERVIEWS{$filename}){
+        if ($FILE_OVERVIEWS{$filename}->{fileoverview}){
             $summary = $FILE_OVERVIEWS{$filename}->{fileoverview}[0];
             $summary .= "<BR/><BR/>";
 
@@ -234,7 +251,7 @@ sub get_overall_summary {
                 $summary .= &{$FILE_ATTRS_MAP{$name}}($val)
                     if $FILE_ATTRS_MAP{$name};
             }
-        }
+        }     
     }
     $summary;
 }
@@ -255,8 +272,9 @@ sub output_index_and_help_templates {
 
     # Output the help document template
     &output_template(HELP_TMPL, 'help-doc.html',  { 
-        page_footer => $OPTIONS{PAGE_FOOTER}, 
-        project_name => $OPTIONS{PROJECT_NAME} });
+        page_footer     => $OPTIONS{PAGE_FOOTER}, 
+        ctime           => $TIME,
+        project_name    => $OPTIONS{PROJECT_NAME} });
 
 }
 
@@ -266,7 +284,8 @@ sub output_index_and_help_templates {
 sub output_classes_frames_templates {
     my $params = {    
         filename    => 'All Classes',
-        fname_link  => 'All Classes',
+        fname_link  => '<a href="overview-summary.html" ' .
+                        'target="classFrame">All Classes</a>',
         CLASSNAMES  => \@CLASSNAMES };
     if (@FILENAMES < 2){
         $params->{project_name} = $OPTIONS{PROJECT_NAME};
@@ -275,9 +294,9 @@ sub output_classes_frames_templates {
     &output_template(ALLCLASSES_TMPL, 'allclasses-frame.html', $params);
 
     &output_template(ALLCLASSES_NOFRAME_TMPL, 'allclasses-noframe.html', {  
-        CLASSNAMES     => \@CLASSNAMES,
-        project_name   => $OPTIONS{PROJECT_NAME},
-        logo           => basename($OPTIONS{LOGO}) });
+        CLASSNAMES      => \@CLASSNAMES,
+        project_name    => $OPTIONS{PROJECT_NAME},
+        logo            => basename($OPTIONS{LOGO}) });
 
 }
 
@@ -287,25 +306,65 @@ sub output_classes_frames_templates {
 sub output_overview_summaries {
     my ($summary) = @_;
     &output_template(OVERVIEW_TMPL, 'overview-summary.html', {  
-        generic           => 1,
-        project_name      => $OPTIONS{PROJECT_NAME},
-        page_footer       => $OPTIONS{PAGE_FOOTER},
-        project_summary   => $summary });
+        generic             => 1,
+        project_name        => $OPTIONS{PROJECT_NAME},
+        project_title       => $OPTIONS{PROJECT_NAME},
+        page_footer         => $OPTIONS{PAGE_FOOTER},
+        ctime               => $TIME,
+        project_summary     => $summary,
+        is_file_summary     => 0});
 
     for my $filename (keys %FILE_OVERVIEWS){
-        my $summary = $FILE_OVERVIEWS{$filename}->{fileoverview}[0];
+        my %overview = %{$FILE_OVERVIEWS{$filename}};
+        my $src = delete $overview{src};
+        my $summary = keys(%overview) 
+            ? $overview{fileoverview}[0]
+            : "No overview generated for '$filename'";
         $summary .= "<BR/><BR/>";
-        while (my ($name, $val) = each %{$FILE_OVERVIEWS{$filename}}){
+        while (my ($name, $val) = each %overview){
             $summary .= &{$FILE_ATTRS_MAP{$name}}($val)
                 if $FILE_ATTRS_MAP{$name};
         }
         &output_template(OVERVIEW_TMPL, "overview-summary-$filename.html", {
-            generic           => 0,
-            project_name      => $filename,
-            page_footer       => $OPTIONS{PAGE_FOOTER},
-            project_summary   => $summary });
+            generic             => 0,
+            sourcecode          => $OPTIONS{NO_SRC} ? '' : &to_html($src),
+            project_name        => $OPTIONS{PROJECT_NAME},
+            project_title       => $filename,
+            page_footer         => $OPTIONS{PAGE_FOOTER},
+            ctime               => $TIME,
+            project_summary     => $summary,
+            is_file_summary     => 1});
     }
 
+}
+
+#
+# Output a summary page about the 'static constant' field values for all
+# classes
+#
+sub output_const_summary {
+    my @static_params;
+    for my $classname (sort { uc($a) cmp uc($b) } keys %$CLASSES){
+        my $class = $CLASSES->{$classname};
+        my @statics = grep { $_->{field_value} =~ /^(?:\d+)|(?:(['"]).*\1)$/} 
+            grep { $_->{field_vars}->{final}} @{$class->{class_fields}};
+        if (@statics){
+            push @static_params, {
+                classname       => $classname,
+                static_values   => [map { 
+                    name        => $_->{field_name},
+                    value       => $_->{field_value},
+                    classname   => $classname}, @statics] };
+        }
+    }
+    &output_template(CONSTANTS_TMPL, 'constant-values.html', {
+        project_name        => $OPTIONS{PROJECT_NAME},
+        page_footer         => $OPTIONS{PAGE_FOOTER},
+        ctime               => $TIME,
+        classnames          => [map {name => $_->{classname}}, @static_params],
+        static_finals       => \@static_params 
+    }
+    ) if @static_params;
 }
 
 #
@@ -314,10 +373,10 @@ sub output_overview_summaries {
 #
 sub output_multiple_files_templates {
     &output_template(OVERVIEW_FRAME_TMPL, 'overview-frame.html', {  
-        logo           => basename($OPTIONS{LOGO}),
-        project_name   => $OPTIONS{PROJECT_NAME},
-        filenames      => \@FILENAMES });
-
+        logo            => basename($OPTIONS{LOGO}),
+        project_name    => $OPTIONS{PROJECT_NAME},
+        filenames       => \@FILENAMES });
+    
     for my $fname (map { $_->{filename}} @FILENAMES){
         my @classes = grep {
             ($$CLASSES{$_}->{constructor_vars}->{filename} || '') eq $fname
@@ -326,15 +385,24 @@ sub output_multiple_files_templates {
         &output_template(ALLCLASSES_TMPL, 
             sprintf('overview-%s.html', $fname), {  
                 filename    => $fname, 
-                fname_link  => $FILE_OVERVIEWS{basename($fname)} 
-                                ?  "<a href='overview-summary-$fname.html' 
-                                        target='classFrame'>$fname</a>"
+                fname_link  => $FILE_OVERVIEWS{$fname} 
+                                ?  sprintf('<a href="overview-summary-%s.html" 
+                                        target="classFrame">%s</a>', 
+                                        mangle($fname), $fname)
                                 : $fname,
                 CLASSNAMES  => [map {classname => $_}, sort @classes] }); 
 
     }
 }
 
+#
+# Mangle a file path so that it can be used as a filename
+#
+sub mangle {
+    local $_ = shift;
+    tr{/\\}{_};
+    $_;
+}
 
 # 
 # Build the tree representation of the inheritance
@@ -348,7 +416,11 @@ sub build_class_tree {
     push @family, $classname;
     while ($class->{extends} and $class->{extends} ne ""){
         my $base = $class->{extends};
-        $base =~ s#^(.*)$#<a href="$1.html">$1</a># if $$CLASSES{$base};
+        if ($$CLASSES{$base}){
+            $base = "<a href='$base.html'>$base</a>" 
+                unless (!$OPTIONS{PRIVATE} 
+                    && $$CLASSES{$base}->{constructor_vars}->{private});
+        }
         push @family, $base;
         $class = $$CLASSES{$class->{extends}};
     }
@@ -385,7 +457,14 @@ sub show_usage(){
     --logo              Specify a path to a logo to be used in the docs 
     --project-summary   Specify a path to a text file that contains an 
                         overview summary of the project 
+
+    --no-sources        Don't include the source code view
                         
+    --package-naming    Use package-style naming (i.e. keep directory names
+                        in the file path). This is useful if you have multiple
+                        files with the same name, but in different directories.
+                        This option is only useful if --recursive is also used.
+
     --globals-name      Specify a 'class name' under which all unattached
                         methods will be classified. The defaults to GLOBALS
                         \n};
@@ -402,23 +481,28 @@ sub load_sources(){
             $arg =~ s/(.*[^\/])$/$1\//; 
             find( { 
                 wanted => sub { 
-                    push @filenames, $_ if 
-                        ((-f and -r and /.+\.js$/i) && 
-                            (/^$arg[^\/]+$/ || $OPTIONS{RECURSIVE}));
+                    push @filenames, {
+                        name => $_, 
+                        relname => $OPTIONS{PACKAGENAMING} 
+                                ? substr($_, length($arg))
+                                : (fileparse($_))[0] 
+                    } if ((-f and -r and /.+\.js$/i) && 
+                                (/^$arg[^\/]+$/ || $OPTIONS{RECURSIVE}))
                 }, 
                 no_chdir => 1 }, $arg);
         } elsif (-f $arg){
-            push @filenames, $arg;
+            my $relname = (fileparse($arg))[0];
+            push @filenames, { name => $arg, relname => $relname };
         }   
     }
     for (@filenames){
-        &_log("Loading sources from $_");
-        open SRC, "<$_" or  (warn "Can't open $_, skipping: $!\n" and next);
+        &_log(sprintf 'Loading sources from %s', $_->{name});
+        open SRC, '<', $_->{name} 
+            or (warn sprintf("Can't open %s, skipping: $!\n", $_->{name}) 
+                and next);
         local $/ = undef;
-        push @sources, (fileparse($_))[0];
+        push @sources, $_->{relname};
         push @sources, \<SRC>;
-        &output_template(SRC_TMPL, sprintf('%s.html', basename($_)), 
-            {sourcecode=>to_html(${$sources[-1]})});
         close SRC;
     }
     @sources;
@@ -527,6 +611,10 @@ sub map_fields {
             &resolve_synonyms($_->{field_vars});
             next if (!$OPTIONS{PRIVATE} && $_->{field_vars}->{private});
             my $description = &resolve_inner_links($_->{field_description});
+            my $const_link = ($_->{field_vars}->{final} &&
+                    ($_->{field_value} =~ /^\-?\d+(\.\d+)?$/
+                    || $_->{field_value} =~ /^(["']).*\1$/)) 
+                ? $class->{classname} : '';
             push @fields, { 
                 field_name          => $_->{field_name}, 
                 field_description   => $description,
@@ -534,7 +622,8 @@ sub map_fields {
                 is_final            => defined($_->{field_vars}->{final}),
                 is_private          => defined($_->{field_vars}->{private}),
                 is_class_field      => $type eq 'class_fields',
-                type                => &map_field_type($_)};
+                type                => &map_field_type($_),
+                const_link          => $const_link};
         }
     }
    \@fields;
@@ -564,15 +653,18 @@ sub map_method_inheritance {
         my $superclassname = $class->{extends};
         my $superclass = $$CLASSES{$superclassname};
         while ($superclass){
-            my $methods = 
-                $class->{inherits}->{$superclassname}->{instance_methods};
-            push @method_inheritance, {
-                superclass_name     => $superclassname,
-                inherited_methods   => join(', ', 
-                    map(qq|<a href="$superclassname.html#$_">$_</a>|, 
-                        &filter_private_methods(
-                            $methods, $superclassname)))} 
-                                if ($methods and @$methods);
+            if (!$superclass->{constructor_vars}->{private} 
+                    || $OPTIONS{PRIVATE}){
+                my $methods = 
+                    $class->{inherits}->{$superclassname}->{instance_methods};
+                push @method_inheritance, {
+                    superclass_name     => $superclassname,
+                    inherited_methods   => join(', ', 
+                        map(qq|<a href="$superclassname.html#$_">$_</a>|, 
+                            &filter_private_methods(
+                                $methods, $superclassname)))} 
+                                    if ($methods and @$methods);
+            }
             $superclassname = $superclass->{extends};
             $superclass = $superclassname ? $$CLASSES{$superclassname} : undef;
         }
@@ -592,14 +684,17 @@ sub map_field_inheritance {
         my $superclassname = $class->{extends};
         my $superclass = $$CLASSES{$superclassname};
         while ($superclass){
-            my $fields = 
-                $class->{inherits}->{$superclassname}->{instance_fields};
-            push @field_inheritance, {
-                superclass_name     => $superclassname,
-                inherited_fields    => join(', ', 
-                    map(qq|<a href="$superclassname.html#$_">$_</a>|, 
-                        &filter_private_fields($fields, $superclassname)))}
-                            if ($fields and @$fields);
+            if (!$superclass->{constructor_vars}->{private} 
+                    || $OPTIONS{PRIVATE}){
+                my $fields = 
+                    $class->{inherits}->{$superclassname}->{instance_fields};
+                push @field_inheritance, {
+                    superclass_name     => $superclassname,
+                    inherited_fields    => join(', ', 
+                        map(qq|<a href="$superclassname.html#$_">$_</a>|, 
+                            &filter_private_fields($fields, $superclassname)))}
+                                if ($fields and @$fields);
+            }
             $superclassname = $superclass->{extends};
             $superclass = $superclassname ? $$CLASSES{$superclassname} : undef;
         }
@@ -630,7 +725,7 @@ sub filter_private_methods {
 sub filter_private_fields {
     my ($fields, $superclassname) = @_;
     my @visible_fields;
-    for my $field (map {$_->{field_name}} @$fields){
+    for my $field (@$fields){
         for my $super_field(@{$$CLASSES{$superclassname}->{instance_fields}}){
             push @visible_fields, $field
                 if $field eq $super_field->{field_name} and
@@ -706,6 +801,7 @@ sub output_index_template {
         letters         => $letter_list,
         project_name    => $OPTIONS{PROJECT_NAME},
         page_footer     => $OPTIONS{PAGE_FOOTER},
+        ctime           => $TIME,
         index_list      => [map {
                                 letter => $_->{letter_name}, 
                                 value => $letters{$_->{letter_name}}
@@ -748,7 +844,8 @@ sub output_tree_template {
     &output_template(TREE_TMPL, 'overview-tree.html', {  
         classtrees      => $tree,
         project_name    => $OPTIONS{PROJECT_NAME},
-        page_footer     => $OPTIONS{PAGE_FOOTER} }, 1);
+        page_footer     => $OPTIONS{PAGE_FOOTER},
+        ctime           => $TIME }, 1);
 }
 
 #
@@ -793,16 +890,18 @@ sub parse_cmdline {
     $OPTIONS{LOGO} = '';
     $OPTIONS{GLOBALS_NAME} = 'GLOBALS';
     GetOptions(
-        'private|p'          => \$OPTIONS{PRIVATE},
-        'directory|d=s'      => \$OPTIONS{OUTPUT},
-        'help|h'             => \$OPTIONS{HELP},
-        'recursive|r'        => \$OPTIONS{RECURSIVE},
-        'page-footer=s'      => \$OPTIONS{PAGE_FOOTER},
-        'project-name=s'     => \$OPTIONS{PROJECT_NAME},
-        'project-summary=s'  => \$OPTIONS{PROJECT_SUMMARY},
-        'logo=s'             => \$OPTIONS{LOGO},
-        'globals-name=s'     => \$OPTIONS{GLOBALS_NAME},
-        'quiet|q'            => \$OPTIONS{QUIET});
+        'private|p'         => \$OPTIONS{PRIVATE},
+        'directory|d=s'     => \$OPTIONS{OUTPUT},
+        'help|h'            => \$OPTIONS{HELP},
+        'recursive|r'       => \$OPTIONS{RECURSIVE},
+        'page-footer=s'     => \$OPTIONS{PAGE_FOOTER},
+        'project-name=s'    => \$OPTIONS{PROJECT_NAME},
+        'project-summary=s' => \$OPTIONS{PROJECT_SUMMARY},
+        'logo=s'            => \$OPTIONS{LOGO},
+        'globals-name=s'    => \$OPTIONS{GLOBALS_NAME},
+        'quiet|q'           => \$OPTIONS{QUIET},
+        'no-sources'        => \$OPTIONS{NO_SRC},
+        'package-naming'    => \$OPTIONS{PACKAGENAMING});
     $OPTIONS{OUTPUT} =~ s/([^\/])$/$1\//;
 }
 
@@ -899,7 +998,8 @@ sub initialize_param_maps {
         filename =>
             sub {
                 sprintf '<I>Defined in %s</I><BR/><BR/>', 
-                    "<a href='$_[0].html'>$_[0]</a>";
+                    sprintf("<a href='overview-summary-%s.html'>%s</a>", 
+                        mangle($_[0]), $_[0]);
             },
         overviewfile => 
             sub {
@@ -942,18 +1042,31 @@ sub fetch_args {
     my (@args, %used);
     for my $arg (split /\W+/, ($$arg_list_ref =~ /\(([^)]*)/)[0]){
         for (@{$vars->{param}}){
-            my ($type, $name, $value) = /(?:\{(\w+(?:\.\w+)*)\})?\s*(\w+)(.*)/;
+            my ($type, $link, $name, $value) = 
+                /(?:
+                    \{\s*
+                        (\w+(?:\.\w+)*)         # type name
+                        (?:\s+(\S+)\s*)?        # optional link
+                    \})?
+                    \s*
+                    (\w+)                       # parameter name
+                    (.*)                        # description
+                /x;
             next unless $name eq $arg;
             $used{$name} = 1;
             $type ||= '';
-            $type =  qq|<a href="$type.html">$type</a>| if $$CLASSES{$type};
+            if ($$CLASSES{$type} || $link){
+                $link ||= "$type.html";
+                $type =  qq|<a href="$link">$type</a>| ;
+            }
             my $type_regex = qr{\b$arg\b};
             $$arg_list_ref =~ s/($type_regex)/&lt;$type&gt; $1/ if $type;
             push @args, { varname => $name, vardescrip => $value};
         }
     }
     for (@{$vars->{param}}){
-        my ($type, $name, $value) = /(?:\{(\w+(?:\.\w+)*)\})?\s*(\w+)(.*)/;
+        my ($type, $link, $name, $value) 
+            = /(?:\{\s*(\w+(?:\.\w+)*)(?:\s+(\S+)\s*)?\})?\s*(\w+)(.*)/;
         next if $used{$name};
         push @args, { varname => $name, vardescrip => $value };
     }

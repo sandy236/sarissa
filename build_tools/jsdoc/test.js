@@ -58,7 +58,7 @@ function Hexagon(sideLength) {
 /**
  * This is an unattached (static) function that adds two integers together.
  * @param {int} One The first number to add 
- * @param {int} Two The second number to add 
+ * @param {int http://jsdoc.sourceforge.net/} Two The second number to add 
  * @author Gabriel Reid
  * @deprecated So you shouldn't use it anymore!
  */
@@ -150,6 +150,7 @@ Shape.prototype.clone = function(){
  * Create a new Rectangle instance. 
  * @class A basic rectangle class, inherits from Shape.
  * This class could be considered a concrete implementation class
+ * @constructor
  * @param {int} width The optional width for this Rectangle
  * @param {int} height Thie optional height for this Rectangle
  * @author Gabriel Reid

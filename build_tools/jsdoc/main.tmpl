@@ -23,12 +23,9 @@ parent.document.title="<TMPL_VAR name="classname">";
 <A NAME="navbar_bottom_firstrow"><!-- --></A>
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
   <TR ALIGN="center" VALIGN="top">
-  <!-- 
-  This is navbar functionality that is not yet handled
- --> 
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"></TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"> <TMPL_IF NAME="file_overview"> <A HREF="<TMPL_VAR NAME="file_overview">"></TMPL_IF><FONT CLASS="NavBarFont1"><TMPL_IF NAME="file_overview"><B></TMPL_IF>File<TMPL_IF NAME="file_overview"></B></TMPL_IF></FONT><TMPL_IF NAME="file_overview"></A></TMPL_IF>&nbsp;</TD>
+  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev">&nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"--><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -90,7 +87,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <HR>
 <DL>
    <!-- Class definition -->
-   <DT>class 
+   <DT><TMPL_IF NAME="class_attribs"><TMPL_VAR NAME="class_attribs">&nbsp;</TMPL_IF>class 
    <B><TMPL_VAR NAME="classname"></B>
    <TMPL_IF NAME="superclass">
       <DT>extends <TMPL_VAR NAME="superclass"> 
@@ -150,7 +147,8 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TMPL_IF>
 
    <TMPL_LOOP name="field_inheritance">
-   &nbsp;<A NAME="fields_inherited_from_class_A"><!-- --></A>
+   <TMPL_IF NAME="inherited_fields">
+   &nbsp;<A NAME=""><!-- --></A>
    <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
    <TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
    <TD><B>Fields inherited from class <A HREF="<TMPL_VAR name="superclass_name">.html"><TMPL_VAR name="superclass_name"></A></B></TD>
@@ -162,6 +160,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TR>
 </TABLE>
 &nbsp;
+</TMPL_IF>
 </TMPL_LOOP>
 
 <!-- =========== END FIELD SUMMARY =========== -->
@@ -259,6 +258,13 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <PRE><TMPL_IF NAME="is_private">&lt;private&gt;&nbsp;</TMPL_IF><TMPL_IF NAME="is_class_field">&lt;static&gt;&nbsp;</TMPL_IF><TMPL_IF NAME="is_final">&lt;final&gt;&nbsp;</TMPL_IF><TMPL_VAR NAME="type">&nbsp;<B><TMPL_VAR NAME="field_name"></B></PRE>
    <UL>
    <TMPL_VAR NAME="field_description">
+   <TMPL_IF NAME="const_link">
+    <P>
+    <DL>
+    <DT><B>See Also:</B><DD><A HREF="constant-values.html#java.awt.AWTEvent.COMPONENT_EVENT_MASK">Constant Field Values</A></DL>
+    </DL>
+
+   </TMPL_IF>
    </UL>
    <HR>
    </TMPL_LOOP>
@@ -266,7 +272,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 
 <!-- ============ FIELD DETAIL END =========== -->
 
-<!-- ========= CONSTRUCTOR DETAIL START ======== -->
+    <!-- ========= CONSTRUCTOR DETAIL START ======== -->
 <TMPL_IF NAME="constructor_args">
 <A NAME="constructor_detail"><!-- --></A>
 <TABLE BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
@@ -385,13 +391,10 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <A NAME="navbar_bottom_firstrow"><!-- --></A>
 <TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3">
   <TR ALIGN="center" VALIGN="top">
-  <!-- 
-  This is navbar functionality that is not yet handled
- --> 
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"></TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"> <TMPL_IF NAME="file_overview"> <A HREF="<TMPL_VAR NAME="file_overview">"></TMPL_IF><FONT CLASS="NavBarFont1"><TMPL_IF NAME="file_overview"><B></TMPL_IF>File<TMPL_IF NAME="file_overview"></B></TMPL_IF></FONT><TMPL_IF NAME="file_overview"></A></TMPL_IF>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <!--A HREF="overview-tree.html"--><FONT CLASS="NavBarFont1">Tree</FONT><!--/A-->&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="overview-tree.html"><FONT CLASS="NavBarFont1"><b>Tree</b></FONT></A>&nbsp;</TD>
   <!--TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1"-->    <!--A HREF="deprecated-list.html"--><!--FONT CLASS="NavBarFont1">Deprecated</FONT--><!--/A--><!--&nbsp;</TD-->
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
@@ -440,5 +443,6 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <FONT SIZE="-1">
 <TMPL_VAR NAME="page_footer">
 </FONT>
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoc.sourceforge.net/">JSDoc</a> on <TMPL_VAR NAME="ctime"></div>
 </BODY>
 </HTML>

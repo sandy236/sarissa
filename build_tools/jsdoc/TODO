@@ -1,5 +1,16 @@
 TODO for JSDoc
 
+- XML / XMI export
+
+- Improve the --package-naming option so that there are separate namespaces
+  for each package (so that you can have the same class name defined in 
+  different packages)
+
+- Fix some spacing/table issues in the navbar in the templates (use a td
+  border in the stylesheet to debug)
+
+- Introduce a more generalized system for generating the navbar
+
 - Handle additional information (such as @see) for fields
 
 - Uncallable methods/functions should be marked as private, or show the scope
@@ -7,17 +18,12 @@ TODO for JSDoc
 
 - Dynamic handling of assignment of prototype to a temp variable (preprocessor)
 
-- Add support for interfaces, this still has to be better defined
+- Add support for interfaces, but first this has to be better defined
 
 - Top-level var documenting (maybe add a '@global' tag to force toplevel vars
   to be documented
 
 - Add an FAQ, more and better documentation
-
-- Case sensitivity issues, perhaps introduce name mangling 
-
-- Fix empty 'fields inherited from' box: shouldn't be there unless 
-  it has content
 
 - Java port (someday...)
 

@@ -1,3 +1,56 @@
+JSDoc 1.9.1.2
+=============
+
+- Further improvements to mark_void_method
+
+- Improved handling of dynamically-bound methods within functions
+
+- Improved handling of erroneous documenting of 'this'
+
+- Fixed quoting on error message
+
+- Added a few new unit tests for testing general behaviour
+
+JSDoc 1.9.1.1
+=============
+
+- Fix for embarrassing bug in mark_void_method
+
+JSDoc 1.9.1
+===========
+
+- Fix for the incorrect void marking of methods that return a string literal
+
+- Fix to stop dynamic prototyping from adding non-dynamic classes
+
+- Added ability to add a link to parameter-type data, as follows:
+    @param {TypeName http://my.link.com/} myParam Description of parameter
+
+JSDoc 1.9
+=========
+
+- Added support for a Constant Values page like in Javadoc
+
+- Added support for private classes (by marking the constructor with
+  the @private attribute)
+
+- Added a "File" page with links to it in the navbar. The "File" page includes
+  the file overview if one has been supplied, as well as the source view
+  (unless jsdoc has been invoked with the --no-sources flag)
+
+- Added a --no-sources commandline option to not show the sourcecode for
+  the JavaScript files 
+
+- Added --package-naming commandline option, which specifies that the path 
+  leading to each source file will be preserved. This allows for the same 
+  filename to be used in different directories. Using the same class name
+  in different packages is _not_ supported (yet)
+
+- Added JSDoc link and creation time in the footer of each page
+
+- Added support for @member tag to explicitly mark a method as a member of
+  a class
+
 JSDoc 1.8.4
 ===========
 
