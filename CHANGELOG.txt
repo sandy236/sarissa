@@ -1,4 +1,4 @@
-0.9.4  NOTE: Deprecated stuff will go away in 0.9.6. You 
+0.9.4:  NOTE: Deprecated stuff will go away in 0.9.6. You 
        have been warned. 
        * Added some constants to check for availability of features. 
        * the xml property is now deprecated. 
@@ -10,6 +10,7 @@
           work on KHTML-based browsers like Konqueror (at least on my KDE 3.3) 
           and Safari.
        * First stab at sarissa_dhtml.js, dont know if that will stay there...
+       * Fixed major bug in selectSingleNode
        
 0.9.3: Fixed readyState bug in finally clause in XMLDocument.prototype.load.
          Added var before for loop indexes.

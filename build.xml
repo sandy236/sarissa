@@ -13,6 +13,7 @@
     <property name="jsdoc.out.dir" location="jsdoc_out"/>
     <target name="init" depends="clean">
         <tstamp/>
+        
     </target>
     <target name="clean" description="Deletes all generated files and directories">
         <delete dir="${dist.dir}"/>
@@ -20,21 +21,32 @@
     </target>
     <target name="jsdoc" depends="init" description="Generates the JSdoc documentation in jsdoc.out.dir">
     	<!--echo message="${jsdoc.dist.dir}/jsdoc.pl ${src.dir}/sarissa.js -d ${jsdoc.out.dir}"/-->
-   		<exec executable="perl" failonerror="true" >
+        <mkdir dir="${jsdoc.out.dir}"/>	
+        <exec executable="perl" failonerror="true" >
 	   		<arg line="${jsdoc.dist.dir}/jsdoc.pl --private 
                        --directory ${jsdoc.out.dir} 
 	   				   --project-name ${ant.project.name} 
 	   				   --project-summary doc/jsdoc-project-summary 
-	   				   ${src.dir}/sarissa.js ${src.dir}/testsarissa.js"/>
+	   				   ${src.dir}/sarissa.js ${src.dir}/sarissa_dhtml.js ${src.dir}/sarissa_ieemu_xslt.js ${src.dir}/sarissa_ieemu_xpath.js ${src.dir}/testsarissa.js"/>
 	   	</exec>
     </target>
     <target name="dist" depends="jsdoc" description="Assembles a destribution archive in dist.dir">        
-        <mkdir dir="${dist.dir}"/>
-        <zip zipfile="${dist.dir}/${ant.project.name}${project.version}.zip">
-        	<zipfileset dir="${doc.dir}" prefix="${ant.project.name}/doc" includes="**/*.*" excludes="jsdoc-project-summary"/>
-        	<zipfileset dir="${jsdoc.out.dir}" prefix="${ant.project.name}/doc" includes="**/*.*"/>
-            <zipfileset dir="${src.dir}" prefix="${ant.project.name}" includes="CHANGELOG.txt"/>   
-        	<zipfileset dir="${src.dir}" prefix="${ant.project.name}" includes="sarissa.js"/>
-        </zip>
+        <mkdir dir="${dist.dir}/temp"/>
+        <mkdir dir="${dist.dir}/temp/doc"/>   
+        <filter token="project.version" value="${project.version}"/>
+        <copy todir="${dist.dir}/temp/doc" filtering="true">
+            <fileset dir="${doc.dir}" includes="**/*.*" excludes="jsdoc-project-summary **/cvs/**"/>  
+            <fileset dir="${jsdoc.out.dir}" includes="**/*.*" excludes="**/cvs/**"/>    
+        </copy>
+        <copy todir="${dist.dir}/temp" filtering="true">
+            <fileset dir="${src.dir}">
+                <include name="*.js *.html"/>
+                  
+             </fileset>
+        </copy>     
+        <!--zip zipfile="${dist.dir}/${ant.project.name}${project.version}.zip">
+        	<zipfileset dir="${dist.dir}/temp" prefix="${ant.project.name}" includes="**/*.*"/>
+        </zip-->
+        <!--delete dir="${dist.dir}/temp"/-->
     </target>
 </project>

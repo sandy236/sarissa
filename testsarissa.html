@@ -41,6 +41,7 @@ div.placeholder{border:1px solid black;}
     
     function runTestCases(){
     	runTestCase(new SarissaTestCase());
+        runTestCase(new XMLSerializerTestCase());
     	runTestCase(new XMLDocumentTestCase());
     	runTestCase(new XMLElementTestCase());
     	runTestCase(new HTMLElementTestCase());
@@ -53,9 +54,9 @@ div.placeholder{border:1px solid black;}
 		<h1>Sarissa Unit Tests</h1>
 		<button onclick="runTestCases()">Run Testcases</button>
 		<button onclick="alert(document.body.innerHTML)">markup</button>
+        <div id="parseError"> </div>
 		<br />
-		<div id="toc">
-		
-		</div>
+		<div id="toc"> </div>
+        <hr />
 	</body>
 </html>
