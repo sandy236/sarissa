@@ -170,10 +170,7 @@ sub output_class_templates {
             constructor_args    => $class->{constructor_args},
             constructor_params  => \@constructor_params,
             constructor_attrs   => $constructor_attrs,
-            constructor_returns => 
-                ref($class->{constructor_vars}->{returns}[0]) eq 'ARRAY' 
-                    ?  $class->{constructor_vars}->{returns}[0][0] 
-                    : $class->{constructor_vars}->{returns}[0],
+            constructor_returns => $class->{constructor_vars}->{returns}[0],
             class_summary       => $class_summary,
             class_attribs       => $class->{constructor_vars}->{private} ?
                                     '&lt;private&gt;' : '',
@@ -487,7 +484,7 @@ sub load_sources(){
                                 ? substr($_, length($arg))
                                 : (fileparse($_))[0] 
                     } if ((-f and -r and /.+\.js$/i) && 
-                                (/^$arg[^\/]+$/ || $OPTIONS{RECURSIVE}))
+                                (/^\Q$arg\E[^\/]+$/ || $OPTIONS{RECURSIVE}))
                 }, 
                 no_chdir => 1 }, $arg);
         } elsif (-f $arg){
@@ -563,9 +560,8 @@ sub map_methods{
                 @args = map { &format_vars($_); $_ } @args; 
                 &format_vars($method->{vars});
                 my $desc = &resolve_inner_links($method->{description});
-                my $ret = ref($method->{vars}->{returns}[0]) eq 'ARRAY' 
-                            ? $method->{vars}->{returns}[0][0] 
-                            : $method->{vars}->{returns}[0];
+                my $type = &map_return_type($method);
+                my $ret = $method->{vars}->{returns}[0];
                 my $attrs = &format_method_attributes($method->{vars});
 
                 push @methods, {
@@ -578,7 +574,7 @@ sub map_methods{
                     is_class_method     => $mtype eq 'class_methods',
                     is_private          => defined($method->{vars}->{private}), 
                     attributes          => $attrs,
-                    type                => &map_return_type($method) };
+                    type                => $type };
         }
     }
     \@methods;
@@ -589,10 +585,23 @@ sub map_methods{
 #
 sub map_return_type {
     my ($method) = @_;
-    return 'Object' unless $method->{vars}->{type}[0];
-    my $name = $method->{vars}->{type}[0];
+    #return 'Object' unless $method->{vars}->{type}[0];
+    my $name = 'Object';
+    my $link = '';
+    if (defined($method->{vars}->{type})){
+        $name = $method->{vars}->{type}[0];
+    } elsif (defined($method->{vars}->{returns}[0])){
+        if ($method->{vars}->{returns}[0] =~ s/\s*\{(\w+)(?:\s+([^}]+))?\}//){
+            $name = $1;
+            $link = $2;
+        }
+         
+    }
     $name =~ s/^\s*(\S.*?)\s*$/$1/;
-    return qq|<a href="$name.html">$name</a>| if $$CLASSES{$name};
+    if ($$CLASSES{$name} || $link){
+        $link ||= "$name.html";
+        return qq|<a href="$link">$name</a>|;
+    }
     $name;
 }
 

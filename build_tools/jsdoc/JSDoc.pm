@@ -203,7 +203,7 @@ sub parse_code_tree {
 # PARAM: The document string to be parsed
 #
 sub parse_jsdoc_comment {
-    my $doc = shift;
+    my ($doc, $raw) = @_; 
 
     # Remove excess '*' characters
     $doc =~ s/^[*\s]*([^*].*?)[*\s]*$/$1/s;
@@ -223,7 +223,7 @@ sub parse_jsdoc_comment {
         \s*
         (.*)
         $/xs;
-
+    $summary =~ s/^\s*(\S.*?)\s*$/$1/s;
     $parsed{summary} = $summary;
 
     # two types of variable def can be dealt with here:
@@ -239,8 +239,8 @@ sub parse_jsdoc_comment {
             /gsx) {
             my ($name, $val) = ($1, $2);
             $vars{$name} = [] unless defined $vars{$name};
-            $val =~ s/\n/ /g;
-            push(@{$vars{$name}}, ($val =~ /^\s*(.*)\s*$/)[0]);
+            $val =~ s/\n/ /g unless $raw;
+            push(@{$vars{$name}}, ($val =~ /^\s*(.*)\s*$/s)[0]);
         }
         $parsed{vars} = \%vars;
     }
@@ -276,7 +276,7 @@ sub fetch_funcs_and_classes {
 
         #Inheritance
         (?:(\w+(?:\.\w+)*?)\.prototype\s*=
-                           \s*new\s*(\w+(?:\.\w+)*?)\(.*?\)\s*[;\n])| 
+                           \s*new\s*(\w+(?:\.\w+)*?)(?:\(.*?\))?\s*[;\n])| 
 
         # Class property
         (?:(\w+(?:\.\w+)*?)\.(\$?\w+)\s*=\s*(.*?)\s*[;\n]))        
@@ -425,7 +425,9 @@ sub add_function {
 
     if ($FUNCTIONS{$function}){
         warn "Function '$function' already declared\n";
-        return 0;
+        unless ($doc && !$FUNCTIONS{$function}->{documentation}->{summary}){
+            return 0;
+        }
     }
     $FUNCTIONS{$function} = {};
     my $func = $FUNCTIONS{$function};
@@ -706,6 +708,8 @@ sub preprocess_source {
              $DQUOTE$NONQUOTE*|
              $SQUOTE$NONQUOTE*)
           |$MLINE_COMMENT|$SLINE_COMMENT/$1/gx;
+
+        1 while $src =~ s/$JSDOC_COMMENT\s*($JSDOC_COMMENT)/$1/g;
     }
 
     # Alter the prototype-initialization blocks
@@ -1006,8 +1010,7 @@ sub parse_file_info {
     while ($src =~ /($JSDOC_COMMENT)/g){
        local $_ = substr($1, 3, length($1) - 5); # Get the actual content 
        if (/\@fileoverview\b/){
-          my $doc = parse_jsdoc_comment($_);
-          #$CLASSES{__FILES__}->{$CTX_FILE} = $doc->{vars};
+          my $doc = parse_jsdoc_comment($_, 1);
           %fileinfo = (%{$doc->{vars}}, %fileinfo);
           last;
        }

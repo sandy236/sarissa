@@ -1,3 +1,17 @@
+JSDoc 1.9.1.3
+=============
+
+- Fixed issue with backslashes in path
+
+- Fixed issue with <pre> tags and JavaScript code within fileoverview sections
+
+- Made documented versions of a method take precedence over a 
+  non-documented version
+
+- Added support for prototype assignment without parentheses
+
+- Added new @return label {type typeLink} Description... syntax
+
 JSDoc 1.9.1.2
 =============
 

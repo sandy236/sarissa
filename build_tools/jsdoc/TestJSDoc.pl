@@ -365,7 +365,7 @@ for (1..100){
 push @testsrc, "\n}\n";
 $testsrc = join("\n", @testsrc);
 # This could crash everything
-#preprocess_source($testsrc);
+preprocess_source($testsrc);
 pass("Process huge unbalanced constructor with preprocess_source");
 
 #
@@ -489,3 +489,70 @@ ok(eq_set(
             @{$classes->{SomeClass}->{instance_fields}}],
         ['valA', 'valB']),
     "Ensure instance fields are assigned in prototype definition block");
+
+#
+# Test prototype assignment
+#
+diag("Test prototype assignment");
+reset_parser();
+$src = '
+function Base(){}
+function Sub(){}
+Sub.prototype = new Base();
+';
+$classes = parse_code_tree(\$src);
+ok($classes->{Sub}->{extends} eq 'Base',
+    "Prototype assignment results in inheritance");
+
+reset_parser();
+$src = '
+function Base(){}
+function Sub(){}
+Sub.prototype = new Base;
+';
+$classes = parse_code_tree(\$src);
+ok($classes->{Sub}->{extends} eq 'Base',
+    "Prototype assignment results in inheritance (2)");
+
+#
+# Test the handling of methods defined more than once
+#
+reset_parser();
+$src = '
+function f(){}
+/** doc */
+function f(){}
+';
+$classes = parse_code_tree(\$src);
+ok($classes->{GLOBALS}->{class_methods}->[0]->{description} eq 'doc',
+    "In case of double function definition, the one with most info wins");
+
+reset_parser();
+$src = '
+/** doc */
+function f(){}
+function f(){}
+';
+$classes = parse_code_tree(\$src);
+ok($classes->{GLOBALS}->{class_methods}->[0]->{description} eq 'doc',
+    "In case of double function definition, the one with most info wins (2)");
+
+#
+# Make sure that extra JSDoc-style comment blocks are not viewed as source
+#
+reset_parser();
+$src = '
+/** @constructor */
+function x(){}
+
+/** more doc 
+function y(){}
+*/
+
+/** @constructor */
+function z(){}
+';
+$classes = parse_code_tree(\$src);
+ok(!defined($classes->{GLOBALS}->{class_methods}->[0]),
+    "Ignore JSDoc in extra JSDoc-comment blocks");
+
