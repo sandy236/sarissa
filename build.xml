@@ -5,7 +5,7 @@
 	More info at http://sarissa.sf.net 
 	Email comments at mbatsis@users.sf.net
 	</description>
-	<property name="project.version" value="0.9.3"/>
+	<property name="project.version" value="0.9.4"/>
     <property name="dist.dir" location="dist"/>
     <property name="doc.dir" location="doc"/>
     <property name="src.dir" location="${basedir}"/>
@@ -21,12 +21,11 @@
     <target name="jsdoc" depends="init" description="Generates the JSdoc documentation in jsdoc.out.dir">
     	<!--echo message="${jsdoc.dist.dir}/jsdoc.pl ${src.dir}/sarissa.js -d ${jsdoc.out.dir}"/-->
    		<exec executable="perl" failonerror="true" >
-	   		<arg line="${jsdoc.dist.dir}/jsdoc.pl  
-	   		                     --private 
-	   							--directory ${jsdoc.out.dir} 
-	   							--project-name ${ant.project.name} 
-	   							--project-summary doc/jsdoc-project-summary 
-	   							${src.dir}/sarissa.js ${src.dir}/testsarissa.js"/>
+	   		<arg line="${jsdoc.dist.dir}/jsdoc.pl --private 
+                       --directory ${jsdoc.out.dir} 
+	   				   --project-name ${ant.project.name} 
+	   				   --project-summary doc/jsdoc-project-summary 
+	   				   ${src.dir}/sarissa.js ${src.dir}/testsarissa.js"/>
 	   	</exec>
     </target>
     <target name="dist" depends="jsdoc" description="Assembles a destribution archive in dist.dir">        

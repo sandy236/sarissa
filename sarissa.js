@@ -20,6 +20,7 @@ Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
 Sarissa.IS_ENABLED_XMLHTTP = false;
 Sarissa.IS_ENABLED_XSLTPROC = false;
 Sarissa.IS_ENABLED_SELECT_NODES = false;
+Sarissa.IS_ENABLED_SERIALIZER = false;
 
 // 
 var _sarissa_iNsCounter = 0;
@@ -44,8 +45,7 @@ if(_SARISSA_IS_IE){
 	// implement importNode for IE
 	if(!document.importNode){
 		/**
-		 * Implements importNode for IE using innerHTML. Main purpose it to
-		 * be able to append Nodes from XMLDocuments to the current page in IE
+		 * Implements importNode for the current window document in IE using innerHTML.
 		 * @param oNode the Node to import
 		 * @param bChildren whether to include the children of oNode
 		 * @returns the imported node for further use
@@ -92,7 +92,7 @@ if(_SARISSA_IS_IE){
 		return o2Store;
 	};
 	// store proper progIDs
-	_SARISSA_DOM_PROGID = pickRecentProgID(["Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"], [["SELECT_NODES", 2],["TRANSFORM_NODE", 2]]);
+	_SARISSA_DOM_PROGID = pickRecentProgID(["Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"], [["SELECT_NODES", 2],["TRANSFORM_NODE", 2],["SERIALIZER", 3]]);
 	_SARISSA_XMLHTTP_PROGID = pickRecentProgID(["Msxml2.XMLHTTP.5.0", "Msxml2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"], [["XMLHTTP", 4]]);
 	_SARISSA_THREADEDDOM_PROGID = pickRecentProgID(["Msxml2.FreeThreadedDOMDocument.5.0", "MSXML2.FreeThreadedDOMDocument.4.0", "MSXML2.FreeThreadedDOMDocument.3.0"]);
 	_SARISSA_XSLTEMPLATE_PROGID = pickRecentProgID(["Msxml2.XSLTemplate.5.0", "Msxml2.XSLTemplate.4.0", "MSXML2.XSLTemplate.3.0"], [["XSLTPROC", 2]]);
@@ -140,6 +140,12 @@ if(_SARISSA_IS_IE){
 		oDoc.setProperty("SelectionLanguage", "XPath");
 		oDoc.setProperty("SelectionNamespaces", sNsSet);
 	};
+	
+    // see mozilla version
+    Sarissa.getXmlString = function(oDoc)	{
+        return oDoc.xml;
+    };
+            
 	/**
 	 * Basic implementation of Mozilla's XSLTProcessor for IE. 
 	 * Reuses the same XSLT stylesheet for multiple transforms
@@ -263,7 +269,7 @@ if(_SARISSA_IS_IE){
     //===============================
     // setup Sarissa.getXmlHttpRequest 
     //===============================
-    if(XMLHttpRequest && XMLHttpRequest.prototype){
+    if(window.XMLHttpRequest){
         try{
             /**
              * <p>Factory method to obtain a new XMLHTTP Request object</p>
@@ -275,6 +281,24 @@ if(_SARISSA_IS_IE){
             Sarissa.IS_ENABLED_XMLHTTP = true;
         }catch(e){
             alert("Error: Failed to set up 'Sarissa.getXmlHttpRequest', reason: "+e);
+        };
+    };
+    
+    //===============================
+    // setup Sarissa.getXmlHttpRequest 
+    //===============================
+    if(window.XMLSerializer){
+        try{
+            /**
+             * <p>Factory method to obtain the serialization of a DOM Node</p>
+             * @returns the serialized Node as an XML string
+             */
+            Sarissa.getXmlString = function(oDoc)	{
+                return (new XMLSerializer()).serializeToString(oDoc);
+            };
+            Sarissa.IS_ENABLED_SERIALIZER = true;
+        }catch(e){
+            alert("Error: Failed to set up 'Sarissa.getXmlString', reason: "+e);
         };
     };
     
@@ -449,6 +473,7 @@ if(_SARISSA_IS_IE){
              * <p>Emulates IE's xml property, giving read-only access to the XML tree
              * in it's serialized form (in other words, an XML string)</p>
              * @uses Mozilla's XMLSerializer class.
+             * @deprecated
              */
             XMLDocument.prototype.__defineGetter__("xml", function (){
                 return (new XMLSerializer()).serializeToString(this);
@@ -461,10 +486,8 @@ if(_SARISSA_IS_IE){
             Node.prototype.__defineGetter__("xml", function (){
                 return (new XMLSerializer()).serializeToString(this);
             });
-            /**
-             * <p>Ensures and informs the xml property is read only</p>
-             * @throws an &quot;Invalid assignment on read-only property&quot; error.
-             */
+            // Ensures and informs the xml property is read only
+            // throws an Invalid assignment on read-only propertyerror.
             XMLDocument.prototype.__defineSetter__("xml", function (){
                 throw "Invalid assignment on read-only property 'xml'. Hint: Use the 'loadXML(String xml)' method instead. (original exception: "+e+")";
             });
@@ -594,7 +617,7 @@ if (_SARISSA_IS_MOZ){
 	 */
 	XMLDocument.prototype.load = function(sURI){
 		var oDoc = document.implementation.createDocument("", "", null);
-		oDoc._sarissa_copyDOM(this);
+		oDoc._sarissa_copyDOM(this);    
 		this.parseError = 0;
 		_sarissa_setReadyState(this, 1);
 		try{
@@ -622,6 +645,7 @@ if (_SARISSA_IS_MOZ){
 	 * otherwise an error will be thrown</p>
 	 * @uses Mozilla's XSLTProcessor
 	 * @deprecated
+     * <p><b>Note: This method will be removed in Sarissa 0.9.5</b></p>
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @argument oResult The Document to store the transformation result
 	 */
@@ -634,6 +658,7 @@ if (_SARISSA_IS_MOZ){
 	 * <p>Extends the Document class to emulate IE's transformNodeToObject</p>
 	 * @uses Mozilla's XSLTProcessor
 	 * @deprecated
+     * <p><b>Note: This method will be removed in Sarissa 0.9.5</b></p>
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @argument oResult The Document to store the transformation result
 	 * @throws Errors that try to be informative
@@ -667,9 +692,10 @@ if (_SARISSA_IS_MOZ){
 	/**
 	 * <p>Extends the Element class to emulate IE's transformNode. </p>
 	 * <p><b>Note </b>: The result of your transformation must be well formed,
-	 * otherwise you will get an error</p>
+	 * otherwise you will get an error</p>. 
 	 * @uses Mozilla's XSLTProcessor
 	 * @deprecated
+     * <p><b>Note: This method will be removed in Sarissa 0.9.5</b></p>
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @returns the result of the transformation serialized to an XML String
 	 */
@@ -684,6 +710,7 @@ if (_SARISSA_IS_MOZ){
 	 * otherwise you will get an error</p>
 	 * @uses Mozilla's XSLTProcessor
 	 * @deprecated
+     * <p><b>Note: This method will be removed in Sarissa 0.9.5</b></p>
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @returns the result of the transformation serialized to an XML String
 	 */
@@ -726,6 +753,7 @@ if (_SARISSA_IS_MOZ){
  * not any included/imported files.
  * </p>
  * @deprecated
+ * <p><b>Note: This method will be removed in Sarissa 0.9.5</b></p>
  * @argument oXslDoc the target XSLT DOM Document
  * @argument sParamName the name of the XSLT parameter
  * @argument sParamValue the value of the XSLT parameter

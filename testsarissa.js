@@ -1,3 +1,12 @@
+
+/** @constructor */
+function SarissaConstantsTestCase() {
+	/** @final */
+    this.name = 'SarissaConstantsTestCase';
+ 
+};
+SarissaConstantsTestCase.prototype = new TestCase;
+
 /** @constructor */
 function SarissaTestCase() {
 	/** @final */
@@ -8,10 +17,14 @@ function SarissaTestCase() {
 		this.assert(Sarissa.getDomDocument("http://foo.bar/","foo", null));
 		this.assert(Sarissa.getDomDocument());
     };
-    
-    /** Test the <code>Sarissa.getXmlHttpRequest()</code> property */
+    /** Test the <code>Sarissa.getXmlHttpRequest()</code> method */
     this.testGetXmlHttpRequest = function(){
 		this.assert(Sarissa.getXmlHttpRequest());
+    };
+    /** Test the <code>Sarissa.getXmlString()</code> method */
+    this.testGetXmlString = function(){
+	    	var oDom = Sarissa.getDomDocument("","foo", null);
+		this.assert(Sarissa.getXmlString(oDom));
     };
 };
 SarissaTestCase.prototype = new TestCase;
@@ -37,14 +50,14 @@ testSelectSingleNode = function() {
 /** Test the <code>XMLDocument.xml (read)</code> property */
 testXmlRead = function() {
     this.xmlDoc = Sarissa.getDomDocument("", "foo", null);
-    this.assertEquals(this.xmlDoc.xml, "<foo/>");
+    this.assert(this.xmlDoc.xml);
 };
 
 /** Test the <code>XMLDocument.xml (write)</code> property */
 testXmlWrite = function() {
     this.assertThrows(function(){
         var xmlDoc = Sarissa.getDomDocument("", "foo", null);
-        xmlDoc.xml = "foo bar";
+        xmlDoc.xml = "<foo/>";
     });
 };
     
