@@ -49,3 +49,19 @@ function XMLDocumentTestCase() {
     };
 };
 XMLDocumentTestCase.prototype = new TestCase;
+
+/** @constructor */
+function HTMLElementTestCase() {
+	/** @final */
+	this.name = 'HTMLElementTestCase';
+	
+	/** Test the <code>HTMLElement.innerText (read)</code> property */
+	this.testInnerText = function(){
+		var s = "test string";
+		var p = window.document.createElement("p");
+		this.assert(p.innerText.length > -1);
+		p.appendChild(document.createTextNode(s));
+		this.assertTrue(p.innerText.length > 0);
+	};
+};
+HTMLElementTestCase.prototype = new TestCase;

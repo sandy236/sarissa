@@ -13,11 +13,6 @@ div{border:1px solid blue;}
     </script>
     <script type="text/javascript">
     <!--
-
-
-
-
-
 function test()
 {
     // create source document
@@ -37,7 +32,7 @@ function test()
     xmlDoc.transformNodeToObject(xslDoc, resultDoc);
 
 	// show result XML using importNode (implemented for IE by Sarissa) and appendChild:
-	document.getElementById("appendChild").appendChild(document.importNode(resultDoc.documentElement, true));
+	document.getElementById("result").appendChild(document.importNode(resultDoc.documentElement, true));
 	
 	alert(document.body.innerHTML);
 }
@@ -48,7 +43,6 @@ function test()
 
 <body>
 <div><button onclick="test()">test</button></div>
-	<div id="appendInnerHTML"></div>
-	<div id="appendChild"></div>
+	<div id="result"></div>
 </body>
 </html>

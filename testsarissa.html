@@ -42,7 +42,14 @@ div.placeholder{border:1px solid black;}
     function runTestCases(){
     	runTestCase(new SarissaTestCase());
     	runTestCase(new XMLDocumentTestCase());
+    	runTestCase(new HTMLElementTestCase());
     };
+    
+    alert(Sarissa.IS_ENABLED_XSLTPROC);
+    alert(Sarissa.IS_ENABLED_TRANSFORM_NODE);
+    alert(Sarissa.IS_ENABLED_SELECT_NODES);
+    alert(Sarissa.IS_ENABLED_XMLHTTP);
+    
 //]]>
 </script>
 </head>
