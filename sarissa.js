@@ -163,7 +163,8 @@ if (_SARISSA_IS_MOZ)
 	});
 	HTMLElement.prototype.__defineGetter__("innerText", function ()
 	{
-		return _sarissa_normalizeText(this.innerHTML.replace(/<[^>]+>/g,""));
+		var s = this.innerHTML;
+		return s ? _sarissa_normalizeText( s.replace(/<[^>]+>/g, "")) : "";
 	});
 	/**
 	 * <p>Emulate IE's onreadystatechange attribute</p>
