@@ -1,6 +1,16 @@
-0.9.4  Added some constants to check for availability of features. 
-       Sarissa.getXmlHttpRequest should now work with browsers that 
-       support XMLHttpRequest. TODO: finish refactoring (trying to be friendly to more browsers...) 
+0.9.4  NOTE: Deprecated stuff will go away in 0.9.6. You 
+       have been warned. 
+       * Added some constants to check for availability of features. 
+       * the xml property is now deprecated. 
+       * transformNode and transformNodeToObject are deprecated
+       * Sarissa.setXslParameter is now deprecated.
+       * Sarissa now has the getXmlString method that replaces IE's .xml property,
+          which is now deprecated.
+       * Sarissa's getXmlString,getXmlHttpRequest and getDomDocument should 
+          work on KHTML-based browsers like Konqueror (at least on my KDE 3.3) 
+          and Safari.
+       * First stab at sarissa_dhtml.js, dont know if that will stay there...
+       
 0.9.3: Fixed readyState bug in finally clause in XMLDocument.prototype.load.
          Added var before for loop indexes.
  
