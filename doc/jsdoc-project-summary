@@ -25,7 +25,7 @@
 	<h3>Gredits</h3>
 	  <p>
 	  Many thanks to Axel Hecht, Jonas Sicking, the folks at netscape.public.mozilla.* forums, Dimitre Novatchev, 
-	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson and Rob (Flaherty?). My deepest apologies to anyone I fail to mention;
+	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson, Rob Flaherty and David Carlisle. My deepest apologies to anyone I fail to mention;
 	  please send over an email if your name should be here!
 	  </p>
 	  <p>
@@ -335,6 +335,7 @@ Sarissa.getParseErrorText(oDomDoc);
       <h3>
         <a id="transform">How to transform a DOM Document Object with XSLT</a>
       </h3>
+      
       <p>
             Both Mozilla and IE provide JavaScript interfaces to control XSLT
             transformations thanks to Transformiix and MSXML3 (or above)
