@@ -23,7 +23,7 @@
     	<!--echo message="${jsdoc.dist.dir}/jsdoc.pl ${src.dir}/sarissa.js -d ${jsdoc.out.dir}"/-->
         <mkdir dir="${jsdoc.out.dir}"/>	
         <exec executable="perl" failonerror="true" >
-	   		<arg line="${jsdoc.dist.dir}/jsdoc.pl --private 
+	   		<arg line="${jsdoc.dist.dir}/jsdoc.pl --public 
                        --directory ${jsdoc.out.dir} 
 	   				   --project-name ${ant.project.name} 
 	   				   --project-summary doc/jsdoc-project-summary 

@@ -36,7 +36,7 @@
  */
 Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
     document.body.style.cursor = "wait";
-    var xmlhttp = Sarissa.getXmlHttpRequest();
+    var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", fragment_url);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {

@@ -103,6 +103,18 @@ function SarissaTestCase() {
 SarissaTestCase.prototype = new TestCase;
 
 /** @constructor */
+function XMLHttpRequestTestCase(){
+    /** @final */
+    this.name = 'XmlHttpRequestTestCase';
+
+    /** Test the XMLHttpRequest constructor exists (natively or not) */
+    this.test = function(){
+        this.assert(new XMLHttpRequest());
+    };
+};
+XMLHttpRequestTestCase.prototype = new TestCase;
+
+/** @constructor */
 function XMLSerializerTestCase(){
 	/** @final */
     this.name = 'XMLSerializerTestCase';

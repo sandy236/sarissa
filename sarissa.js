@@ -47,7 +47,7 @@ Sarissa.PARSED_OK = "Document contains no parsing errors";
  */
 Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
 /**
- * tells you whether XmlHttpRequest (or equivalent) is available
+ * tells you whether XMLHttpRequest (or equivalent) is available
  * @type boolean
  */
 Sarissa.IS_ENABLED_XMLHTTP = false;
@@ -69,7 +69,7 @@ var _SARISSA_HAS_DOM_FEATURE = _SARISSA_HAS_DOM_IMPLEMENTATION && document.imple
 /** <b>Deprecated, will be remooved in 0.9.6</b>. @deprecated */
 var _SARISSA_IS_MOZ = _SARISSA_HAS_DOM_CREATE_DOCUMENT && _SARISSA_HAS_DOM_FEATURE;
 /** <b>Deprecated, will be remooved in 0.9.6</b>. @deprecated */
-var _SARISSA_IS_IE = document.all && (navigator.userAgent.toLowerCase().indexOf("msie") > -1);
+var _SARISSA_IS_IE = document.all && window.ActiveXObject &&  (navigator.userAgent.toLowerCase().indexOf("msie") > -1);
 //==========================================
 // Implement Node constants if not available
 //==========================================
@@ -137,10 +137,14 @@ if(_SARISSA_IS_IE){
 		};
 		return oDoc;
 	};
-	// see non-IE version
-	Sarissa.getXmlHttpRequest = function()	{
-		return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
-	};
+    if(!window.XMLHttpRequest){
+        /**
+        * Emulate XMLHttpRequest
+        */
+        function XMLHttpRequest(){
+            return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
+        };
+    };
 	// see non-IE version
 	Sarissa.getParseErrorText = function (oDoc) {
         var parseErrorText = Sarissa.PARSED_OK;
@@ -290,17 +294,17 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
             */
             XMLDocument.prototype.load = function(sURI) {
                 var oDoc = document.implementation.createDocument("", "", null);
-                oDoc._sarissa_copyDOM(this);
+                Sarissa.copyChildNodes(this, oDoc);
                 this.parseError = 0;
-                _sarissa_setReadyState(this, 1);
+                Sarissa.__setReadyState__(this, 1);
                 try {
                     if(this.async == false && _SARISSA_SYNC_NON_IMPLEMENTED) {
                         var tmp = new XMLHttpRequest();
                         tmp.open("GET", sURI, false);
                         tmp.send(null);
-                        _sarissa_setReadyState(this, 2);
-                        this._sarissa_copyDOM(tmp.responseXML);
-                        _sarissa_setReadyState(this, 3);
+                        Sarissa.__setReadyState__(this, 2);
+                        Sarissa.copyChildNodes(tmp.responseXML, this);
+                        Sarissa.__setReadyState__(this, 3);
                     }
                     else {
                         this._sarissa_load(sURI);
@@ -311,7 +315,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 }
                 finally {
                     if(this.async == false){
-                        _sarissa_loadHandler(this);
+                        Sarissa.__handleLoad__(this);
                     };
                 };
                 return oDoc;
@@ -372,23 +376,21 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
             return oDoc;
         };        
     };//if(_SARISSA_HAS_DOM_CREATE_DOCUMENT)
-    //===============================
-    // setup Sarissa.getXmlHttpRequest 
-    //===============================
-    if(window.XMLHttpRequest){
-        /**
-         * <p>Factory method to obtain a new XMLHTTP Request object</p>
-         * @returns a new XMLHTTP Request object
-         */
-        Sarissa.getXmlHttpRequest = function()	{
-            return new XMLHttpRequest();
-        };
-        Sarissa.IS_ENABLED_XMLHTTP = true;
-    };
 };
 //==========================================
 // Common stuff
 //==========================================
+if(window.XMLHttpRequest){
+    /**
+    * <p><b>Deprecated, will be remooved in 0.9.6</b>. Factory method to obtain a new XMLHTTP Request object</p>
+    * @returns a new XMLHTTP Request object
+    * @deprecated
+    */
+    Sarissa.getXmlHttpRequest = function()  {
+        return new XMLHttpRequest();
+    };
+    Sarissa.IS_ENABLED_XMLHTTP = true;
+};
 if(!document.importNode){
     /**
      * Implements importNode for the current window document in IE using innerHTML.
@@ -413,7 +415,7 @@ if(!Sarissa.getParseErrorText){
      * <p>Returns a human readable description of the parsing error. Usefull
      * for debugging. Tip: append the returned error string in a &lt;pre&gt;
      * element if you want to render it.</p>
-     * <p>Many thanks to Christian Stocker for the patch.</p>
+     * <p>Many thanks to Christian Stocker for the initial patch.</p>
      * @argument oDoc The target DOM document
      * @returns The parsing error description of the target Document in
      *          human readable form (preformated text)
