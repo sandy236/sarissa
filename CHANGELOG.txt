@@ -1,0 +1,8 @@
+0.9.3: Fixed readyState bug in finally clause in XMLDocument.prototype.load.
+         Added var before for loop indexes.
+ 
+0.9.2: Sarissa was "adversely affecting Array". Now, Sarissa uses the  new 
+        SarissaNodeList class that inherits Array, instead of extending Array
+        directly. Many thanks to Rob (Flaherty?) for the bug report and initial patch.
+
+0.9.xx  No changelog kept. 
