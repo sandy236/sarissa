@@ -33,7 +33,8 @@
             <fileset dir="${doc.dir}" includes="samples/*" excludes="**/cvs/**" />
             <fileset dir="${doc.dir}" includes="*.txt" excludes="**/cvs/**" />   
         </copy>        
-        <replace dir="${dist.dir}/temp" token="@sarissa.version@" value="${sarissa.version}"/>      
+        <replace dir="${dist.dir}/temp" token="@sarissa.version@" value="${sarissa.version}" /> 
+	<fixcrlf srcdir="${dist.dir}/temp" tab="remove" tablength="4" javafiles="no" includes="**/*.js" />     
 	</target>
 	<target name="jsdoc" depends="init" description="Generates the JSdoc documentation in jsdoc.out.dir">
 		<mkdir dir="${jsdoc.out.dir}" />      

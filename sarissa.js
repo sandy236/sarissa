@@ -52,7 +52,9 @@ Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
  */
 Sarissa.IS_ENABLED_XMLHTTP = false;
 /**
- * tells you whether XSLTProcessor is available
+ * <b>Deprecated, will be remooved in 0.9.6</b>. Check for 
+ * <code>window.XSLTProcessor</code> instead to see if 
+ * XSLTProcessor is available.
  * @type boolean
  */
 Sarissa.IS_ENABLED_XSLTPROC = false;
@@ -74,175 +76,175 @@ var _SARISSA_IS_IE = document.all && window.ActiveXObject &&  (navigator.userAge
 // Implement Node constants if not available
 //==========================================
 if(!window.Node || !window.Node.ELEMENT_NODE){
-    var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5, 	ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
+    var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5,  ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
 };
 // IE initialization
 if(_SARISSA_IS_IE){
-	// for XSLT parameter names, prefix needed by IE
-	_SARISSA_IEPREFIX4XSLPARAM = "xsl:";
-	// used to store the most recent ProgID available out of the above
-	var _SARISSA_DOM_PROGID = "";
-	var _SARISSA_XMLHTTP_PROGID = "";
-	/**
-	 * Called when the Sarissa_xx.js file is parsed, to pick most recent
-	 * ProgIDs for IE, then gets destroyed.
-	 * @param idList an array of MSXML PROGIDs from which the most recent will be picked for a given object
-	 * @param enabledList an array of arrays where each array has two items; the index of the PROGID for which a certain feature is enabled
-	 */
-	function pickRecentProgID(idList, enabledList){
-		// found progID flag
-		var bFound = false;
-		for(var i=0; i < idList.length && !bFound; i++){
-			try{
-				var oDoc = new ActiveXObject(idList[i]);
-				o2Store = idList[i];
-				bFound = true;
-				for(var j=0;j<enabledList.length;j++)
-					if(i <= enabledList[j][1])
-						Sarissa["IS_ENABLED_"+enabledList[j][0]] = true;
-			}catch (objException){
-				// trap; try next progID
-			};
-		};
-		if (!bFound)
-			throw "Could not retreive a valid progID of Class: " + idList[idList.length-1]+". (original exception: "+e+")";
-		idList = null;
-		return o2Store;
-	};
-	// pick best available MSXML progIDs
-	_SARISSA_DOM_PROGID = pickRecentProgID(["Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"], [["SELECT_NODES", 2],["TRANSFORM_NODE", 2]]);
-	_SARISSA_XMLHTTP_PROGID = pickRecentProgID(["Msxml2.XMLHTTP.5.0", "Msxml2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"], [["XMLHTTP", 4]]);
-	_SARISSA_THREADEDDOM_PROGID = pickRecentProgID(["Msxml2.FreeThreadedDOMDocument.5.0", "MSXML2.FreeThreadedDOMDocument.4.0", "MSXML2.FreeThreadedDOMDocument.3.0"]);
-	_SARISSA_XSLTEMPLATE_PROGID = pickRecentProgID(["Msxml2.XSLTemplate.5.0", "Msxml2.XSLTemplate.4.0", "MSXML2.XSLTemplate.3.0"], [["XSLTPROC", 2]]);
-	// we dont need this anymore
-	pickRecentProgID = null;
-	//============================================
-	// Factory methods (IE)
-	//============================================
-	// see non-IE version
-	Sarissa.getDomDocument = function(sUri, sName){
-		var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-		// if a root tag name was provided, we need to load it in the DOM
-		// object
-		if (sName){
-			// if needed, create an artifical namespace prefix the way Moz
-			// does
-			if (sUri){
-				oDoc.loadXML("<a" + _sarissa_iNsCounter + ":" + sName + " xmlns:a" + _sarissa_iNsCounter + "=\"" + sUri + "\" />");
-				// don't use the same prefix again
-				++_sarissa_iNsCounter;
-			}
-			else
-				oDoc.loadXML("<" + sName + "/>");
-		};
-		return oDoc;
-	};
+    // for XSLT parameter names, prefix needed by IE
+    _SARISSA_IEPREFIX4XSLPARAM = "xsl:";
+    // used to store the most recent ProgID available out of the above
+    var _SARISSA_DOM_PROGID = "";
+    var _SARISSA_XMLHTTP_PROGID = "";
+    /**
+     * Called when the Sarissa_xx.js file is parsed, to pick most recent
+     * ProgIDs for IE, then gets destroyed.
+     * @param idList an array of MSXML PROGIDs from which the most recent will be picked for a given object
+     * @param enabledList an array of arrays where each array has two items; the index of the PROGID for which a certain feature is enabled
+     */
+    function pickRecentProgID(idList, enabledList){
+        // found progID flag
+        var bFound = false;
+        for(var i=0; i < idList.length && !bFound; i++){
+            try{
+                var oDoc = new ActiveXObject(idList[i]);
+                o2Store = idList[i];
+                bFound = true;
+                for(var j=0;j<enabledList.length;j++)
+                    if(i <= enabledList[j][1])
+                        Sarissa["IS_ENABLED_"+enabledList[j][0]] = true;
+            }catch (objException){
+                // trap; try next progID
+            };
+        };
+        if (!bFound)
+            throw "Could not retreive a valid progID of Class: " + idList[idList.length-1]+". (original exception: "+e+")";
+        idList = null;
+        return o2Store;
+    };
+    // pick best available MSXML progIDs
+    _SARISSA_DOM_PROGID = pickRecentProgID(["Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"], [["SELECT_NODES", 2],["TRANSFORM_NODE", 2]]);
+    _SARISSA_XMLHTTP_PROGID = pickRecentProgID(["Msxml2.XMLHTTP.5.0", "Msxml2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"], [["XMLHTTP", 4]]);
+    _SARISSA_THREADEDDOM_PROGID = pickRecentProgID(["Msxml2.FreeThreadedDOMDocument.5.0", "MSXML2.FreeThreadedDOMDocument.4.0", "MSXML2.FreeThreadedDOMDocument.3.0"]);
+    _SARISSA_XSLTEMPLATE_PROGID = pickRecentProgID(["Msxml2.XSLTemplate.5.0", "Msxml2.XSLTemplate.4.0", "MSXML2.XSLTemplate.3.0"], [["XSLTPROC", 2]]);
+    // we dont need this anymore
+    pickRecentProgID = null;
+    //============================================
+    // Factory methods (IE)
+    //============================================
+    // see non-IE version
+    Sarissa.getDomDocument = function(sUri, sName){
+        var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
+        // if a root tag name was provided, we need to load it in the DOM
+        // object
+        if (sName){
+            // if needed, create an artifical namespace prefix the way Moz
+            // does
+            if (sUri){
+                oDoc.loadXML("<a" + _sarissa_iNsCounter + ":" + sName + " xmlns:a" + _sarissa_iNsCounter + "=\"" + sUri + "\" />");
+                // don't use the same prefix again
+                ++_sarissa_iNsCounter;
+            }
+            else
+                oDoc.loadXML("<" + sName + "/>");
+        };
+        return oDoc;
+    };
     if(!window.XMLHttpRequest){
         /**
-        * Emulate XMLHttpRequest
-        */
+         * Emulate XMLHttpRequest
+         * @constructor
+         */
         function XMLHttpRequest(){
             return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
         };
     };
-	// see non-IE version	
-	Sarissa.getParseErrorText = function (oDoc) {
+    // see non-IE version   
+    Sarissa.getParseErrorText = function (oDoc) {
         var parseErrorText = Sarissa.PARSED_OK;
         if(oDoc.parseError != 0){
-		    parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason + 
+            parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason + 
                 "\nLocation: " + oDoc.parseError.url + 
                 "\nLine Number " + oDoc.parseError.line + ", Column " + 
                 oDoc.parseError.linepos + 
                 ":\n" + oDoc.parseError.srcText +
                 "\n";
-		    for(var i = 0;  i < oDoc.parseError.linepos;i++){
-			    parseErrorText += "-";
+            for(var i = 0;  i < oDoc.parseError.linepos;i++){
+                parseErrorText += "-";
             };
-		    parseErrorText +=  "^\n";
+            parseErrorText +=  "^\n";
         };
         return parseErrorText;
-	};
-	// see non-IE version
-	Sarissa.setXpathNamespaces = function(oDoc, sNsSet)	{
-		oDoc.setProperty("SelectionLanguage", "XPath");
-		oDoc.setProperty("SelectionNamespaces", sNsSet);
-	};   
-	/**
-	 * Basic implementation of Mozilla's XSLTProcessor for IE. 
-	 * Reuses the same XSLT stylesheet for multiple transforms
-	 * @constructor
-	 */
-	function XSLTProcessor(){
-		this.template = new ActiveXObject(_SARISSA_XSLTEMPLATE_PROGID);
-		this.processor = null;
-	};
-	/**
-	 * Impoprts the given XSLT DOM and compiles it to a reusable transform
-	 * @argument xslDoc The XSLT DOMDocument to import
-	 */
-	XSLTProcessor.prototype.importStylesheet = function(xslDoc){
-		// convert stylesheet to free threaded
-		var converted = new ActiveXObject(_SARISSA_THREADEDDOM_PROGID); 
-		converted.loadXML(xslDoc.xml);
-		this.template.stylesheet = converted;
-		this.processor = this.template.createProcessor();
-		// (re)set default param values
-		this.paramsSet = new Array();
-	};
-	/**
-	 * Transform the given XML DOM
-	 * @argument sourceDoc The XML DOMDocument to transform
-	 * @return The transformation result as a DOM Document
-	 */
-	XSLTProcessor.prototype.transformToDocument = function(sourceDoc) {
+    };
+    // see non-IE version
+    Sarissa.setXpathNamespaces = function(oDoc, sNsSet) {
+        oDoc.setProperty("SelectionLanguage", "XPath");
+        oDoc.setProperty("SelectionNamespaces", sNsSet);
+    };   
+    /**
+     * Basic implementation of Mozilla's XSLTProcessor for IE. 
+     * Reuses the same XSLT stylesheet for multiple transforms
+     * @constructor
+     */
+    function XSLTProcessor(){
+        this.template = new ActiveXObject(_SARISSA_XSLTEMPLATE_PROGID);
+        this.processor = null;
+    };
+    /**
+     * Impoprts the given XSLT DOM and compiles it to a reusable transform
+     * @argument xslDoc The XSLT DOMDocument to import
+     */
+    XSLTProcessor.prototype.importStylesheet = function(xslDoc){
+        // convert stylesheet to free threaded
+        var converted = new ActiveXObject(_SARISSA_THREADEDDOM_PROGID); 
+        converted.loadXML(xslDoc.xml);
+        this.template.stylesheet = converted;
+        this.processor = this.template.createProcessor();
+        // (re)set default param values
+        this.paramsSet = new Array();
+    };
+    /**
+     * Transform the given XML DOM
+     * @argument sourceDoc The XML DOMDocument to transform
+     * @return The transformation result as a DOM Document
+     */
+    XSLTProcessor.prototype.transformToDocument = function(sourceDoc){
         this.processor.input = sourceDoc;
-		var outDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-		this.processor.output = outDoc; 
-		this.processor.transform();
-		return outDoc;
-	};
+        var outDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
+        this.processor.output = outDoc; 
+        this.processor.transform();
+        return outDoc;
+    };
     /**
      * Not sure if this works in IE. Maybe this will allow non-well-formed
      * transformation results (i.e. with no single root element)
-	 * @argument sourceDoc The XML DOMDocument to transform
-	 * @return The transformation result as a DOM Fragment
-	 */
-	XSLTProcessor.prototype.transformToFragment = function(sourceDoc, ownerDocument)
-	{
+     * @argument sourceDoc The XML DOMDocument to transform
+     * @return The transformation result as a DOM Fragment
+     */
+    XSLTProcessor.prototype.transformToFragment = function(sourceDoc, ownerDocument){
         return this.transformToDocument(sourceDoc);
     };
-	/**
-	 * Set global XSLT parameter of the imported stylesheet
-	 * @argument nsURI The parameter namespace URI
-	 * @argument name The parameter base name
-	 * @argument value The new parameter value
-	 */
-	XSLTProcessor.prototype.setParameter = function(nsURI, name, value){
-		/* nsURI is optional but cannot be null */
-		if(nsURI){
-			this.processor.addParameter(name, value, nsURI);
+    /**
+     * Set global XSLT parameter of the imported stylesheet
+     * @argument nsURI The parameter namespace URI
+     * @argument name The parameter base name
+     * @argument value The new parameter value
+     */
+    XSLTProcessor.prototype.setParameter = function(nsURI, name, value){
+        /* nsURI is optional but cannot be null */
+        if(nsURI){
+            this.processor.addParameter(name, value, nsURI);
         }else{
-			this.processor.addParameter(name, value);
+            this.processor.addParameter(name, value);
         };
-		/* update updated params for getParameter */
-		if(!this.paramsSet[""+nsURI]){
-			this.paramsSet[""+nsURI] = new Array();
+        /* update updated params for getParameter */
+        if(!this.paramsSet[""+nsURI]){
+            this.paramsSet[""+nsURI] = new Array();
         };
-		this.paramsSet[""+nsURI][name] = value;
-	};
-	/**
-	 * Gets a parameter if previously set by setParameter. Returns null
-	 * otherwise
-	 * @argument name The parameter base name
-	 * @argument value The new parameter value
-	 * @return The parameter value if reviously set by setParameter, null otherwise
-	 */
-	XSLTProcessor.prototype.getParameter = function(nsURI, name){
-		if(this.paramsSet[""+nsURI] && this.paramsSet[""+nsURI][name])
-			return this.paramsSet[""+nsURI][name];
-		else
-			return null;
-	};
+        this.paramsSet[""+nsURI][name] = value;
+    };
+    /**
+     * Gets a parameter if previously set by setParameter. Returns null
+     * otherwise
+     * @argument name The parameter base name
+     * @argument value The new parameter value
+     * @return The parameter value if reviously set by setParameter, null otherwise
+     */
+    XSLTProcessor.prototype.getParameter = function(nsURI, name){
+        if(this.paramsSet[""+nsURI] && this.paramsSet[""+nsURI][name])
+            return this.paramsSet[""+nsURI][name];
+        else
+            return null;
+    };
 }
 else{ /* end IE initialization, try to deal with real browsers now ;-) */
    if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
@@ -356,8 +358,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
         * <p>Attached by an event handler to the load event. Internal use.</p>
         * @private
         */
-        function _sarissa_XMLDocument_onload()
-        {
+        function _sarissa_XMLDocument_onload()        {
             Sarissa.__handleLoad__(this);
         };
         /**
@@ -381,7 +382,6 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
         */
         Sarissa.getDomDocument = function(sUri, sName){
             var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
-
             oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
             return oDoc;
         };        
@@ -455,9 +455,10 @@ Sarissa.getText = function(oNode, deep){
         if(node.nodeType == Node.TEXT_NODE){
             s += node.data;
         }else if(deep == true
-                 && (node.nodeType == Node.ELEMENT_NODE
-                     || node.nodeType == Node.DOCUMENT_NODE
-                     || node.nodeType == Node.DOCUMENT_FRAGMENT_NODE)){
+                    && (node.nodeType == Node.ELEMENT_NODE
+                        || node.nodeType == Node.DOCUMENT_NODE
+                        || node.nodeType == Node.DOCUMENT_FRAGMENT_NODE)){
+        
             s += Sarissa.getText(node, true);
         };
     };
@@ -475,6 +476,7 @@ if(window.XMLSerializer){
     if((Sarissa.getDomDocument("","foo", null)).xml){
         // see non-IE version
         Sarissa.serialize = function(oDoc) {
+            // TODO: check for HTML document and return innerHTML instead
             return oDoc.xml;
         };
         /**
@@ -490,6 +492,9 @@ if(window.XMLSerializer){
             return oNode.xml;
         };
     };
+};
+if(window.XSLTProcessor){
+    Sarissa.IS_ENABLED_XSLTPROC = true;
 };
 /**
  * strips tags from a markup string
@@ -528,4 +533,4 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
         };
     };
 };
-//	 EOF
+//   EOF

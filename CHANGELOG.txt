@@ -1,3 +1,8 @@
+0.9.4.4: Fixed and deprecated Sarissa.IS_ENABLED_XSLTPROC bug in Moz 
+       and added fixcrlf task in build. 
+
+0.9.4.3: Fixed bugs in methods of sarissa_dhtml
+
 0.9.4.2: Fixed a bug in transformNode and transformNodeToObject in
        sarissa_ieemu_xslt.js (it was not really working)
 
