@@ -35,17 +35,24 @@
  *                  content before updating the target element with it
  */
 Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
-    document.body.style.cursor = "wait";
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open("GET", fragment_url);
-    function sarissa_dhtml_loadHandler() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            document.body.style.cursor = "";
-            Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
-	    };
+    try{
+        document.body.style.cursor = "wait";
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", sFromUrl);
+        function sarissa_dhtml_loadHandler() {
+            if (xmlhttp.readyState == 4) {
+                document.body.style.cursor = "auto";
+                Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
+            };
+        };
+	    xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
+        xmlhttp.send(null);
+        document.body.style.cursor = "auto";
+    }
+    catch(e){
+    	document.body.style.cursor = "auto";
+        throw e;
     };
-    xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
-    xmlhttp.send(null);
 };
 
 /**
@@ -56,17 +63,37 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
  *                  DOM node before updating the target element with it
  */
 Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc){
-    Sarissa.clearChildNodes(oTargetElement);
-    // check for parsing errors
-    var oDoc = oNode.nodeType == Node.DOCUMENT_NODE?oNode:oNode.ownerDocument;
-    if(oDoc.parseError != 0){
-        var pre = document.createElement("pre");
-        pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(oDoc)));
-        oTargetElement.appendChild(pre);
-    }else{
-        if(xsltproc){;
-            oNode = xsltproc.transformToFragment(oNode, oDoc);
+    try{
+        document.body.style.cursor = "wait";
+        Sarissa.clearChildNodes(oTargetElement);
+        // check for parsing errors
+        var ownerDoc = oNode.nodeType == Node.DOCUMENT_NODE?oNode:oNode.ownerDocument;
+        if(ownerDoc.parseError && ownerDoc.parseError != 0){
+            var pre = document.createElement("pre");
+            pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(ownerDoc)));
+            oTargetElement.appendChild(pre);
+        }
+        else{
+            if(xsltproc){
+                oNode = xsltproc.transformToDocument(oNode);
+            };
+            if(oNode.nodeType == Node.DOCUMENT_NODE){
+                oTargetElement.innerHTML = Sarissa.serialize(oNode.documentElement);
+            }
+            else if(oNode.nodeType == Node.ELEMENT_NODE){
+                if(oNode == oNode.ownerDocument.documentElement){
+                    oTargetElement.innerHTML = Sarissa.serialize(oNode);
+                }
+                else{
+                    oTargetElement.appendChild(oTargetElement.importNode(oNode, true));
+                };
+            };
         };
-        Sarissa.copyChildNodes(oNode, oTargetElement);
+        document.body.style.cursor = "auto";
+    }
+    catch(e){
+    	document.body.style.cursor = "auto";
+	throw e;
     };
 };
+
