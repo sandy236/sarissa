@@ -35,7 +35,7 @@ div.placeholder{border:1px solid black;}
         placeHolder.appendChild(header);
         document.body.appendChild(placeHolder);
         document.body.appendChild(document.createElement("br"));
-        testCase.initialize(new HTMLReporter(placeHolder));
+        testCase.initialize(new XMLReporter(placeHolder));
         testCase.runTests();
     };
     
@@ -44,11 +44,6 @@ div.placeholder{border:1px solid black;}
     	runTestCase(new XMLDocumentTestCase());
     	runTestCase(new HTMLElementTestCase());
     };
-    
-    alert(Sarissa.IS_ENABLED_XSLTPROC);
-    alert(Sarissa.IS_ENABLED_TRANSFORM_NODE);
-    alert(Sarissa.IS_ENABLED_SELECT_NODES);
-    alert(Sarissa.IS_ENABLED_XMLHTTP);
     
 //]]>
 </script>

@@ -26,12 +26,17 @@ function XMLDocumentTestCase() {
 	
 	this.setUp = function() {
         this.xmlDoc = Sarissa.getDomDocument();
-    };
-    
+	};
     /** Test the <code>XMLDocument.loadXML()</code> method */
     this.testLoadXML = function() {
     	this.xmlDoc.loadXML("<root/>");
 		this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
+    };
+     /** Test the <code>XMLDocument.loadXML()</code> method */
+    this.testLoad = function() {
+        this.xmlDoc.async = false;
+        this.xmlDoc.load("test.xml");
+        this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
     };
     
     /** Test the <code>XMLDocument.xml (read)</code> property */

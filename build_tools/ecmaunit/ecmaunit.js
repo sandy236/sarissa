@@ -261,3 +261,58 @@ function HTMLReporter(outputelement, verbose) {
         };
     };
 };
+
+function XMLReporter(outputelement, verbose, xslDoc) {
+    if(!Sarissa)
+        throw "XMLReporter: Sarissa is not available.";
+    this.outputelement = outputelement;
+    this.document = outputelement.ownerDocument;
+    this.domDoc = Sarissa.getDomDocument("", "ecmaunit-report"); //XXX verbose not yet supported
+    this.docRoot = this.domDoc.documentElement;
+    this.summarize = function(numtests, time, exceptions) {
+        /* write the result output to the html node */
+        var time = this.domDoc.createElement('time-elapsed');
+        var text = this.domDoc.createTextNode(numtests + ' tests ran in ' + 
+                                                time / 1000.0 + ' seconds');
+        time.appendChild(text);
+        this.docRoot.appendChild(time);
+        if (exceptions.length) {
+            for (var i=0; i < exceptions.length; i++) {
+                var testcase = exceptions[i][0];
+                var attr = exceptions[i][1];
+                var exception = exceptions[i][2];
+                var div = this.domDoc.createElement('div1');
+                var text = this.domDoc.createTextNode(
+                    testcase + '.' + attr + ', exception: ' + exception);
+                div.appendChild(text);
+                this.docRoot.appendChild(div);
+            };
+            var div = this.domDoc.createElement('div2');
+            var text = this.domDoc.createTextNode('NOT OK!');
+            div.appendChild(text);
+            this.docRoot.appendChild(div);
+        } else {
+            var div = this.domDoc.createElement('div3');
+            var text = this.domDoc.createTextNode('OK!');
+            div.appendChild(text);
+            this.docRoot.appendChild(div);
+        };
+        if(xslDoc){
+            // not implemented
+        }else{
+            this.outputelement.innerHTML = this.domDoc.xml;
+        };
+    };
+};
+XMLReporter.prototype.doTestElement = function(testcase, attr, exception){
+    var test = this.domDoc.createElement('test');
+	test.setAttribute("success", exception?"false":"true");
+    if(exception);
+    return test;
+};
+XMLReporter.prototype.reportSuccess = function(testcase, attr) {
+    this.docRoot.appendChild(this.doTestElement(testcase, attr));
+};
+XMLReporter.prototype.reportError = function(testcase, attr, exception) {
+    this.docRoot.appendChild(this.doTestElement(testcase, attr, exception));
+};

@@ -10,7 +10,7 @@
  */
 /**
  * <p>
- * Factory Class.
+ * Sarissa is a utility class. Provides factory methods for DOMDocument and XMLHTTP objects between other goodies.
  * </p>
  * 
  * @constructor
@@ -247,6 +247,7 @@ if (_SARISSA_IS_MOZ){
 	 * <b>Note </b>: The transformation result <i>must </i> be well formed,
 	 * otherwise an error will be thrown</p>
 	 * @uses Mozilla's XSLTProcessor
+	 * @deprecated
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @argument oResult The Document to store the transformation result
 	 */
@@ -258,6 +259,7 @@ if (_SARISSA_IS_MOZ){
 	/**
 	 * <p>Extends the Document class to emulate IE's transformNodeToObject</p>
 	 * @uses Mozilla's XSLTProcessor
+	 * @deprecated
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @argument oResult The Document to store the transformation result
 	 * @throws Errors that try to be informative
@@ -293,6 +295,7 @@ if (_SARISSA_IS_MOZ){
 	 * <p><b>Note </b>: The result of your transformation must be well formed,
 	 * otherwise you will get an error</p>
 	 * @uses Mozilla's XSLTProcessor
+	 * @deprecated
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @returns the result of the transformation serialized to an XML String
 	 */
@@ -306,6 +309,7 @@ if (_SARISSA_IS_MOZ){
 	 * <p><b>Note </b>: The result of your transformation must be well formed,
 	 * otherwise you will get an error</p>
 	 * @uses Mozilla's XSLTProcessor
+	 * @deprecated
 	 * @argument xslDoc The stylesheet to use (a DOM Document instance)
 	 * @returns the result of the transformation serialized to an XML String
 	 */
@@ -676,7 +680,7 @@ if (_SARISSA_IS_MOZ){
  * <b>Note </b> that this method can only work for the main stylesheet and
  * not any included/imported files.
  * </p>
- * 
+ * @deprecated
  * @argument oXslDoc the target XSLT DOM Document
  * @argument sParamName the name of the XSLT parameter
  * @argument sParamValue the value of the XSLT parameter
