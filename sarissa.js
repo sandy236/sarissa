@@ -190,7 +190,7 @@ if(_SARISSA_IS_IE){
 	 * @return The transformation result as a DOM Document
 	 */
 	XSLTProcessor.prototype.transformToDocument = function(sourceDoc) {
-		this.processor.input = sourceDoc;
+        this.processor.input = sourceDoc;
 		var outDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
 		this.processor.output = outDoc; 
 		this.processor.transform();
@@ -274,8 +274,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 */
                 XMLDocument.prototype.async = true;
                 _SARISSA_SYNC_NON_IMPLEMENTED = true;
-                
-            }catch(e){/* trap */}
+            }catch(e){/* trap */};
             /**
             * <p>Keeps a handle to the original load() method. Internal use and only
             * if Mozilla version is lower than 1.4</p>
@@ -390,7 +389,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
 //==========================================
 // Common stuff
 //==========================================
-if(!document.importNode && document.innerHTML){
+if(!document.importNode){
     /**
      * Implements importNode for the current window document in IE using innerHTML.
      * Testing showed that DOM was multiple times slower than innerHTML for this,
@@ -496,33 +495,23 @@ Sarissa.stripTags = function (s) {
  * @argument oNode the Node to empty
  */
 Sarissa.clearChildNodes = function(oNode) {
-    if(oNode.hasChildNodes){
-        while(oNode.hasChildNodes()){
-            oNode.removeChild(oNode.firstChild);
-        };
+    while(oNode.hasChildNodes()){
+        oNode.removeChild(oNode.firstChild);
     };
 };
 /**
  * <p> Replaces the childNodes of the toDoc object with the childNodes of
  * the fromDoc object</p>
  * <p> <b>Note:</b> The second object's original content is deleted before the copy operation</p>
- * @argument fromDoc the Node to copy the childNodes from
- * @argument toDoc the Node to copy the childNodes to
+ * @argument nodeFrom the Node to copy the childNodes from
+ * @argument nodeTo the Node to copy the childNodes to
  */
-Sarissa.copyChildNodes = function(fromDoc, toDoc) {
-    Sarissa.clearChildNodes(toDoc);
-    if(fromDoc.nodeType == Node.DOCUMENT_NODE || fromDoc.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
-        var oNodes = fromDoc.childNodes;
-        var ownerDoc = toDoc.nodeType == Node.DOCUMENT_NODE?toDoc:toDoc.ownerDocument;
-        if(ownerDoc.importNode){
-            for(var i=0;i<oNodes.length;i++) {
-                toDoc.appendChild(ownerDoc.importNode(oNodes[i], true));
-            };
-        }else{
-            for(var i=0;i<oNodes.length;i++) {
-                toDoc.appendChild(oNodes[i]);
-            };
-        };
+Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
+    Sarissa.clearChildNodes(nodeTo);
+    var oNodes = nodeFrom.childNodes;
+    var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE?nodeTo:nodeTo.ownerDocument;
+    for(var i=0;i<oNodes.length;i++) {
+        nodeTo.appendChild(ownerDoc.importNode(oNodes[i], true));
     };
 };
 //	 EOF

@@ -55,18 +55,19 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
  *                  DOM node before updating the target element with it
  */
 Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc){
-    try{
-        Sarissa.clearChildNodes(oTargetElement);
-        // check for parsing errors
-        var oDoc = oNode.nodeType == Node.DOCUMENT_NODE?oNode:oNode.ownerDocument;
-        if(oDoc.parseError != 0){
-            var pre = document.createElement("pre");
-            pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(oDoc)));
-            oTargetElement.appendChild(pre);
-        }else{
-            Sarissa.copyChildNodes(xsltproc!=null?xsltproc.transformToFragment(oNode, oDoc):oNode, oTargetElement);
+    Sarissa.clearChildNodes(oTargetElement);
+    // check for parsing errors
+    var oDoc = oNode.nodeType == Node.DOCUMENT_NODE?oNode:oNode.ownerDocument;
+    if(oDoc.parseError != 0){
+        var pre = document.createElement("pre");
+        pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(oDoc)));
+        oTargetElement.appendChild(pre);
+    }else{
+        if(xsltproc){
+            alert("updateContentFromNode: oNode before XSLT: "+Sarissa.serialize(oNode));
+            oNode = xsltproc.transformToFragment(oNode, oDoc);
+            alert("updateContentFromNode: oNode after XSLT: "+Sarissa.serialize(oNode));
         };
-    }catch(e){
-        throw new Error("Failed updating element content, original exception: "+e);
+        Sarissa.copyChildNodes(oNode, oTargetElement);
     };
 };
