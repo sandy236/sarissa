@@ -202,7 +202,7 @@ if(_SARISSA_IS_IE){
 	 * @argument sourceDoc The XML DOMDocument to transform
 	 * @return The transformation result as a DOM Fragment
 	 */
-	XSLTProcessor.prototype.transformToFragment = function(sourceDoc)
+	XSLTProcessor.prototype.transformToFragment = function(sourceDoc, ownerDocument)
 	{
         return this.transformToDocument(sourceDoc);
     };
@@ -239,11 +239,105 @@ if(_SARISSA_IS_IE){
 			return null;
 	};
 }
-else{ /* end IE initialization, try to deal with real browsers now ;-) *./
-    /*=================================
-      setup Sarissa.getDomDocument
-    =================================*/
-    if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
+else{ /* end IE initialization, try to deal with real browsers now ;-) */
+   if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
+        if(window.XMLDocument){
+            /**
+            * <p>Emulate IE's onreadystatechange attribute</p>
+            */
+            XMLDocument.prototype.onreadystatechange = null;
+            /**
+            * <p>Emulates IE's readyState property, which always gives an integer from 0 to 4:</p>
+            * <ul><li>1 == LOADING,</li>
+            * <li>2 == LOADED,</li>
+            * <li>3 == INTERACTIVE,</li>
+            * <li>4 == COMPLETED</li></ul>
+            */
+            XMLDocument.prototype.readyState = 0;
+            /**
+            * <p>Emulate IE's parseError attribute</p>
+            */
+            XMLDocument.prototype.parseError = 0;
+
+            // NOTE: setting async to false will only work with documents
+            // called over HTTP (meaning a server), not the local file system,
+            // unless you are using Moz 1.4+.
+            // BTW the try>catch block is for 1.4; I haven't found a way to check if
+            // the property is implemented without
+            // causing an error and I dont want to use user agent stuff for that...
+            var _SARISSA_SYNC_NON_IMPLEMENTED = false;
+            try{
+                /**
+                * <p>Emulates IE's async property for Moz versions prior to 1.4.
+                * It controls whether loading of remote XML files works
+                * synchronously or asynchronously.</p>
+                */
+                XMLDocument.prototype.async = true;
+                _SARISSA_SYNC_NON_IMPLEMENTED = true;
+                
+            }catch(e){/* trap */}
+            /**
+            * <p>Keeps a handle to the original load() method. Internal use and only
+            * if Mozilla version is lower than 1.4</p>
+            * @private
+            */
+            XMLDocument.prototype._sarissa_load = XMLDocument.prototype.load;
+            
+            /**
+            * <p>Overrides the original load method to provide synchronous loading for
+            * Mozilla versions prior to 1.4, using an XMLHttpRequest object (if
+            * async is set to false)</p>
+            * @returns the DOM Object as it was before the load() call (may be  empty)
+            */
+            XMLDocument.prototype.load = function(sURI) {
+                var oDoc = document.implementation.createDocument("", "", null);
+                oDoc._sarissa_copyDOM(this);
+                this.parseError = 0;
+                _sarissa_setReadyState(this, 1);
+                try {
+                    if(this.async == false && _SARISSA_SYNC_NON_IMPLEMENTED) {
+                        var tmp = new XMLHttpRequest();
+                        tmp.open("GET", sURI, false);
+                        tmp.send(null);
+                        _sarissa_setReadyState(this, 2);
+                        this._sarissa_copyDOM(tmp.responseXML);
+                        _sarissa_setReadyState(this, 3);
+                    }
+                    else {
+                        this._sarissa_load(sURI);
+                    };
+                }
+                catch (objException) {
+                    this.parseError = -1;
+                }
+                finally {
+                    if(this.async == false){
+                        _sarissa_loadHandler(this);
+                    };
+                };
+                return oDoc;
+            };
+
+            if(window.DOMParser && !XMLDocument.loadXML){
+                /**
+                * <p>Parses the String given as parameter to build the document content
+                * for the object, exactly like IE's loadXML()</p>
+                * @argument strXML The XML String to load as the Document's childNodes
+                * @returns the old Document structure serialized as an XML String
+                */
+                XMLDocument.prototype.loadXML = function(strXML){
+                    Sarissa.__setReadyState__(this, 1);
+                    var sOldXML = this.xml;
+                    var oDoc = (new DOMParser()).parseFromString(strXML, "text/xml");
+                    Sarissa.__setReadyState__(this, 2);
+                    Sarissa.copyChildNodes(oDoc, this);
+                    Sarissa.__setReadyState__(this, 3);
+                    Sarissa.__handleLoad__(this);
+                    return sOldXML;
+                };
+            };//if(window.DOMParser && !XMLDocument.loadXML)
+        };//if(window.XMLDocument)
+
         /**
          * <p>Ensures the document was loaded correctly, otherwise sets the
          * parseError to -1 to indicate something went wrong. Internal use</p>
@@ -268,38 +362,17 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) *./
                 oDoc.onreadystatechange();
         };
         /**
-         * <p>Factory method to obtain a new DOM Document object</p>	 
-         * @argument sUri the namespace of the root node (if any)
-         * @argument sUri the local name of the root node (if any)
-         * @returns a new DOM Document
-         */
+        * <p>Factory method to obtain a new DOM Document object</p>
+        * @argument sUri the namespace of the root node (if any)
+        * @argument sUri the local name of the root node (if any)
+        * @returns a new DOM Document
+        */
         Sarissa.getDomDocument = function(sUri, sName){
             var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
             oDoc.addEventListener("load", new function(){Sarissa.__handleLoad__(this);}, false);
             return oDoc;
-        };
-        //===============================
-        // setup loadXML if needed
-        //=============================
-        if(window.DOMParser && !window.XMLDocument.loadXML){
-          /**
-             * <p>Parses the String given as parameter to build the document content
-             * for the object, exactly like IE's loadXML()</p>
-             * @argument strXML The XML String to load as the Document's childNodes
-             * @returns the old Document structure serialized as an XML String
-             */
-            XMLDocument.prototype.loadXML = function(strXML){
-                Sarissa.__setReadyState__(this, 1);
-                var sOldXML = this.xml;
-                var oDoc = (new DOMParser()).parseFromString(strXML, "text/xml");
-                Sarissa.__setReadyState__(this, 2);
-                Sarissa.copyChildNodes(oDoc, this);
-                Sarissa.__setReadyState__(this, 3);
-                Sarissa.__handleLoad__(this);
-                return sOldXML;
-            };
-        };
-    };
+        };        
+    };//if(_SARISSA_HAS_DOM_CREATE_DOCUMENT)
     //===============================
     // setup Sarissa.getXmlHttpRequest 
     //===============================
@@ -320,6 +393,9 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) *./
 if(!document.importNode && document.innerHTML){
     /**
      * Implements importNode for the current window document in IE using innerHTML.
+     * Testing showed that DOM was multiple times slower than innerHTML for this,
+     * sorry folks. If you encounter trouble (who knows what IE does behind innerHTML)
+     * please gimme a call.
      * @param oNode the Node to import
      * @param bChildren whether to include the children of oNode
      * @returns the imported node for further use

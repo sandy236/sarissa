@@ -34,7 +34,7 @@
  * @param xsltproc (optional) the transformer to use on the returned
  *                  content before updating the target element with it
  */
-Sarissa.updateContentFromURI(sFromUrl, oTargetElement, xsltproc) {
+Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
     document.body.style.cursor = "wait";
     var xmlhttp = Sarissa.getXmlHttpRequest();
     xmlhttp.open("GET", fragment_url);
@@ -54,14 +54,19 @@ Sarissa.updateContentFromURI(sFromUrl, oTargetElement, xsltproc) {
  * @param xsltproc (optional) the transformer to use on the given 
  *                  DOM node before updating the target element with it
  */
-Sarissa.updateContentFromNode(oNode, oTargetElement, xsltproc){
-    Sarissa.clearChildNodes(oTargetElement);
-    var result = xmlhttp.responseXML;
-    if(!result || result.parseError != 0){
-        var pre = document.createElement("pre");
-        pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(result)));
-        oTargetElement.appendChild(pre);
-    }else{
-        Sarissa.copyChildNodes(xsltproc!=null?xsltproc.transformToFragment(result):result, oTargetElement);
+Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc){
+    try{
+        Sarissa.clearChildNodes(oTargetElement);
+        // check for parsing errors
+        var oDoc = oNode.nodeType == Node.DOCUMENT_NODE?oNode:oNode.ownerDocument;
+        if(oDoc.parseError != 0){
+            var pre = document.createElement("pre");
+            pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(oDoc)));
+            oTargetElement.appendChild(pre);
+        }else{
+            Sarissa.copyChildNodes(xsltproc!=null?xsltproc.transformToFragment(oNode, oDoc):oNode, oTargetElement);
+        };
+    }catch(e){
+        throw new Error("Failed updating element content, original exception: "+e);
     };
 };
