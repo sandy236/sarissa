@@ -3,7 +3,7 @@
  * About
  * ====================================================================
  * Sarissa cross browser XML library - unit tests
- * @version @project.version@
+ * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
  * This module contains unit tests for Sarissa that use EcmaUnit by Guido Wesdorp and
@@ -68,18 +68,17 @@ function SarissaTestCase() {
     };
     
     /** Test the <code>Sarissa.getParseErrorText()</code> */
-    this.testGetParseErrorTextNoError = function(){
+    this.testGetParseErrorTextError = function(){
         var oDom = Sarissa.getDomDocument("","foo", null);
         oDom.loadXML("<root><element>hfyrhy 5h yf<element></root>");
-        var pre = document.createElement("pre");
-        pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(oDom)));
-        document.getElementById("parseError").appendChild(pre);
+        document.getElementById("parseError").appendChild(document.createTextNode(Sarissa.getParseErrorText(oDom)));
         this.assert(Sarissa.getParseErrorText(oDom));
     };
     
     /** Test the <code>Sarissa.copyChildNodes()</code> method */
     this.testCopyChildNodes = function(){
         var from = Sarissa.getDomDocument("","foo", null);
+        from.documentElement.appendChild(from.createElement("elementName"));
         var to = Sarissa.getDomDocument("","bar", null);
         Sarissa.copyChildNodes(from, to);
         this.assertEquals(from.documentElement.tagName, to.documentElement.tagName);
@@ -163,6 +162,7 @@ function XMLDocumentTestCase() {
     this.testLoad = function() {
         this.xmlDoc.async = false;
         this.xmlDoc.load("test.xml");
+        alert(Sarissa.serialize(this.xmlDoc));
         this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
     };
     

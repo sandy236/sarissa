@@ -3,7 +3,7 @@
  * About
  * ====================================================================
  * Sarissa cross browser XML library - IE XSLT Emulation (deprecated)
- * @version @project.version@
+ * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
  * This script emulates Internet Explorer's transformNode and transformNodeToObject
@@ -33,8 +33,8 @@
  *
  */
 if(!Sarissa.IS_ENABLED_TRANSFORM_NODE && window.XSLTProcessor){
-    /**
-     * <p>Extends the Element class to emulate IE's transformNodeToObject (deprecated).
+    /** 
+     * <p><b>Deprecated, will be remooved in 0.9.6 (use XSLTProcessor instead): </b>Extends the Element class to emulate IE's transformNodeToObject (deprecated).
      * <b>Note </b>: The transformation result <i>must </i> be well formed,
      * otherwise an error will be thrown</p>
      * @uses Mozilla's XSLTProcessor  
@@ -44,11 +44,11 @@ if(!Sarissa.IS_ENABLED_TRANSFORM_NODE && window.XSLTProcessor){
      */
     Element.prototype.transformNodeToObject = function(xslDoc, oResult){
         var oDoc = document.implementation.createDocument("", "", null);
-        oDoc._sarissa_copyDOM(this);
+        Sarissa.copyChildNodes(this, oDoc);
         oDoc.transformNodeToObject(xslDoc, oResult);
     };
     /**
-     * <p>Extends the Document class to emulate IE's transformNodeToObject (deprecated).</p>
+     * <p><b>Deprecated, will be remooved in 0.9.6 (use XSLTProcessor instead): </b> Extends the Document class to emulate IE's transformNodeToObject (deprecated).</p>
      * @uses Mozilla's XSLTProcessor  
      * @deprecated use the XSLTProcessor instead
      * @argument xslDoc The stylesheet to use (a DOM Document instance)
@@ -63,7 +63,7 @@ if(!Sarissa.IS_ENABLED_TRANSFORM_NODE && window.XSLTProcessor){
                 /* new nsIXSLTProcessor is available */
                 xsltProcessor.importStylesheet(xslDoc);
                 var newFragment = xsltProcessor.transformToFragment(this, oResult);
-                oResult._sarissa_copyDOM(newFragment);
+                Sarissa.copyChildNodes(newFragment, oResult);
             }else{
                 /* only nsIXSLTProcessorObsolete is available */
                 xsltProcessor.transformDocument(this, xslDoc, oResult, null);
@@ -82,7 +82,7 @@ if(!Sarissa.IS_ENABLED_TRANSFORM_NODE && window.XSLTProcessor){
         };
     };
     /**
-     * <p>Extends the Element class to emulate IE's transformNode (deprecated). </p>
+     * <p><b>Deprecated, will be remooved in 0.9.6 (use XSLTProcessor instead): </b>Extends the Element class to emulate IE's transformNode (deprecated). </p>
      * <p><b>Note </b>: The result of your transformation must be well formed,
      * otherwise you will get an error</p>. 
      * @uses Mozilla's XSLTProcessor    
@@ -92,11 +92,11 @@ if(!Sarissa.IS_ENABLED_TRANSFORM_NODE && window.XSLTProcessor){
      */
     Element.prototype.transformNode = function(xslDoc){
         var oDoc = document.implementation.createDocument("", "", null);
-        oDoc._sarissa_copyDOM(this);
+        Sarissa.copyChildNodes(this, oDoc);
         return oDoc.transformNode(xslDoc);
     };
     /**
-     * <p>Extends the Document class to emulate IE's transformNode (deprecated).</p>
+     * <p><b>Deprecated, will be remooved in 0.9.6 (use XSLTProcessor instead): </b>Extends the Document class to emulate IE's transformNode (deprecated).</p>
      * <p><b>Note </b>: The result of your transformation must be well formed,
      * otherwise you will get an error</p>
      * @uses Mozilla's XSLTProcessor
@@ -119,7 +119,7 @@ if(!Sarissa.IS_ENABLED_TRANSFORM_NODE && window.XSLTProcessor){
     Sarissa.IS_ENABLED_TRANSFORM_NODE = true;
 };
 /**
- * <p>Set xslt parameters (deprecated).</p>
+ * <p><b>Deprecated, will be remooved in 0.9.6 (use XSLTProcessor instead): </b>Set xslt parameters.</p>
  * <p><b>Note </b> that this method can only work for the main stylesheet and not any included/imported files.</p>
  * @deprecated use the XSLTProcessor instead
  * @argument oXslDoc the target XSLT DOM Document

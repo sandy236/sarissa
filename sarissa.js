@@ -3,7 +3,7 @@
  * About
  * ====================================================================
  * Sarissa cross browser XML library 
- * @version @project.version@
+ * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
  * Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs.
@@ -145,15 +145,16 @@ if(_SARISSA_IS_IE){
             return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
         };
     };
-	// see non-IE version
+	// see non-IE version	
 	Sarissa.getParseErrorText = function (oDoc) {
         var parseErrorText = Sarissa.PARSED_OK;
         if(oDoc.parseError != 0){
-		    parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason +" \n";
-		    parseErrorText += "Location: " + oDoc.parseError.url + "\n";
-		    parseErrorText += "Line Number " + oDoc.parseError.line ;
-		    parseErrorText += ", Column " + oDoc.parseError.linepos + ":\n";
-		    parseErrorText += oDoc.parseError.srcText + "\n";
+		    parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason + 
+                "\nLocation: " + oDoc.parseError.url + 
+                "\nLine Number " + oDoc.parseError.line + ", Column " + 
+                oDoc.parseError.linepos + 
+                ":\n" + oDoc.parseError.srcText +
+                "\n";
 		    for(var i = 0;  i < oDoc.parseError.linepos;i++){
 			    parseErrorText += "-";
             };
@@ -285,7 +286,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
             * @private
             */
             XMLDocument.prototype._sarissa_load = XMLDocument.prototype.load;
-            
+
             /**
             * <p>Overrides the original load method to provide synchronous loading for
             * Mozilla versions prior to 1.4, using an XMLHttpRequest object (if
@@ -352,9 +353,17 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
             Sarissa.__setReadyState__(oDoc, 4);
         };
         /**
+        * <p>Attached by an event handler to the load event. Internal use.</p>
+        * @private
+        */
+        function _sarissa_XMLDocument_onload()
+        {
+            Sarissa.__handleLoad__(this);
+        };
+        /**
          * <p>Sets the readyState property of the given DOM Document object.
          * Internal use.</p>
-         * @private 
+         * @private
          * @argument oDoc the DOM Document object to fire the
          *          readystatechange event
          * @argument iReadyState the number to change the readystate property to
@@ -372,7 +381,8 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
         */
         Sarissa.getDomDocument = function(sUri, sName){
             var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
-            oDoc.addEventListener("load", new function(){Sarissa.__handleLoad__(this);}, false);
+
+            oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
             return oDoc;
         };        
     };//if(_SARISSA_HAS_DOM_CREATE_DOCUMENT)
@@ -391,7 +401,7 @@ if(window.XMLHttpRequest){
     };
     Sarissa.IS_ENABLED_XMLHTTP = true;
 };
-if(!document.importNode){
+if(!window.document.importNode){
     /**
      * Implements importNode for the current window document in IE using innerHTML.
      * Testing showed that DOM was multiple times slower than innerHTML for this,
@@ -401,7 +411,7 @@ if(!document.importNode){
      * @param bChildren whether to include the children of oNode
      * @returns the imported node for further use
      */
-    document.importNode = function(oNode, bChildren){
+    window.document.importNode = function(oNode, bChildren){
         var importNode = document.createElement("div");
         if(bChildren)
             importNode.innerHTML = Sarissa.serialize(oNode);
@@ -437,10 +447,6 @@ if(!Sarissa.getParseErrorText){
         return parseErrorText;
     };
 };
-/*
-<html><body><h1>XML parsing error</h1>fatal parsing error: tag mismatch in line 1, column 43<hr><pre>&lt;root&gt;&lt;element&gt;hfyrhy&gt;5hyf&lt;element&gt;&lt;/root&gt;
-                                          ^</pre></body></html>
-*/
 Sarissa.getText = function(oNode, deep){
     var s = "";
     var nodes = oNode.childNodes;
@@ -457,7 +463,6 @@ Sarissa.getText = function(oNode, deep){
     };
     return s;
 };
-//    var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5,  ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
 if(window.XMLSerializer){
     /**
      * <p>Factory method to obtain the serialization of a DOM Node</p>
@@ -472,9 +477,9 @@ if(window.XMLSerializer){
         Sarissa.serialize = function(oDoc) {
             return oDoc.xml;
         };
-        /** 
+        /**
          * Utility class to serialize DOM Node objects to XML strings
-         * @constructor 
+         * @constructor
          */
         XMLSerializer = function(){};
         /**
@@ -510,10 +515,17 @@ Sarissa.clearChildNodes = function(oNode) {
  */
 Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
     Sarissa.clearChildNodes(nodeTo);
-    var oNodes = nodeFrom.childNodes;
-    var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE?nodeTo:nodeTo.ownerDocument;
-    for(var i=0;i<oNodes.length;i++) {
-        nodeTo.appendChild(ownerDoc.importNode(oNodes[i], true));
+    var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
+    var nodes = nodeFrom.childNodes;
+    if(ownerDoc.importNode){
+        for(var i=0;i < nodes.length;i++) {
+            nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
+        };
+    }
+    else{
+        for(var i=0;i < nodes.length;i++) {
+            nodeTo.appendChild(nodes[i].cloneNode(true));
+        };
     };
 };
 //	 EOF

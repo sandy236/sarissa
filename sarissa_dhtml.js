@@ -3,7 +3,7 @@
  * About
  * ====================================================================
  * Sarissa cross browser XML library - DHTML module
- * @version @project.version@
+ * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
  * This module contains some convinient DHTML tricks based on Sarissa 
@@ -38,12 +38,13 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
     document.body.style.cursor = "wait";
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("GET", fragment_url);
-    xmlhttp.onreadystatechange = function() {
+    function sarissa_dhtml_loadHandler() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             document.body.style.cursor = "";
             Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
 	    };
     };
+    xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
     xmlhttp.send(null);
 };
 
@@ -63,10 +64,8 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc){
         pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(oDoc)));
         oTargetElement.appendChild(pre);
     }else{
-        if(xsltproc){
-            alert("updateContentFromNode: oNode before XSLT: "+Sarissa.serialize(oNode));
+        if(xsltproc){;
             oNode = xsltproc.transformToFragment(oNode, oDoc);
-            alert("updateContentFromNode: oNode after XSLT: "+Sarissa.serialize(oNode));
         };
         Sarissa.copyChildNodes(oNode, oTargetElement);
     };
