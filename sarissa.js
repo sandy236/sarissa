@@ -20,72 +20,468 @@ Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
 Sarissa.IS_ENABLED_XMLHTTP = false;
 Sarissa.IS_ENABLED_XSLTPROC = false;
 Sarissa.IS_ENABLED_SELECT_NODES = false;
-//	 some basic browser detection TODO: change this
-var _SARISSA_IS_IE = (navigator.userAgent.toLowerCase().indexOf("msie") > -1)?true:false;
-var _SARISSA_IS_MOZ = (document.implementation && document.implementation.createDocument)?true:false;
+
+// 
 var _sarissa_iNsCounter = 0;
 var _SARISSA_IEPREFIX4XSLPARAM = "";
-if (_SARISSA_IS_MOZ){
-	if(XSLTProcessor && XSLTProcessor.prototype){
-		Sarissa.IS_ENABLED_TRANSFORM_NODE = true;
-		if(XSLTProcessor.prototype.reset){
-			Sarissa.IS_ENABLED_XSLTPROC = true;
+
+
+var _SARISSA_HAS_DOM_IMPLEMENTATION = document.implementation && true;
+var _SARISSA_HAS_DOM_CREATE_DOCUMENT = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.createDocument;
+var _SARISSA_HAS_DOM_FEATURE = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.hasFeature;
+/** <b>This will be removed in a next version!</b> @deprecated */
+var _SARISSA_IS_MOZ = _SARISSA_HAS_DOM_CREATE_DOCUMENT && _SARISSA_HAS_DOM_FEATURE;
+/** <b>This will be removed in a next version!</b> @deprecated */
+var _SARISSA_IS_IE = document.all && (navigator.userAgent.toLowerCase().indexOf("msie") > -1);
+
+// IE initialization
+if(_SARISSA_IS_IE){
+  try{
+    // Add NodeType constants; missing in IE4, 5 and 6
+	if(!window.Node){
+		var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5, 	ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
+	};
+	// implement importNode for IE
+	if(!document.importNode){
+		/**
+		 * Implements importNode for IE using innerHTML. Main purpose it to
+		 * be able to append Nodes from XMLDocuments to the current page in IE
+		 * @param oNode the Node to import
+		 * @param bChildren whether to include the children of oNode
+		 * @returns the imported node for further use
+		 */
+		document.importNode = function(oNode, bChildren){
+			var importNode = document.createElement("div");
+			if(bChildren)
+				importNode.innerHTML = oNode.xml;
+			else
+				importNode.innerHTML = oNode.cloneNode(false).xml;
+			return importNode.firstChild;
 		};
-	};
-	if(XMLHttpRequest && XMLHttpRequest.prototype){
-		Sarissa.IS_ENABLED_XMLHTTP = true;
-	};
-	if(document.implementation.hasFeature && document.implementation.hasFeature("XPath", "3.0")){
-		Sarissa.IS_ENABLED_SELECT_NODES = true;
-	};
+	}//if(!document.importNode)
+	
+	// for XSLT parameter names, prefix needed by IE
+	_SARISSA_IEPREFIX4XSLPARAM = "xsl:";
+	// used to store the most recent ProgID available out of the above
+	var _SARISSA_DOM_PROGID = "";
+	var _SARISSA_XMLHTTP_PROGID = "";
 	/**
-	 * <p>Factory method to obtain a new DOM Document object</p>	 
-	 * @argument sUri the namespace of the root node (if any)
-	 * @argument sUri the local name of the root node (if any)
-	 * @returns a new DOM Document
+	 * Called when the Sarissa_xx.js file is parsed, to pick most recent
+	 * ProgIDs for IE, then gets destroyed.
+	 * @param idList an array of MSXML PROGIDs from which the most recent will be picked for a given object
+	 * @param enabledList an array of arrays where each array has two items; the index of the PROGID for which a certain feature is enabled
 	 */
+	function pickRecentProgID(idList, enabledList){
+		// found progID flag
+		var bFound = false;
+		for(var i=0; i < idList.length && !bFound; i++){
+			try{
+				var oDoc = new ActiveXObject(idList[i]);
+				o2Store = idList[i];
+				bFound = true;
+				for(var j=0;j<enabledList.length;j++)
+					if(i <= enabledList[j][1])
+						Sarissa["IS_ENABLED_"+enabledList[j][0]] = true;
+			}catch (objException){
+				// trap; try next progID
+			};
+		};
+		if (!bFound)
+			throw "Could not retreive a valid progID of Class: " + idList[idList.length-1]+". (original exception: "+e+")";
+		idList = null;
+		return o2Store;
+	};
+	// store proper progIDs
+	_SARISSA_DOM_PROGID = pickRecentProgID(["Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"], [["SELECT_NODES", 2],["TRANSFORM_NODE", 2]]);
+	_SARISSA_XMLHTTP_PROGID = pickRecentProgID(["Msxml2.XMLHTTP.5.0", "Msxml2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"], [["XMLHTTP", 4]]);
+	_SARISSA_THREADEDDOM_PROGID = pickRecentProgID(["Msxml2.FreeThreadedDOMDocument.5.0", "MSXML2.FreeThreadedDOMDocument.4.0", "MSXML2.FreeThreadedDOMDocument.3.0"]);
+	_SARISSA_XSLTEMPLATE_PROGID = pickRecentProgID(["Msxml2.XSLTemplate.5.0", "Msxml2.XSLTemplate.4.0", "MSXML2.XSLTemplate.3.0"], [["XSLTPROC", 2]]);
+	// we dont need this anymore
+	pickRecentProgID = null;
+	//============================================
+	// Factory methods (IE)
+	//============================================
+	// see mozilla version
 	Sarissa.getDomDocument = function(sUri, sName){
-		var oDoc = document.implementation.createDocument(sUri, sName, null);
-		oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
+		var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
+		// if a root tag name was provided, we need to load it in the DOM
+		// object
+		if (sName){
+			// if needed, create an artifical namespace prefix the way Moz
+			// does
+			if (sUri){
+				oDoc.loadXML("<a" + _sarissa_iNsCounter + ":" + sName + " xmlns:a" + _sarissa_iNsCounter + "=\"" + sUri + "\" />");
+				// don't use the same prefix again
+				++_sarissa_iNsCounter;
+			}
+			else
+				oDoc.loadXML("<" + sName + "/>");
+		};
 		return oDoc;
 	};
-	/**
-	 * <p>Factory method to obtain a new XMLHTTP Request object</p>
-	 * @returns a new XMLHTTP Request object
-	 */
+	// see mozilla version
 	Sarissa.getXmlHttpRequest = function()	{
-		return new XMLHttpRequest();
+		return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
+	};
+	// see mozilla version
+	Sarissa.getParseErrorText = function (oDoc) {
+		var parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason +" \n";
+		parseErrorText += "Location: " + oDoc.parseError.url + "\n";
+		parseErrorText += "Line Number " + oDoc.parseError.line ;
+		parseErrorText += ", Column " + oDoc.parseError.linepos + ":\n";
+		parseErrorText += oDoc.parseError.srcText + "\n";
+		for(var i = 0;  i < oDoc.parseError.linepos;i++)
+			parseErrorText += "-";
+		parseErrorText +=  "^\n";
+		return parseErrorText;
+	};
+	// see mozilla version
+	Sarissa.setXpathNamespaces = function(oDoc, sNsSet)	{
+		oDoc.setProperty("SelectionLanguage", "XPath");
+		oDoc.setProperty("SelectionNamespaces", sNsSet);
 	};
 	/**
-	 * <p>Attached by an event handler to the load event. Internal use.</p>
-	 * @private
+	 * Basic implementation of Mozilla's XSLTProcessor for IE. 
+	 * Reuses the same XSLT stylesheet for multiple transforms
+	 * @constructor
 	 */
-	function _sarissa_XMLDocument_onload(){
-		_sarissa_loadHandler(this);
+	function XSLTProcessor(){
+		this.template = new ActiveXObject(_SARISSA_XSLTEMPLATE_PROGID);
+		this.processor = null;
 	};
 	/**
-	 * <p>Ensures the document was loaded correctly, otherwise sets the
-	 * parseError to -1 to indicate something went wrong. Internal use</p>
-	 * @private
+	 * Impoprts the given XSLT DOM and compiles it to a reusable transform
+	 * @argument xslDoc The XSLT DOMDocument to import
 	 */
-	function _sarissa_loadHandler(oDoc){
-		if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
-			oDoc.parseError = -1;
-		_sarissa_setReadyState(oDoc, 4);
+	XSLTProcessor.prototype.importStylesheet = function(xslDoc){
+		// convert stylesheet to free threaded
+		var converted = new ActiveXObject(_SARISSA_THREADEDDOM_PROGID); 
+		converted.loadXML(xslDoc.xml);
+		this.template.stylesheet = converted;
+		this.processor = this.template.createProcessor();
+		// (re)set default param values
+		this.paramsSet = new Array();
 	};
 	/**
-	 * <p>Sets the readyState property of the given DOM Document object.
-	 * Internal use.</p>
-	 * @private 
-	 * @argument oDoc the DOM Document object to fire the
-	 *          readystatechange event
-	 * @argument iReadyState the number to change the readystate property to
+	 * Transform the given XML DOM
+	 * @argument sourceDoc The XML DOMDocument to transform
+	 * @return The transformation result as a DOM Document
 	 */
-	function _sarissa_setReadyState(oDoc, iReadyState){
-		oDoc.readyState = iReadyState;
-		if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
-			oDoc.onreadystatechange();
+	XSLTProcessor.prototype.transformToDocument = function(sourceDoc)	{
+		this.processor.input = sourceDoc;
+		var outDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
+		this.processor.output = outDoc; 
+		this.processor.transform();
+		return outDoc;
 	};
+	/**
+	 * Set global XSLT parameter of the imported stylesheet
+	 * @argument nsURI The parameter namespace URI
+	 * @argument name The parameter base name
+	 * @argument value The new parameter value
+	 */
+	XSLTProcessor.prototype.setParameter = function(nsURI, name, value){
+		// nsURI is optional and cannot be null
+		if(nsURI)
+			this.processor.addParameter(name, value, nsURI);
+		else
+			this.processor.addParameter(name, value);
+		// update updated params for getParameter
+		if(!this.paramsSet[""+nsURI])
+			this.paramsSet[""+nsURI] = new Array();
+			
+		this.paramsSet[""+nsURI][name] = value;
+	};
+	/**
+	 * Gets a parameter if previously set by setParameter. Returns null
+	 * otherwise
+	 * @argument name The parameter base name
+	 * @argument value The new parameter value
+	 * @return The parameter value if reviously set by setParameter, null otherwise
+	 */
+	XSLTProcessor.prototype.getParameter = function(nsURI, name){
+		if(this.paramsSet[""+nsURI] && this.paramsSet[""+nsURI][name])
+			return this.paramsSet[""+nsURI][name];
+		else
+			return null;
+	};
+  }catch(e){};
+}else{// end IE initialization, try to deal with real browsers now ;-)
+
+    //===============================
+    // setup Sarissa.getDomDocument
+    //===============================
+    if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
+        try{
+           	/**
+             * <p>Attached by an event handler to the load event. Internal use.</p>
+             * @private
+             */
+            function _sarissa_XMLDocument_onload(){
+                _sarissa_loadHandler(this);
+            };
+            /**
+             * <p>Ensures the document was loaded correctly, otherwise sets the
+             * parseError to -1 to indicate something went wrong. Internal use</p>
+             * @private
+             */
+            function _sarissa_loadHandler(oDoc){
+                if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
+                    oDoc.parseError = -1;
+                _sarissa_setReadyState(oDoc, 4);
+            };
+            /**
+             * <p>Sets the readyState property of the given DOM Document object.
+             * Internal use.</p>
+             * @private 
+             * @argument oDoc the DOM Document object to fire the
+             *          readystatechange event
+             * @argument iReadyState the number to change the readystate property to
+             */
+            function _sarissa_setReadyState(oDoc, iReadyState){
+                oDoc.readyState = iReadyState;
+                if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
+                    oDoc.onreadystatechange();
+            };
+
+            /**
+             * <p>Factory method to obtain a new DOM Document object</p>	 
+             * @argument sUri the namespace of the root node (if any)
+             * @argument sUri the local name of the root node (if any)
+             * @returns a new DOM Document
+             */
+            Sarissa.getDomDocument = function(sUri, sName){
+                var oDoc = document.implementation.createDocument(sUri, sName, null);
+                oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
+                return oDoc;
+            };
+        }catch(e){
+            alert("Error: Failed to set up 'Sarissa.getDomDocument', reason: "+e);
+        };
+    };
+    
+    //===============================
+    // setup Sarissa.getXmlHttpRequest 
+    //===============================
+    if(XMLHttpRequest && XMLHttpRequest.prototype){
+        try{
+            /**
+             * <p>Factory method to obtain a new XMLHTTP Request object</p>
+             * @returns a new XMLHTTP Request object
+             */
+            Sarissa.getXmlHttpRequest = function()	{
+                return new XMLHttpRequest();
+            };
+            Sarissa.IS_ENABLED_XMLHTTP = true;
+        }catch(e){
+            alert("Error: Failed to set up 'Sarissa.getXmlHttpRequest', reason: "+e);
+        };
+    };
+    
+    //===============================
+    // setup selectNodes etc
+    //===============================
+    if(_SARISSA_HAS_DOM_FEATURE && document.implementation.hasFeature("XPath", "3.0")){
+        try{
+            /**
+             * <p>SarissaNodeList behaves as a NodeList but is only used as a result to <code>selectNodes</code>, 
+             * so it also has some properties IEs proprietery object features.</p>
+             * @private
+             * @constructor
+             * @argument i the (initial) list size
+             */
+             function SarissaNodeList(i){
+                this.length = i;
+             };
+             /** <p>Set an Array as the prototype object</p> */
+             SarissaNodeList.prototype = new Array(0);
+             /** <p>Inherit the Array constructor </p> */
+             SarissaNodeList.prototype.constructor = Array;
+             /**  
+             * <p>Returns the node at the specified index or null if the given index 
+             * is greater than the list size or less than zero </p>
+             * <p><b>Note</b> that in ECMAScript you can also use the square-bracket 
+             * array notation instead of calling <code>item</code>
+             * @argument i the index of the member to return
+             * @returns the member corresponding to the given index
+             */
+             SarissaNodeList.prototype.item = function(i) {
+                return (i < 0 || i >= this.length)?null:this[i];
+             };
+            /**
+             * <p>Emulate IE's expr property
+             * (Here the SarissaNodeList object is given as the result of selectNodes).</p>
+             * @returns the XPath expression passed to selectNodes that resulted in
+             *          this SarissaNodeList
+             */
+            SarissaNodeList.prototype.expr = "";
+            /** dummy, used to accept IE's stuff without throwing errors */
+            XMLDocument.prototype.setProperty  = function(x,y){};
+            /**
+             * <p>Programmatically control namespace URI/prefix mappings for XPath
+             * queries.</p>
+             * <p>This method comes especially handy when used to apply XPath queries
+             * on XML documents with a default namespace, as there is no other way
+             * of mapping that to a prefix.</p>
+             * <p>Using no namespace prefix in DOM Level 3 XPath queries, implies you
+             * are looking for elements in the null namespace. If you need to look
+             * for nodes in the default namespace, you need to map a prefix to it
+             * first like:</p>
+             * <pre>Sarissa.setXpathNamespaces(oDoc, &quot;xmlns:myprefix=&amp;aposhttp://mynsURI&amp;apos&quot;);</pre>
+             * <p><b>Note 1 </b>: Use this method only if the source document features
+             * a default namespace (without a prefix). You will need to map that
+             * namespace to a prefix for queries to work.</p>
+             * <p><b>Note 2 </b>: This method calls IE's setProperty method to set the
+             * appropriate namespace-prefix mappings, so you dont have to do that.</p>
+             * @param oDoc The target XMLDocument to set the namespace mappings for.
+             * @param sNsSet A whilespace-seperated list of namespace declarations as
+             *            those would appear in an XML document. E.g.:
+             *            <code>&quot;xmlns:xhtml=&apos;http://www.w3.org/1999/xhtml&apos; 
+             * xmlns:&apos;http://www.w3.org/1999/XSL/Transform&apos;&quot;</code>
+             * @throws An error if the format of the given namespace declarations is bad.
+             */
+            Sarissa.setXpathNamespaces = function(oDoc, sNsSet)	{
+                //oDoc._sarissa_setXpathNamespaces(sNsSet);
+                oDoc._sarissa_useCustomResolver = true;
+                var namespaces = sNsSet.indexOf(" ")>-1?sNsSet.split(" "):new Array(sNsSet);
+                oDoc._sarissa_xpathNamespaces = new Array(namespaces.length);
+                for(var i=0;i < namespaces.length;i++){
+                    var ns = namespaces[i];
+                    var colonPos = ns.indexOf(":");
+                    var assignPos = ns.indexOf("=");
+                    if(colonPos == 5 && assignPos > colonPos+2){
+                        var prefix = ns.substring(colonPos+1, assignPos);
+                        var uri = ns.substring(assignPos+2, ns.length-1);
+                        oDoc._sarissa_xpathNamespaces[prefix] = uri;
+                    }else{
+                        throw "Bad format on namespace declaration(s) given";
+                    };
+                };
+            };
+            /**
+             * @private Flag to control whether a custom namespace resolver should
+             *          be used, set to true by Sarissa.setXpathNamespaces
+             */
+            XMLDocument.prototype._sarissa_useCustomResolver = false;
+            /** @private */
+            XMLDocument.prototype._sarissa_xpathNamespaces = new Array();
+            /**
+             * <p>Extends the XMLDocument to emulate IE's selectNodes.</p>
+             * @argument sExpr the XPath expression to use
+             * @argument contextNode this is for internal use only by the same
+             *           method when called on Elements
+             * @returns the result of the XPath search as a SarissaNodeList 
+             * @throws An error if no namespace URI is found for the given prefix.
+             */
+            XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+                var nsDoc = this;
+                var nsresolver = this._sarissa_useCustomResolver
+                ? function(prefix){
+                    var s = nsDoc._sarissa_xpathNamespaces[prefix];
+                    if(s)return s;
+                    else throw "No namespace URI found for prefix: '" + prefix+"'";
+                  }
+                : this.createNSResolver(this.documentElement);
+                    var oResult = this.evaluate(sExpr, 
+                            (contextNode?contextNode:this), 
+                            nsresolver, 
+                            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);	
+                var nodeList = new SarissaNodeList(oResult.snapshotLength);
+                nodeList.expr = sExpr;
+                for(var i=0;i<nodeList.length;i++)
+                    nodeList[i] = oResult.snapshotItem(i);
+                return nodeList;
+            };
+            /**
+             * <p>Extends the Element to emulate IE's selectNodes</p>
+             * @argument sExpr the XPath expression to use
+             * @returns the result of the XPath search as an (Sarissa)NodeList
+             * @throws An
+             *             error if invoked on an HTML Element as this is only be
+             *             available to XML Elements.
+             */
+            Element.prototype.selectNodes = function(sExpr){
+                var doc = this.ownerDocument;
+                if(doc.selectNodes)
+                    return doc.selectNodes(sExpr, this);
+                else
+                    throw "Method selectNodes is only supported by XML Elements";
+            };
+            /**
+             * <p>Extends the XMLDocument to emulate IE's selectSingleNodes.</p>
+             * @argument sExpr the XPath expression to use
+             * @argument contextNode this is for internal use only by the same
+             *           method when called on Elements
+             * @returns the result of the XPath search as an (Sarissa)NodeList
+             */
+            XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+                var ctx = contextNode?contextNode:null;
+                sExpr += "[1]";
+                var nodeList = this.selectNodes(sExpr, ctx);
+                if(nodeList.length > 0)
+                    return nodeList.item(0);
+                else 
+                    return null;
+            };
+            /**
+             * <p>Extends the Element to emulate IE's selectNodes.</p>
+             * @argument sExpr the XPath expression to use
+             * @returns the result of the XPath search as an (Sarissa)NodeList
+             * @throws An error if invoked on an HTML Element as this is only be
+             *             available to XML Elements.
+             */
+            Element.prototype.selectSingleNode = function(sExpr){
+                var doc = this.ownerDocument;
+                if(doc.selectSingleNode)
+                    return doc.selectSingleNode(sExpr, this);
+                else
+                    throw "Method selectNodes is only supported by XML Elements";
+            };
+            Sarissa.IS_ENABLED_SELECT_NODES = true;
+        }catch(e){
+            alert("Error: Failed to set up 'document.selectNodes/selectSingleNode', reason: "+e);
+        };
+	};// end setting up selectNodes etc
+    
+    if(XMLDocument && XMLDocument.prototype && !XMLDocument.prototype.xml){
+        try{
+            /**
+             * <p>Emulates IE's xml property, giving read-only access to the XML tree
+             * in it's serialized form (in other words, an XML string)</p>
+             * @uses Mozilla's XMLSerializer class.
+             */
+            XMLDocument.prototype.__defineGetter__("xml", function (){
+                return (new XMLSerializer()).serializeToString(this);
+            });
+            /**
+             * <p>Emulates IE's xml property, giving read-only access to the XML tree
+             * in it's serialized form (in other words, an XML string)</p>
+             * @uses Mozilla's XMLSerializer class.
+             */
+            Node.prototype.__defineGetter__("xml", function (){
+                return (new XMLSerializer()).serializeToString(this);
+            });
+            /**
+             * <p>Ensures and informs the xml property is read only</p>
+             * @throws an &quot;Invalid assignment on read-only property&quot; error.
+             */
+            XMLDocument.prototype.__defineSetter__("xml", function (){
+                throw "Invalid assignment on read-only property 'xml'. Hint: Use the 'loadXML(String xml)' method instead. (original exception: "+e+")";
+            });
+        }catch(e){
+            alert("Error: Failed to set up 'XMLDocument.prototype.xml', reason: "+e);
+        };
+    };
+};
+
+
+
+if (_SARISSA_IS_MOZ){
+	
+	
+
+        
+
 	/**
 	 * <p>Deletes all child Nodes of the Document. Internal use</p>
 	 * @private
@@ -138,29 +534,7 @@ if (_SARISSA_IS_MOZ){
 		_sarissa_loadHandler(this);
 		return sOldXML;
 	};
-	/**
-	 * <p>Emulates IE's xml property, giving read-only access to the XML tree
-	 * in it's serialized form (in other words, an XML string)</p>
-	 * @uses Mozilla's XMLSerializer class.
-	 */
-	XMLDocument.prototype.__defineGetter__("xml", function (){
-		return (new XMLSerializer()).serializeToString(this);
-	});
-	/**
-	 * <p>Emulates IE's xml property, giving read-only access to the XML tree
-	 * in it's serialized form (in other words, an XML string)</p>
-	 * @uses Mozilla's XMLSerializer class.
-	 */
-	Node.prototype.__defineGetter__("xml", function (){
-		return (new XMLSerializer()).serializeToString(this);
-	});
-	/**
-	 * <p>Ensures and informs the xml property is read only</p>
-	 * @throws an &quot;Invalid assignment on read-only property&quot; error.
-	 */
-	XMLDocument.prototype.__defineSetter__("xml", function (){
-		throw "Invalid assignment on read-only property 'xml'. Hint: Use the 'loadXML(String xml)' method instead. (original exception: "+e+")";
-	});
+
 	/**
 	 * <p>Emulates IE's innerText (read/write). Note that this removes all
 	 * childNodes of an HTML Element and just replaces it with a textNode</p>
@@ -325,159 +699,7 @@ if (_SARISSA_IS_MOZ){
 		};
 		return str;
 	};
-	/**
-	 * <p>SarissaNodeList behaves as a NodeList but is only used as a result to <code>selectNodes</code>, 
-	 * so it also has some properties IEs proprietery object features.</p>
-	 * @private
-	 * @constructor
-	 * @argument i the (initial) list size
-	 */
-	 function SarissaNodeList(i){
-	 	this.length = i;
-	 };
-	 /** <p>Set an Array as the prototype object</p> */
-	 SarissaNodeList.prototype = new Array(0);
-	 /** <p>Inherit the Array constructor </p> */
-	 SarissaNodeList.prototype.constructor = Array;
-	 /**  
-	 * <p>Returns the node at the specified index or null if the given index 
-	 * is greater than the list size or less than zero </p>
-	 * <p><b>Note</b> that in ECMAScript you can also use the square-bracket 
-	 * array notation instead of calling <code>item</code>
-	 * @argument i the index of the member to return
-	 * @returns the member corresponding to the given index
-	 */
-	 SarissaNodeList.prototype.item = function(i) {
-	 	return (i < 0 || i >= this.length)?null:this[i];
-	 };
-	/**
-	 * <p>Emulate IE's expr property
-	 * (Here the SarissaNodeList object is given as the result of selectNodes).</p>
-	 * @returns the XPath expression passed to selectNodes that resulted in
-	 *          this SarissaNodeList
-	 */
-	SarissaNodeList.prototype.expr = "";
-	/** dummy, used to accept IE's stuff without throwing errors */
-	XMLDocument.prototype.setProperty  = function(x,y){};
-	/**
-	 * <p>Programmatically control namespace URI/prefix mappings for XPath
-	 * queries.</p>
-	 * <p>This method comes especially handy when used to apply XPath queries
-	 * on XML documents with a default namespace, as there is no other way
-	 * of mapping that to a prefix.</p>
-	 * <p>Using no namespace prefix in DOM Level 3 XPath queries, implies you
-	 * are looking for elements in the null namespace. If you need to look
-	 * for nodes in the default namespace, you need to map a prefix to it
-	 * first like:</p>
-	 * <pre>Sarissa.setXpathNamespaces(oDoc, &quot;xmlns:myprefix=&amp;aposhttp://mynsURI&amp;apos&quot;);</pre>
-	 * <p><b>Note 1 </b>: Use this method only if the source document features
-	 * a default namespace (without a prefix). You will need to map that
-	 * namespace to a prefix for queries to work.</p>
-	 * <p><b>Note 2 </b>: This method calls IE's setProperty method to set the
-	 * appropriate namespace-prefix mappings, so you dont have to do that.</p>
-	 * @param oDoc The target XMLDocument to set the namespace mappings for.
-	 * @param sNsSet A whilespace-seperated list of namespace declarations as
-	 *            those would appear in an XML document. E.g.:
-	 *            <code>&quot;xmlns:xhtml=&apos;http://www.w3.org/1999/xhtml&apos; 
-	 * xmlns:&apos;http://www.w3.org/1999/XSL/Transform&apos;&quot;</code>
-	 * @throws An error if the format of the given namespace declarations is bad.
-	 */
-	Sarissa.setXpathNamespaces = function(oDoc, sNsSet)	{
-		//oDoc._sarissa_setXpathNamespaces(sNsSet);
-		oDoc._sarissa_useCustomResolver = true;
-		var namespaces = sNsSet.indexOf(" ")>-1?sNsSet.split(" "):new Array(sNsSet);
-		oDoc._sarissa_xpathNamespaces = new Array(namespaces.length);
-		for(var i=0;i < namespaces.length;i++){
-			var ns = namespaces[i];
-			var colonPos = ns.indexOf(":");
-			var assignPos = ns.indexOf("=");
-			if(colonPos == 5 && assignPos > colonPos+2){
-				var prefix = ns.substring(colonPos+1, assignPos);
-				var uri = ns.substring(assignPos+2, ns.length-1);
-				oDoc._sarissa_xpathNamespaces[prefix] = uri;
-			}else{
-				throw "Bad format on namespace declaration(s) given";
-			};
-		};
-	};
-	/**
-	 * @private Flag to control whether a custom namespace resolver should
-	 *          be used, set to true by Sarissa.setXpathNamespaces
-	 */
-	XMLDocument.prototype._sarissa_useCustomResolver = false;
-	XMLDocument.prototype._sarissa_xpathNamespaces = new Array();
-	/**
-	 * <p>Extends the XMLDocument to emulate IE's selectNodes.</p>
-	 * @argument sExpr the XPath expression to use
-	 * @argument contextNode this is for internal use only by the same
-	 *           method when called on Elements
-	 * @returns the result of the XPath search as a SarissaNodeList 
-	 * @throws An error if no namespace URI is found for the given prefix.
-	 */
-	XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
-		var nsDoc = this;
-		var nsresolver = this._sarissa_useCustomResolver
-		? function(prefix){
-			var s = nsDoc._sarissa_xpathNamespaces[prefix];
-			if(s)return s;
-			else throw "No namespace URI found for prefix: '" + prefix+"'";
-		  }
-		: this.createNSResolver(this.documentElement);
-			var oResult = this.evaluate(sExpr, 
-					(contextNode?contextNode:this), 
-					nsresolver, 
-					XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);	
-		var nodeList = new SarissaNodeList(oResult.snapshotLength);
-		nodeList.expr = sExpr;
-		for(var i=0;i<nodeList.length;i++)
-			nodeList[i] = oResult.snapshotItem(i);
-		return nodeList;
-	};
-	/**
-	 * <p>Extends the Element to emulate IE's selectNodes</p>
-	 * @argument sExpr the XPath expression to use
-	 * @returns the result of the XPath search as an (Sarissa)NodeList
-	 * @throws An
-	 *             error if invoked on an HTML Element as this is only be
-	 *             available to XML Elements.
-	 */
-	Element.prototype.selectNodes = function(sExpr){
-		var doc = this.ownerDocument;
-		if(doc.selectNodes)
-			return doc.selectNodes(sExpr, this);
-		else
-			throw "Method selectNodes is only supported by XML Elements";
-	};
-	/**
-	 * <p>Extends the XMLDocument to emulate IE's selectSingleNodes.</p>
-	 * @argument sExpr the XPath expression to use
-	 * @argument contextNode this is for internal use only by the same
-	 *           method when called on Elements
-	 * @returns the result of the XPath search as an (Sarissa)NodeList
-	 */
-	XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-		var ctx = contextNode?contextNode:null;
-		sExpr += "[1]";
-		var nodeList = this.selectNodes(sExpr, ctx);
-		if(nodeList.length > 0)
-			return nodeList.item(0);
-		else 
-			return null;
-	};
-	/**
-	 * <p>Extends the Element to emulate IE's selectNodes.</p>
-	 * @argument sExpr the XPath expression to use
-	 * @returns the result of the XPath search as an (Sarissa)NodeList
-	 * @throws An error if invoked on an HTML Element as this is only be
-	 *             available to XML Elements.
-	 */
-	Element.prototype.selectSingleNode = function(sExpr){
-		var doc = this.ownerDocument;
-		if(doc.selectSingleNode)
-			return doc.selectSingleNode(sExpr, this);
-		else
-			throw "Method selectNodes is only supported by XML Elements";
-	};
+
 	/**
 	 * <p>Returns a human readable description of the parsing error. Usefull
 	 * for debugging. Tip: append the returned error string in a &lt;pre&gt;
@@ -494,184 +716,7 @@ if (_SARISSA_IS_MOZ){
 			return parseErrorText;
 		};
 	};
-	
-}else if (_SARISSA_IS_IE){
-	// Add NodeType constants; missing in IE4, 5 and 6
-	if(!window.Node){
-		var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5, 	ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
-	};
-	// implement importNode for IE
-	if(!document.importNode){
-		/**
-		 * Implements importNode for IE using innerHTML. Main purpose it to
-		 * be able to append Nodes from XMLDocuments to the current page in
-		 * IE.
-		 * 
-		 * @param oNode
-		 *            the Node to import
-		 * @param bChildren
-		 *            whether to include the children of oNode
-		 * @returns the imported node for further use
-		 */
-		document.importNode = function(oNode, bChildren){
-			var importNode = document.createElement("div");
-			if(bChildren)
-				importNode.innerHTML = oNode.xml;
-			else
-				importNode.innerHTML = oNode.cloneNode(false).xml;
-			return importNode.firstChild;
-		};
-	}//if(!document.importNode)
-	
-	// for XSLT parameter names, prefix needed by IE
-	_SARISSA_IEPREFIX4XSLPARAM = "xsl:";
-	// used to store the most recent ProgID available out of the above
-	var _SARISSA_DOM_PROGID = "";
-	var _SARISSA_XMLHTTP_PROGID = "";
-	/**
-	 * Called when the Sarissa_xx.js file is parsed, to pick most recent
-	 * ProgIDs for IE, then gets destroyed.
-	 * @param idList an array of MSXML PROGIDs from which the most recent will be picked for a given object
-	 * @param enabledList an array of arrays where each array has two items; the index of the PROGID for which a certain feature is enabled
-	 */
-	function pickRecentProgID(idList, enabledList){
-		// found progID flag
-		var bFound = false;
-		for(var i=0; i < idList.length && !bFound; i++){
-			try{
-				var oDoc = new ActiveXObject(idList[i]);
-				o2Store = idList[i];
-				bFound = true;
-				for(var j=0;j<enabledList.length;j++)
-					if(i <= enabledList[j][1])
-						Sarissa["IS_ENABLED_"+enabledList[j][0]] = true;
-			}catch (objException){
-				// trap; try next progID
-			};
-		};
-		if (!bFound)
-			throw "Could not retreive a valid progID of Class: " + idList[idList.length-1]+". (original exception: "+e+")";
-		idList = null;
-		return o2Store;
-	};
-	// store proper progIDs
-	_SARISSA_DOM_PROGID = pickRecentProgID(["Msxml2.DOMDocument.5.0", "Msxml2.DOMDocument.4.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"], [["SELECT_NODES", 2],["TRANSFORM_NODE", 2]]);
-	_SARISSA_XMLHTTP_PROGID = pickRecentProgID(["Msxml2.XMLHTTP.5.0", "Msxml2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"], [["XMLHTTP", 4]]);
-	_SARISSA_THREADEDDOM_PROGID = pickRecentProgID(["Msxml2.FreeThreadedDOMDocument.5.0", "MSXML2.FreeThreadedDOMDocument.4.0", "MSXML2.FreeThreadedDOMDocument.3.0"]);
-	_SARISSA_XSLTEMPLATE_PROGID = pickRecentProgID(["Msxml2.XSLTemplate.5.0", "Msxml2.XSLTemplate.4.0", "MSXML2.XSLTemplate.3.0"], [["XSLTPROC", 2]]);
-	// we dont need this anymore
-	pickRecentProgID = null;
-	//============================================
-	// Factory methods (IE)
-	//============================================
-	// see mozilla version
-	Sarissa.getDomDocument = function(sUri, sName){
-		var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-		// if a root tag name was provided, we need to load it in the DOM
-		// object
-		if (sName){
-			// if needed, create an artifical namespace prefix the way Moz
-			// does
-			if (sUri){
-				oDoc.loadXML("<a" + _sarissa_iNsCounter + ":" + sName + " xmlns:a" + _sarissa_iNsCounter + "=\"" + sUri + "\" />");
-				// don't use the same prefix again
-				++_sarissa_iNsCounter;
-			}
-			else
-				oDoc.loadXML("<" + sName + "/>");
-		};
-		return oDoc;
-	};
-	// see mozilla version
-	Sarissa.getXmlHttpRequest = function()	{
-		return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
-	};
-	// see mozilla version
-	Sarissa.getParseErrorText = function (oDoc) {
-		var parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason +" \n";
-		parseErrorText += "Location: " + oDoc.parseError.url + "\n";
-		parseErrorText += "Line Number " + oDoc.parseError.line ;
-		parseErrorText += ", Column " + oDoc.parseError.linepos + ":\n";
-		parseErrorText += oDoc.parseError.srcText + "\n";
-		for(var i = 0;  i < oDoc.parseError.linepos;i++)
-			parseErrorText += "-";
-		parseErrorText +=  "^\n";
-		return parseErrorText;
-	};
-	// see mozilla version
-	Sarissa.setXpathNamespaces = function(oDoc, sNsSet)	{
-		oDoc.setProperty("SelectionLanguage", "XPath");
-		oDoc.setProperty("SelectionNamespaces", sNsSet);
-	};
-	/**
-	 * Basic implementation of Mozilla's XSLTProcessor for IE. 
-	 * Reuses the same XSLT stylesheet for multiple transforms
-	 * @constructor
-	 */
-	function XSLTProcessor(){
-		this.template = new ActiveXObject(_SARISSA_XSLTEMPLATE_PROGID);
-		this.processor = null;
-	};
-	/**
-	 * Impoprts the given XSLT DOM and compiles it to a reusable transform
-	 * @argument xslDoc The XSLT DOMDocument to import
-	 */
-	XSLTProcessor.prototype.importStylesheet = function(xslDoc){
-		// convert stylesheet to free threaded
-		var converted = new ActiveXObject(_SARISSA_THREADEDDOM_PROGID); 
-		converted.loadXML(xslDoc.xml);
-		this.template.stylesheet = converted;
-		this.processor = this.template.createProcessor();
-		// (re)set default param values
-		this.paramsSet = new Array();
-	};
-	/**
-	 * Transform the given XML DOM
-	 * @argument sourceDoc The XML DOMDocument to transform
-	 * @return The transformation result as a DOM Document
-	 */
-	XSLTProcessor.prototype.transformToDocument = function(sourceDoc)	{
-		this.processor.input = sourceDoc;
-		var outDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-		this.processor.output = outDoc; 
-		this.processor.transform();
-		return outDoc;
-	};
-	/**
-	 * Set global XSLT parameter of the imported stylesheet
-	 * @argument nsURI The parameter namespace URI
-	 * @argument name The parameter base name
-	 * @argument value The new parameter value
-	 */
-	XSLTProcessor.prototype.setParameter = function(nsURI, name, value){
-		// nsURI is optional and cannot be null
-		if(nsURI)
-			this.processor.addParameter(name, value, nsURI);
-		else
-			this.processor.addParameter(name, value);
-			
-		// update updated params for getParameter
-		if(!this.paramsSet[""+nsURI])
-			this.paramsSet[""+nsURI] = new Array();
-			
-		this.paramsSet[""+nsURI][name] = value;
-	};
-	
-	/**
-	 * Gets a parameter if previously set by setParameter. Returns null
-	 * otherwise
-	 * @argument name The parameter base name
-	 * @argument value The new parameter value
-	 * @return The parameter value if reviously set by setParameter, null otherwise
-	 */
-	XSLTProcessor.prototype.getParameter = function(nsURI, name){
-		if(this.paramsSet[""+nsURI] && this.paramsSet[""+nsURI][name])
-			return this.paramsSet[""+nsURI][name];
-		else
-			return null;
-	};
-}
-
+};
 /**
  * <p>
  * Factory method, used to set xslt parameters.

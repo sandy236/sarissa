@@ -1,3 +1,6 @@
+0.9.4  Added some constants to check for availability of features. 
+       Sarissa.getXmlHttpRequest should now work with browsers that 
+       support XMLHttpRequest. TODO: finish refactoring (trying to be friendly to more browsers...) 
 0.9.3: Fixed readyState bug in finally clause in XMLDocument.prototype.load.
          Added var before for loop indexes.
  

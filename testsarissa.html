@@ -35,13 +35,14 @@ div.placeholder{border:1px solid black;}
         placeHolder.appendChild(header);
         document.body.appendChild(placeHolder);
         document.body.appendChild(document.createElement("br"));
-        testCase.initialize(new XMLReporter(placeHolder));
+        testCase.initialize(new HTMLReporter(placeHolder));
         testCase.runTests();
     };
     
     function runTestCases(){
     	runTestCase(new SarissaTestCase());
     	runTestCase(new XMLDocumentTestCase());
+    	runTestCase(new XMLElementTestCase());
     	runTestCase(new HTMLElementTestCase());
     };
     
