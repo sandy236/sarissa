@@ -1,19 +1,20 @@
-/*
- * This file is to be used for testing the JSDoc parser
+/** 
+ * @fileoverview This file is to be used for testing the JSDoc parser
  * It is not intended to be an example of good JavaScript OO-programming,
  * nor is it intended to fulfill any specific purpose apart from 
- * demonstrating the functionality of the parser
+ * demonstrating the functionality of the 
+ * {@link http://sourceforge.net/projects/jsdoc JSDoc} parser
+ *
+ * @author Gabriel Reid gab_reid@users.sourceforge.net
+ * @version 0.1 
  */
 
-/*******************************************************************
- *************        Big Block Comment ****************************
- *******************************************************************/
 
 /**
- * This is the basic Shape class.  
+ * Construct a new Shape object.
+ * @class This is the basic Shape class.  
  * It can be considered an abstract class, even though no such thing
  * really existing in JavaScript
- * TODO: This is an example todo message
  * @constructor
  * @throws MemoryException if there is no more memory 
  * @throws GeneralShapeException rarely (if ever)
@@ -27,47 +28,60 @@ function Shape(){
     * For inner functions like this to be picked up by the parser, the
     * function that acts as a constructor <b>must</b> be denoted with
     * the <b>&#64;constructor</b> tag in its comment.
+    * @type String
     */
-   this.innerFunction = function(){
+   this.getClassName = function(){
       return "Shape";
    }
 
-   /** This is another inner */
-   this.anotherInner = function(){
-   }
-   
-   /** This is a private method, just used here as an example */
-   function privateFunction(){
-      return 'Private';
+   /** 
+    * This is a private method, just used here as an example 
+    */
+   function addReference(){
+       // Do nothing...
    }
    
 }
 
+/**
+ * Create a new Hexagon instance.
+ * @extends Shape
+ * @class Hexagon is a class that is a <i>logical</i> sublcass of 
+ * {@link Shape} (thanks to the <code>&#64;extends</code> tag), but in 
+ * reality it is completely unrelated to Shape.
+ * @param {int} sideLength The length of one side for the new Hexagon
+ */
+function Hexagon(sideLength) {
+}
+
 
 /**
- * This is an unattached function 
- * @param One one
- * @param Two two
+ * This is an unattached (static) function that adds two integers together.
+ * @param {int} One The first number to add 
+ * @param {int} Two The second number to add 
  * @author Gabriel Reid
  * @deprecated So you shouldn't use it anymore!
  */
-function UnattachedFunction(One, Two){
-   return "";
+function Add(One, Two){
+    return One + Two;
 }
 
 
 /**
  * The color of this shape
+ * @type Color
  */
 Shape.prototype.color = null;
 
 /**
  * The border of this shape. 
+ * @type int
  */
 Shape.prototype.border = null;
 
 /* 
- * The assignment of function implementation for Shape 
+ * The assignment of function implementations for Shape, documentation will
+ * be taken over from the method declaration.
  */
 
 Shape.prototype.getCoords = Shape_GetCoords;
@@ -87,14 +101,16 @@ Shape.prototype.setColor = Shape_SetColor;
  * about shapes in a 2D location here.
  * @requires Shape The shape class
  * @returns A Coordinate object representing the location of this Shape
+ * @type Coordinate
  */
 function Shape_GetCoords(){
    return this.coords;
 }
 
 /**
- * Get the color of this shape
+ * Get the color of this shape.
  * @see #setColor
+ * @type Color
  */
 function Shape_GetColor(){
    return this.color;
@@ -102,7 +118,7 @@ function Shape_GetColor(){
 
 /**
  * Set the coordinates for this Shape
- * @argument coordinates The coordinates to set for this Shape
+ * @param {Coordinate} coordinates The coordinates to set for this Shape
  */
 function Shape_SetCoords(coordinates){
    this.coords = coordinates;
@@ -110,9 +126,11 @@ function Shape_SetCoords(coordinates){
 
 /**
  * Set the color for this Shape
- * @param color The color to set for this Shape
- * @param other There is no other param
+ * @param {Color} color The color to set for this Shape
+ * @param other There is no other param, but it can still be documented if
+ *              optional parameters are used
  * @throws NonExistantColorException (no, not really!)
+ * @see #setColor
  */
 function Shape_SetColor(color){
    this.color = color;
@@ -129,10 +147,11 @@ Shape.prototype.clone = function(){
 }
 
 /**
- * A basic rectangle class, inherits from Shape.
+ * Create a new Rectangle instance. 
+ * @class A basic rectangle class, inherits from Shape.
  * This class could be considered a concrete implementation class
- * @param width The optional width for this Rectangle
- * @param height Thie optional height for this Rectangle
+ * @param {int} width The optional width for this Rectangle
+ * @param {int} height Thie optional height for this Rectangle
  * @author Gabriel Reid
  * @see Shape Shape is the base class for this
  */
@@ -162,14 +181,17 @@ Rectangle.prototype.width = 0;
 
 /**
  * Value to represent the height of the Rectangle
+ * @private
+ * @type int
  */
 Rectangle.prototype.height = 0;
 
 /**
- * This is just an anonymous function for testing
+ * Get the type of this object. 
+ * @type String
  */
-Rectangle.prototype.rectFunction = function(){
-   return 0;
+Rectangle.prototype.getClassName= function(){
+    return "Rectangle";
 }
 
 /*
@@ -189,6 +211,8 @@ Rectangle.prototype.getArea = Rectangle_GetArea;
 
 /**
  * Get the value of the width for the Rectangle
+ * @type int
+ * @see #setWidth
  */
 function Rectangle_GetWidth(){
    return this.width;
@@ -198,31 +222,36 @@ function Rectangle_GetWidth(){
  * Get the value of the height for the Rectangle.
  * Another getter is the {@link Shape#getColor} method in the 
  * {@link Shape base Shape class}.  
+ * @return The height of this Rectangle
+ * @type int
+ * @see #setHeight
  */
 function Rectangle_GetHeight(){
+    return this.height;
 }
 
 /**
  * Set the width value for this Rectangle.
- * This is a link to an {@link GLOBALS#UnattachedFunction 
- * unattached function}.
- * @param width The width value to be set
+ * @param {int} width The width value to be set
+ * @see #setWidth
  */
 function Rectangle_SetWidth(width){
    this.width = width;
 }
 
 /**
- * Set the height value for this Rectangle
- * @param height The height value to be set
+ * Set the height value for this Rectangle.
+ * @param {int} height The height value to be set
+ * @see #getHeight
  */
 function Rectangle_SetHeight(height){
    this.height = height;
 }
 
 /**
- * Get the value for the total area of
- * this Rectangle
+ * Get the value for the total area of this Rectangle
+ * @return total area of this Rectangle
+ * @type int
  */
 function Rectangle_GetArea(){
    return width * height;
@@ -230,9 +259,10 @@ function Rectangle_GetArea(){
 
 
 /**
- * A Square is a subclass of {@link Rectangle}
- * @param width The optional width for this Rectangle
- * @param height The optional height for this Rectangle
+ * Create a new Square instance.
+ * @class A Square is a subclass of {@link Rectangle}
+ * @param {int} width The optional width for this Rectangle
+ * @param {int} height The optional height for this Rectangle
  */
 function Square(width, height){
    if (width){
@@ -248,10 +278,9 @@ function Square(width, height){
 Square.prototype = new Rectangle();
 
 
-/* 
- * The assignment of function implementation for Shape 
+/*
+ * The assignment of function implementation for Shape.
  */
-
 Square.prototype.setWidth = Square_SetWidth;
 
 Square.prototype.setHeight = Square_SetHeight;
@@ -260,7 +289,8 @@ Square.prototype.setHeight = Square_SetHeight;
 
 /**
  * Set the width value for this Square.
- * @param width The width value to be set
+ * @param {int} width The width value to be set
+ * @see #getWidth
  */
 function Square_SetWidth(width){
    this.width = this.height = width;
@@ -268,7 +298,8 @@ function Square_SetWidth(width){
 
 /**
  * Set the height value for this Square 
- * @param height The height value to be set
+ * Sets the {@link Rectangle#height height} attribute in the Rectangle.
+ * @param {int} height The height value to be set
  */
 function Square_SetHeight(height){
    this.height = this.width = height;
@@ -276,8 +307,9 @@ function Square_SetHeight(height){
 
 
 /**
- * Circle class is another subclass of Shape
- * @param radius The optional radius of this Circle
+ * Create a new Circle instance based on a radius.
+ * @class Circle class is another subclass of Shape
+ * @param {int} radius The optional radius of this Circle
  */
 function Circle(radius){
    if (radius){
@@ -291,16 +323,18 @@ Circle.prototype = new Shape();
 /** 
  * The radius value for this Circle 
  * @private
+ * @type int
  */
 Circle.prototype.radius = 0;
 
 /** 
  * A very simple class (static) field that is also a constant
  * @final
+ * @type float
  */
 Circle.PI = 3.14;
 
-Circle.getClassName = Circle_GetClassName;
+Circle.createCircle = Circle_CreateCircle;
 
 Circle.prototype.getRadius = Circle_GetRadius;
 
@@ -308,6 +342,8 @@ Circle.prototype.setRadius = Circle_SetRadius;
 
 /**
  * Get the radius value for this Circle
+ * @type int
+ * @see #setRadius
  */
 function Circle_GetRadius(){
    return this.radius;
@@ -315,26 +351,29 @@ function Circle_GetRadius(){
 
 /** 
  * Set the radius value for this Circle
- * @param radius The radius value to set
+ * @param {int} radius The radius value to set
+ * @see #getRadius
  */
 function Circle_SetRadius(radius){
    this.radius = radius;
 }
 
 /** 
- * A class (static) method.
- * @param test This is a test param
- * @private
+ * An example of a  class (static) method that acts as a factory for Circle
+ * objects. Given a radius value, this method creates a new Circle.
+ * @param {int} radius The radius value to use for the new Circle.
+ * @type Circle
  */
-function Circle_GetClassName(test){
-   return "Circle";
+function Circle_CreateCircle(radius){
+    return new Circle(radius);
 }
 
 
 /**
- * Coordinate is a class that can encapsulate location information
- * @param x The optional x portion of the Coordinate
- * @param y The optinal y portion of the Coordinate
+ * Create a new Coordinate instance based on x and y grid data.
+ * @class Coordinate is a class that can encapsulate location information.
+ * @param {int} x The optional x portion of the Coordinate
+ * @param {int} y The optinal y portion of the Coordinate
  */
 function Coordinate(x, y){
    if (x){
@@ -345,10 +384,20 @@ function Coordinate(x, y){
    }
 }
 
-/** The x portion of the Coordinate */
+/** 
+ * The x portion of the Coordinate 
+ * @type int
+ * @see #getX
+ * @see #setX
+ */
 Coordinate.prototype.x = 0;
 
-/** The y portion of the Coordinate */
+/** 
+ * The y portion of the Coordinate 
+ * @type int
+ * @see #getY
+ * @see #setY
+ */
 Coordinate.prototype.y = 0;
 
 Coordinate.prototype.getX = Coordinate_GetX;
@@ -357,64 +406,99 @@ Coordinate.prototype.setX = Coordinate_SetX;
 Coordinate.prototype.setY = Coordinate_SetY;
 
 /**
- * Get the x portion of the Coordinate 
+ * Gets the x portion of the Coordinate.
+ * @type int
+ * @see #setX
  */
 function Coordinate_GetX(){
    return this.x;
 }
 
 /** 
- * Get the y portion of the Coordinate
+ * Get the y portion of the Coordinate.
+ * @type int
+ * @see #setY
  */
 function Coordinate_GetY(){
    return this.y;
 }
 
 /**
- * Set the x portion of the Coordinate
- * @param x The x value to set
+ * Sets the x portion of the Coordinate.
+ * @param {int} x The x value to set
+ * @see #getX
  */
 function Coordinate_SetX(x){
    this.x = x;
 }
 
 /** 
- * Set the y portion of the Coordinate
- * @param y The y value to set
+ * Sets the y portion of the Coordinate.
+ * @param {int} y The y value to set
+ * @see #getY
  */
 function Coordinate_SetY(y){
    this.y = y;
 }
 
 /**
- * This class exists to demonstrate the assignment of a class prototype
- * as an anonymous block
+ * @class This class exists to demonstrate the assignment of a class prototype
+ * as an anonymous block.
  */
 function ShapeFactory(){
 }
 
 ShapeFactory.prototype = {
-   /** Create a shape */
+   /** 
+    * Creates a new {@link Shape} instance.
+    * @return A new {@link Shape}
+    * @type Shape
+    */
    createShape: function(){
       return new Shape();
    }
 }
 
+/**
+ * An example of a singleton class
+ */
+MySingletonShapeFactory = new function(){
 
-/** This is the Foo class
- @constructor */
+   /**
+    * Get the next {@link Shape} 
+    * @type Shape
+    * @return A new {@link Shape}
+    */
+   this.getShape = function(){ 
+      return null; 
+   }
+
+}
+
+
+/** 
+ * Create a new Foo instance.
+ * @class This is the Foo class. It exists to demonstrate 'nested' classes.
+ * @constructor 
+ * @see Foo.Bar
+ */
 function Foo(){}
 
-/** @constructor */
+/** 
+ * Creates a new instance of Bar.
+ * @class This class exists to demonstrate 'nested' classes.
+ * @constructor 
+ * @see Foo.Bar
+ */
 function Bar(){}
 
 /** 
  * Nested class
- *  @constructor 
+ * @constructor 
  */
 Foo.Bar = function(){this.x = 2;}
 
 Foo.Bar.prototype = new Bar();
 
-Foo.Bar.prototype.x = '3';
+Foo.Bar.prototype.y = '3';
 

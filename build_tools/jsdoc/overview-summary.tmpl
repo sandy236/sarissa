@@ -71,10 +71,12 @@ parent.document.title="<TMPL_VAR NAME"project_name"> Overview";
 	<tr>
 		<td valign="top">
                         <TMPL_IF NAME="project_name">
+                            <TMPL_IF NAME="generic">
                            <p>
                            This document is the API Specification for 
                            <TMPL_VAR NAME="project_name">.
                            </p>
+                           </TMPL_IF>
                         </TMPL_IF>
 			
 			<h4>Summary</h4>

@@ -93,13 +93,15 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <DT>class 
    <B><TMPL_VAR NAME="classname"></B>
    <TMPL_IF NAME="superclass">
-      <DT>extends <a href="<TMPL_VAR NAME="superclass">.html"><TMPL_VAR NAME="superclass"></A> 
+      <DT>extends <TMPL_VAR NAME="superclass"> 
    </TMPL_IF>
 
 </DL>
+   <TMPL_IF NAME="class_summary">
    <P>
    <TMPL_VAR name="class_summary">
    </P>
+   </TMPL_IF>
    <HR>
 
 <!-- ======== NESTED CLASS SUMMARY ======== -->
@@ -182,7 +184,9 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 	 <TMPL_VAR name="constructor_args">
       </CODE>
       <BR>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <TMPL_VAR name="constructor_summary">
+      </TD>
 </TR>
 </TABLE>
 </TMPL_IF>
@@ -275,7 +279,13 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 
 <A NAME="<TMPL_VAR name="classname">()"><!-- --></A><H3>
 <TMPL_VAR name="classname"></H3>
-<PRE>function <B><TMPL_VAR name="classname"></B><TMPL_VAR name="constructor_args"></PRE>
+<PRE><B><TMPL_VAR name="classname"></B><TMPL_VAR name="constructor_args"></PRE>
+
+<TMPL_IF NAME="constructor_detail">
+<UL>
+   <TMPL_VAR name="constructor_detail">
+</UL>
+</TMPL_IF>
 
 <TMPL_IF name="constructor_params">
    <UL>
@@ -305,6 +315,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 <TMPL_VAR name="constructor_attrs">
 </UL>
 </TMPL_IF>
+<HR/>
 <!-- END ADDITIONAL ATTRIBUTES  -->
 
 <!-- ========= CONSTRUCTOR DETAIL END ======== -->
