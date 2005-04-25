@@ -29,6 +29,7 @@
  */
 /**
  * Update an element with response of a GET request on the given URL. 
+ * @addon
  * @param sFromUrl the URL to make the request to
  * @param oTargetElement the element to update
  * @param xsltproc (optional) the transformer to use on the returned
@@ -57,6 +58,7 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
 
 /**
  * Update an element's content with the given DOM node.
+ * @addon
  * @param sFromUrl the URL to make the request to
  * @param oTargetElement the element to update
  * @param xsltproc (optional) the transformer to use on the given 

@@ -1,3 +1,8 @@
+0.9.5.2: * Fixed IE Sarissa.copyChildNodes bug thanks to Bryan Batchelder
+      * Added Sarissa.xmlize howto 
+      * Fixed documentation errors thanks to R. Mark Volkmann
+      * Upgraded JSDoc
+
 0.9.5.1: * Added Sarissa.escape and Sarissa.unescape, to convert 
        from and to the fivepredefined XML entities
       * Fixed a bug in Sarissa.xmlize (yup, added escaping ;-)

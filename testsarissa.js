@@ -6,7 +6,7 @@
  * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
- * This module contains unit tests for Sarissa that use EcmaUnit by Guido Wesdorp and
+ * This module contains unit tests for Sarissa that run using EcmaUnit by Guido Wesdorp and
  * Philipp von Weitershausen, see http http://kupu.oscom.org/download/ecmaunit-0.2.html
  * Thanks for the great work guys!
  *

@@ -71,13 +71,15 @@ var _SARISSA_HAS_DOM_FEATURE = _SARISSA_HAS_DOM_IMPLEMENTATION && document.imple
 /** <b>Deprecated, will be removed in 0.9.6</b>. @deprecated */
 var _SARISSA_IS_MOZ = _SARISSA_HAS_DOM_CREATE_DOCUMENT && _SARISSA_HAS_DOM_FEATURE;
 /** <b>Deprecated, will be removed in 0.9.6</b>. @deprecated */
-var _SARISSA_IS_IE = document.all && window.ActiveXObject &&  (navigator.userAgent.toLowerCase().indexOf("msie") > -1);
-//==========================================
-// Implement Node constants if not available
-//==========================================
+var _SARISSA_IS_IE = document.all 
+	&& window.ActiveXObject 
+	&& navigator.userAgent.toLowerCase().indexOf("msie") > -1  
+	&& navigator.userAgent.toLowerCase().indexOf("opera") == -1;
+
 if(!window.Node || !window.Node.ELEMENT_NODE){
     var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5,  ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
 };
+
 // IE initialization
 if(_SARISSA_IS_IE){
     // for XSLT parameter names, prefix needed by IE
@@ -247,6 +249,7 @@ if(_SARISSA_IS_IE){
     };
 }
 else{ /* end IE initialization, try to deal with real browsers now ;-) */
+
    if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
         if(window.XMLDocument){
             /**
@@ -333,7 +336,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 */
                 XMLDocument.prototype.loadXML = function(strXML){
                     Sarissa.__setReadyState__(this, 1);
-                    var sOldXML = this.xml;
+                    var sOldXML = Sarissa.serialize(this);
                     var oDoc = (new DOMParser()).parseFromString(strXML, "text/xml");
                     Sarissa.__setReadyState__(this, 2);
                     Sarissa.copyChildNodes(oDoc, this);
@@ -354,6 +357,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 oDoc.parseError = -1;
             Sarissa.__setReadyState__(oDoc, 4);
         };
+        
         /**
         * <p>Attached by an event handler to the load event. Internal use.</p>
         * @private
@@ -361,6 +365,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
         function _sarissa_XMLDocument_onload()        {
             Sarissa.__handleLoad__(this);
         };
+        
         /**
          * <p>Sets the readyState property of the given DOM Document object.
          * Internal use.</p>
@@ -402,23 +407,25 @@ if(window.XMLHttpRequest){
     Sarissa.IS_ENABLED_XMLHTTP = true;
 };
 if(!window.document.importNode){
-    /**
-     * Implements importNode for the current window document in IE using innerHTML.
-     * Testing showed that DOM was multiple times slower than innerHTML for this,
-     * sorry folks. If you encounter trouble (who knows what IE does behind innerHTML)
-     * please gimme a call.
-     * @param oNode the Node to import
-     * @param bChildren whether to include the children of oNode
-     * @returns the imported node for further use
-     */
-    window.document.importNode = function(oNode, bChildren){
-        var importNode = document.createElement("div");
-        if(bChildren)
-            importNode.innerHTML = Sarissa.serialize(oNode);
-        else
-            importNode.innerHTML = Sarissa.serialize(oNode.cloneNode(false));
-        return importNode.firstChild;
-    };
+	try{
+	    /**
+	     * Implements importNode for the current window document in IE using innerHTML.
+	     * Testing showed that DOM was multiple times slower than innerHTML for this,
+	     * sorry folks. If you encounter trouble (who knows what IE does behind innerHTML)
+	     * please gimme a call.
+	     * @param oNode the Node to import
+	     * @param bChildren whether to include the children of oNode
+	     * @returns the imported node for further use
+	     */
+	    window.document.importNode = function(oNode, bChildren){
+	        var importNode = document.createElement("div");
+	        if(bChildren)
+	            importNode.innerHTML = Sarissa.serialize(oNode);
+	        else
+	            importNode.innerHTML = Sarissa.serialize(oNode.cloneNode(false));
+	        return importNode.firstChild;
+	    };
+	 }catch(e){};
 };
 if(!Sarissa.getParseErrorText){
     /**
@@ -522,7 +529,7 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
     Sarissa.clearChildNodes(nodeTo);
     var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
     var nodes = nodeFrom.childNodes;
-    if(ownerDoc.importNode){
+    if(typeof(ownerDoc.importNode) == "function"){
         for(var i=0;i < nodes.length;i++) {
             nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
         };
