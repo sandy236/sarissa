@@ -4,7 +4,7 @@
  * ====================================================================
  * Sarissa cross browser XML library - DHTML module
  * @version @sarissa.version@
- * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
+ * @author: Copyright Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
  * This module contains some convinient DHTML tricks based on Sarissa 
  *
@@ -80,7 +80,7 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc){
                 oNode = xsltproc.transformToDocument(oNode);
             };
             if(oNode.nodeType == Node.DOCUMENT_NODE){
-                oTargetElement.innerHTML = Sarissa.serialize(oNode.documentElement);
+                oTargetElement.innerHTML = Sarissa.serialize(_SARISSA_IS_SAFARI?oNode:oNode.documentElement);
             }
             else if(oNode.nodeType == Node.ELEMENT_NODE){
                 if(oNode == oNode.ownerDocument.documentElement){

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * ====================================================================
+ * About
+ * ====================================================================
+ * Minesweeper
+ * @version @sarissa.version@
+ * @author: Copyright Sean Whalen
+ *
+ * This module is a port of the famous Minesweeper game in pure XSLT and JS
+ *
+ * ====================================================================
+ * Licence
+ * ====================================================================
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * the GNU Lesser General Public License version 2.1 as published by
+ * the Free Software Foundation (your choice of the two).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License or GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * or GNU Lesser General Public License along with this program; if not,
+ * write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * or visit http://www.gnu.org
+ *
+ */
+ -->
+<xsl:stylesheet version="1.0" 
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+ 
+ 
+ <xsl:output method="xml"  media-type="text/html"  /> 
+ 
+
+<xsl:template match="/">
+
+
+ 
+
+<html>
+<HEAD>
+ 
+
+</HEAD>
+
+<body>   
+<FORM NAME="form1">
+ 
+<table border="1" bgcolor="gray">
+	<xsl:call-template name="make-board"/>	
+</table>
+	 
+ 
+
+</FORM>
+</body>
+</html>
+</xsl:template>
+
+ 
+<xsl:template name = "make-board">
+<xsl:param name ="markV" select="0"/> 
+	 
+  <xsl:for-each select="//square[@v=$markV][1]">
+  <xsl:sort select="@v" data-type="number"/>  
+ 
+    <xsl:variable name="sendV" select="@v"/> 
+    
+
+     <tr>
+      <xsl:call-template name="make-row">
+	  <xsl:with-param name="thisV" select="$sendV" />    	  	     
+     </xsl:call-template>
+     </tr>
+
+
+      <xsl:call-template name="make-board">
+	  <xsl:with-param name="markV" select="$markV+1" />    	 
+	   	 
+     </xsl:call-template>
+
+
+  </xsl:for-each>
+
+
+</xsl:template>
+
+
+<xsl:template name = "make-row">
+<xsl:param name ="thisV" />       
+
+ 
+
+  <xsl:for-each select="//square[@v=$thisV]">
+  <xsl:sort select="@h" data-type="number"/>  
+
+            
+<xsl:variable name="loopH" select="@h"/> 
+
+
+	<td>   
+
+ 	<input type="button" name="myButton"   oncontextmenu = "return false"
+
+		style="background-color:#88AABB; border: outset ridge; border-width: 4; width: 30;"
+
+		LANGUAGE="javascript"  >
+
+		<xsl:attribute name="id">
+			<xsl:value-of select="$loopH"/>/<xsl:value-of select= "$thisV" />
+		</xsl:attribute>
+
+
+<!-- -->
+<!--	 	<xsl:attribute name="value">  -->
+<!--	 	  	<xsl:value-of select="@isBomb"/>,<xsl:value-of select="@nbc"/> -->
+<!--	 		 -->
+<!--	 	</xsl:attribute> -->
+
+	</input>
+		
+	</td>
+
+
+ 
+
+  </xsl:for-each>
+	  
+ 
+
+ 
+</xsl:template>
+
+
+
+ 
+</xsl:stylesheet>

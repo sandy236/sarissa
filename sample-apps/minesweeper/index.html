@@ -1,0 +1,517 @@
+<!--
+/**
+ * ====================================================================
+ * About
+ * ====================================================================
+ * Minesweeper
+ * @version @sarissa.version@
+ * @author: Copyright Sean Whalen
+ *
+ * This module is a port of the famous Minesweeper game in pure XSLT and JS
+ *
+ * ====================================================================
+ * Licence
+ * ====================================================================
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 or
+ * the GNU Lesser General Public License version 2.1 as published by
+ * the Free Software Foundation (your choice of the two).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License or GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * or GNU Lesser General Public License along with this program; if not,
+ * write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * or visit http://www.gnu.org
+ *
+ */
+ -->
+<html>
+
+  <title>XSLT-Minesweeper</title>
+  <meta name="Description" content="Minesweeper xml xslt">
+  <meta name="KeyWords" content="xml, xslt, javascript">
+  <meta name="KeyWords" content="Minesweeper, Java, Game">
+  <meta name="KeyWords" content="seanwhalen, Sean, Whalen, Sean Whalen">
+
+<body> 
+
+<div id="aboveGame">
+<big><b>All XSLT-Minesweeper</b></big>
+   
+</div>
+
+<div id="gameArea"  oncontextmenu = "return false" >
+
+<MailScannerScript23892 script type="text/javascript" src="sarissa.js"> </MailScannerScript23892> 
+<MailScannerScript23892 script type="text/javascript">
+ 
+
+function init() {
+	 
+     var elem;
+
+     if (document.all) {
+          elem = document.all.gameArea;
+
+     } else if (document.getElementById) {
+          elem = document.getElementById("gameArea");	 
+	  window.captureEvents(Event.MOUSEUP);
+ 
+     }
+     
+     if (elem) {         
+        elem.onmouseup = listenUp;
+	elem.onmouseover = enterButton;
+	elem.onmouseout = exitButton;	
+	     
+     }	
+
+ }
+
+
+function getClickedElement(e) {
+var clicker;
+
+	e = (e ? e  : ((window.event) ? window.event : ""));
+
+	if (e.target) { 
+	   clicker =  e.target;		 
+	}
+	else {      	 
+	   clicker = e.srcElement; 		 
+	}
+
+return clicker;
+
+}
+
+
+function exitButton (e) {
+
+  var clicker = getClickedElement(e); 
+  clicker.style.borderColor = borderCache  ;
+
+}
+
+
+function enterButton (e) {
+ 
+  var clicker = getClickedElement(e); 
+ 
+  if (clicker.style.borderColor != "#FFFF00" ) { borderCache = clicker.style.borderColor ;}
+  clicker.style.borderColor = "#FFFF00";
+
+	 
+}
+
+
+function extrabutton() {
+
+    alert("full map:  " +  Sarissa.serialize( fragment));
+ 
+}
+ 
+
+function revealSquares(clicker){
+
+    var xmlDoc = fragment;
+    var ele = xmlDoc.createElement('click'); 
+
+
+    ele.setAttribute('h', jDictionary[clicker.id].x);
+    ele.setAttribute('v', jDictionary[clicker.id].y);
+    xmlDoc.documentElement.appendChild (ele);
+ 
+  
+	var xmlRevealed  = xsltProcessor.transformToDocument( xmlDoc); 
+
+	var eleID = "" ;
+	var nbc = "";
+	var nbcColor = "";
+	var elSquare  = xmlRevealed.getElementsByTagName("square");
+	var SqBtn =  jDictionary["1/1"].btn;	  
+	var sqBtnStyle;
+
+	for(var i=0; i< elSquare.length; i++) {
+
+	 squareAttrs = elSquare[i].attributes;
+ 		 	 
+	   eleID = squareAttrs.getNamedItem("h").nodeValue + "/" + squareAttrs.getNamedItem("v").nodeValue  ;
+		
+	   nbc = squareAttrs.getNamedItem("nbc").nodeValue;
+
+           SqBtn = jDictionary[eleID].btn;	
+	   sqBtnStyle = SqBtn.style;
+	   sqBtnStyle.border="inset";
+	
+	   if ( nbc !=0  ) {
+	      SqBtn.value =  nbc  ;    		   
+	      sqBtnStyle.color = squareAttrs.getNamedItem("nbcColor").nodeValue ;
+	      sqBtnStyle.fontWeight = "900" ;			    			
+	   }
+		
+	   sqBtnStyle.backgroundColor =  "#CDC9C9" ;
+	   sqBtnStyle.borderColor =  "#DCDCDC" ;
+		 	    	
+	}
+    
+
+}
+
+ 
+
+function listenUp (e ) {
+var iButton = 0 ;
+
+	 
+	e = (e ? e  : ((window.event) ? window.event : ""));
+
+
+	if (e.target) { 
+	   clicker =  e.target;
+	   iButton = e.which;
+	}
+	else {      	 
+	   clicker = e.srcElement; 
+	   iButton  = e.button;
+	}
+
+
+  if (clicker.id == "ddbtn" ) {return ;}
+ 
+  if  (clicker.type == "button") {
+    if  (iButton  == 1  ) {	
+	  Outer_onMouseUp(clicker );
+	  }
+    else {
+	 
+
+	if  (jDictionary[clicker.id].isRevealed ==  0 ) 
+	{
+	 // this doenst work bc the dictionary is stale at this point.
+        	jDictionary[clicker.id].btn.style.backgroundColor="#F08080"; //FFB6C1	 
+		jDictionary[clicker.id].isMarked =  -1;
+	}
+    }	
+  }
+ 
+
+}
+
+
+
+function Outer_onMouseUp(clicker )  {
+	 
+var ibutton   ;
+
+var clicked =jDictionary[clicker.id];
+var btnStyle = clicked.btn.style;
+   
+  if  (clicked.isRevealed  !=0 ) {return; } 
+       
+
+	 if  (clicked.isBomb != -1 ) {		
+		btnStyle.backgroundColor="#11CC22";		
+		btnStyle.border="inset";
+  	
+		revealSquares(clicker);		   
+	}
+	
+        else {	 	  
+	  btnStyle.backgroundColor="#BB2233";
+	  }
+
+}
+
+
+function userVals() {
+
+var hDefault = 15;
+var vDefault = 15;
+var bombDefault = 30;
+
+hMax = hDefault ;
+vMax = vDefault ; 
+bombCount = bombDefault ;
+
+var bContinue = false;
+
+
+bContinue = !isNaN( parseInt(document.getElementById("userH").value  )  ) ;
+ 
+bContinue  = bContinue  & !isNaN( parseInt(document.getElementById("userV").value  )  ) ;
+ 
+bContinue  = bContinue  & !isNaN( parseInt(document.getElementById("userB").value  )  ) ;
+ 
+
+if ( !bContinue) {
+	alert ("One of your entries is not a number.");
+}
+else{
+ hMax =  parseInt(document.getElementById("userH").value);
+ vMax = parseInt(document.getElementById("userV").value ) ;
+ bombCount = parseInt(document.getElementById("userB").value );
+ }
+  
+bContinue   = hMax <= 50  & vMax <= 50 & bombCount  <= (hMax  * vMax )
+
+ 
+ 
+if ( bContinue ) {
+  alertsON = 1;
+  loadBoard();
+}
+else {alert ("One of your entries is too big.  H and V are limited to 50.  Bombs cannot exceed H*V.");}
+ 
+}
+
+function loadBoard() {
+
+jDictionary = new Object ();
+
+
+var xmlDocument =  Sarissa.getDomDocument();
+var xmlString = "<SweeperMap></SweeperMap>";
+xmlDocument.loadXML(xmlString);
+ 
+ 
+var ele = xmlDocument.createElement('range'); 
+ele.setAttribute('hMax', hMax);
+ele.setAttribute('vMax', vMax);
+xmlDocument.documentElement.appendChild (ele);
+ 
+ 
+
+
+var bombList = new Array();
+var ran_h;
+var ran_v;
+var found;
+  for ( i = 0;  i < bombCount ; ) {
+    ran_h =Math.round(Math.random() * (hMax -1) );
+    ran_v =Math.round(Math.random() * (vMax -1) );  
+    found = false;
+    try {found = bombList[ran_h + "/" + ran_v]
+	if (found !=true )
+	{
+	  bombList[ran_h + "/" + ran_v]= true;
+	  ele = xmlDocument.createElement('bomb'); 
+	  ele.setAttribute('h', ran_h);
+	  ele.setAttribute('v', ran_v);
+	  xmlDocument.documentElement.appendChild (ele);
+	  i++;
+	}
+		
+    }
+    catch(e) {
+ 	alert ("assoc access error");
+   }
+  
+}
+  
+
+
+//alert ("in the Sarissa code");
+
+ 
+var xslMapExpander =   Sarissa.getDomDocument();
+xslMapExpander.async = false; 
+xslMapExpander.load("MapExpander.xsl")
+
+   
+  
+var xsltProc  = new XSLTProcessor();
+xsltProc.importStylesheet(xslMapExpander);
+
+    
+fragment = xsltProc.transformToDocument(xmlDocument);
+
+
+ 
+// second style sheet.
+var xslMapBuilder =   Sarissa.getDomDocument();
+xslMapBuilder.async = false; 
+xslMapBuilder.load("MapBuilderBombList.xsl");  // ?contentType=text/html
+
+ 
+xsltProc  = new XSLTProcessor();
+xsltProc.importStylesheet(xslMapBuilder);
+
+
+ 
+ var frag2 = xsltProc.transformToDocument( fragment);
+
+   
+if (   frag2.parseError != 0  )  {
+   alert ("err = " +   frag2.parseError  );
+   alert ("err = " +   frag2.parseError.reason  );
+
+   alert("frag2 " +  Sarissa.serialize( frag2 ));
+ }
+ 
+   
+ 
+  
+document.getElementById("gameArea").innerHTML = ""; 
+//document.getElementById("gameArea").appendChild( xsltProcIE.transformToDocument(fragment)) ; 
+
+
+document.getElementById("gameArea").innerHTML =  Sarissa.serialize( frag2 );
+ 
+
+loadDictionary (fragment);
+ 
+}
+
+ 
+ 
+
+function cacheRevealer()  {
+////cache the 3rd style sheet:
+
+ 
+  var xslRevealer =   Sarissa.getDomDocument();
+  xslRevealer.async = false; 
+  xslRevealer.load("RevealBombs.xsl");  // ?contentType=text/html
+
+ 
+  var xsltProcessor = new XSLTProcessor();
+  xsltProcessor.importStylesheet(xslRevealer);
+
+  return xsltProcessor ;
+
+ 
+}
+
+
+function jDictionary (sweeperSquare) {
+	 
+ this.sweeperSquare = sweeperSquare;
+}
+
+
+function sweeperSquare (btn, x, y, nbc, isBomb) {
+ 
+    this.btn = btn;
+    this.x = x;
+    this.y = y;
+    this.nbc = nbc;
+    this.isBomb = isBomb;
+    this.isRevealed = 0;
+    this.isMarked = 0;
+
+    
+} 
+
+
+function addEle(id, x, y, nbc, isBOmb) {
+    
+   
+    jDictionary[id] = new sweeperSquare(document.getElementById(id), x, y, nbc, isBOmb ) ;
+   
+}
+
+function loadDictionary (allSquares) {
+
+
+squares = allSquares.documentElement.childNodes;
+var ele;
+for (i= 0; i < squares.length; i++) {
+   ele = squares.item(i);
+  
+ 	addEle (ele.getAttribute("h") + "/" + ele.getAttribute("v"),
+ 		ele.getAttribute("h") ,
+		ele.getAttribute("v"),
+ 		ele.getAttribute("nbc"),
+ 		ele.getAttribute("isBomb")		 
+		);  
+}
+
+}
+
+var hMax = 15 ;
+var vMax = 15 ; 
+var bombCount = 30;
+var borderCache =0; 
+var xml2;  
+var fragment ;
+var xslRevealingsheet;
+var xsltProcessor ;
+var alertsON= 0; 
+ 
+ 
+init () ;
+
+loadBoard();
+
+
+xsltProcessor = cacheRevealer();
+ 
+
+</MailScannerScript23892>
+
+
+</div>
+
+<div id="ddd" > 
+
+<b>Horizontal #</b>	<INPUT type="text" id="userH" name="userH" value = "15"  style="background-color:#FFE4B5;    width: 50"> 
+<b>Vertical #</b>	<INPUT type="text" id="userV" name="userV" value = "15" style="background-color:#FFE4B5;   width: 50"> 
+<b>Number of Bombs</b>	<INPUT type="text" id="userB" name="userB" value = "30" style="background-color:#FFE4B5;    width: 50">
+<input type="button" name="userVals" id = "userVals" 		 
+		LANGUAGE="javascript" onClick = "userVals()" value = "Create Map!" style="   width: 100"  
+</input>
+
+
+
+<BR>
+view XML:
+	<input type="button" name="myButton" id = "ddbtn"  value = "XML"  style="   width:70"	 	 
+		LANGUAGE="javascript" onClick = "extrabutton()"  
+	</input>
+
+
+</div>
+
+<div id="belowGame">
+</br></br>
+<b>Some Notes:</b>
+</br>
+	 I started this as a personal educational project to see how much of the data management and rules I could encode in XSLT. The main page uses javascript to handle the mouse-events and to generate the random numbers. Everything else is done in 3 different xslt files. The first stylesheet takes a set of random numbers and a pair of min/max values and returns a list of elements representing a full grid. The next style sheet transforms the list of nodes into grid of HTML buttons. The third sheet returns the set of squares that are revealed when the user clicks on a square. This is a recursive algorithm that looks for flags in squares bordering the square that was clicked. That set is then sent to the same algorithm, and the template finds the flags bordering those squares, etc, until no more bordering flags are found.
+</br>
+<A HREF="http://www.xsltblog.com/codeoftheday/archives/2005/03/ok_this_is_the.html">The app made 'Cool Site of the Day' on the XSLT:Blog!</A> 
+ 
+</br> 
+<A HREF="https://bugzilla.mozilla.org/show_bug.cgi?id=284708 ">This is a link to the Mozilla bug I submitted regarding the performance of Firefox compared to MS-IE</A>
+ 
+</br></br>
+<b>Useful XSLT tools:</b></br>
+Sarissa is a great tool for masking the syntactical differences between MS-IE and Mozilla browsers.
+</br><A HREF="http://sf.net/projects/sarissa">Sarissa:  a cross-browser ECMAScript library for client side XML manipulation</A>
+
+</br> 
+</br>FXSL is a library of math functions and tool set for implementing functions and dynamic, variablized, function calls.  Really, a must-read.
+</br><A HREF="http://sourceforge.net/project/showfiles.php?group_id=53841"> FXSL: an xslt Functional Programming Library.</A>
+</br>
+
+</br>The XSLT:Blog is a rich source of information regarding all things XSLT.  Created by <A HREF="http://mdavid.name/">M. David Peterson.</A>    
+</br><A HREF="http://www.xsltblog.com/"><font color="red"><b>MailScanner has detected a possible fraud attempt from "www.xsltblog.com" claiming to be</b></font> XSLT:Blog - An XSLT community news, commentary, code samples, and evangelism weblog.</A>
+
+
+</br></br></br>
+<b>My java applet web examples:</b> 
+</br><A HREF="http://seanwhalen.home.comcast.net/">A Scrabble game, and java version of Minesweeper that plays a good game by itself.</A>
+
+
+
+</br></br><b>Feedback:</b>
+You can mail feedback to:  <a href="mailto:seanwhalen@comcast.net">seanwhalen@comcast.net</a> 
+</br></br></br>
+</div>
+
+</body>
+</html>

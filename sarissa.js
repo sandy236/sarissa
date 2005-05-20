@@ -70,6 +70,7 @@ var _SARISSA_HAS_DOM_CREATE_DOCUMENT = _SARISSA_HAS_DOM_IMPLEMENTATION && docume
 var _SARISSA_HAS_DOM_FEATURE = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.hasFeature;
 /** <b>Deprecated, will be removed in 0.9.6</b>. @deprecated */
 var _SARISSA_IS_MOZ = _SARISSA_HAS_DOM_CREATE_DOCUMENT && _SARISSA_HAS_DOM_FEATURE;
+var _SARISSA_IS_SAFARI = navigator.userAgent.toLowerCase().indexOf("applewebkit") != -1;
 /** <b>Deprecated, will be removed in 0.9.6</b>. @deprecated */
 var _SARISSA_IS_IE = document.all 
 	&& window.ActiveXObject 
@@ -459,13 +460,14 @@ Sarissa.getText = function(oNode, deep){
     var nodes = oNode.childNodes;
     for(var i=0; i < nodes.length; i++){
         var node = nodes[i];
-        if(node.nodeType == Node.TEXT_NODE){
+        var nodeType = node.nodeType;
+        if(nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE){
             s += node.data;
-        }else if(deep == true
-                    && (node.nodeType == Node.ELEMENT_NODE
-                        || node.nodeType == Node.DOCUMENT_NODE
-                        || node.nodeType == Node.DOCUMENT_FRAGMENT_NODE)){
-        
+        }
+        else if(deep == true
+                    && (nodeType == Node.ELEMENT_NODE
+                        || nodeType == Node.DOCUMENT_NODE
+                        || nodeType == Node.DOCUMENT_FRAGMENT_NODE)){
             s += Sarissa.getText(node, true);
         };
     };
