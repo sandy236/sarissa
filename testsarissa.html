@@ -29,7 +29,7 @@ div.placeholder{border:1px solid black;}
     	// append testcase section
         var placeHolder = document.createElement("div");
         placeHolder.className = "placeholder";
-		placeHolder.appendChild(getLink("#"+name, null, true));
+	placeHolder.appendChild(getLink("#"+name, null, true));
         var header = document.createElement("h3");
         header.appendChild(document.createTextNode(name+" Results"));
         placeHolder.appendChild(header);
@@ -52,7 +52,9 @@ div.placeholder{border:1px solid black;}
 </head>
 	<body>
 		<h1>Sarissa Unit Tests</h1>
-		<button onclick="runTestCases()">Run Testcases</button>
+		<button onclick="alert('window.DOMParser'+window.DOMParser)">Test</button>
+		<button onclick="alert('XMLDocument.loadXML = '+XMLDocument.loadXML)">Test</button>
+                <button onclick="runTestCases()">Run Testcases</button>
 		<button onclick="alert(document.body.innerHTML)">markup</button>
         <br />
         <fieldset>

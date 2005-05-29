@@ -45,10 +45,6 @@ function SarissaTestCase() {
 		this.assert(Sarissa.getDomDocument("http://foo.bar/","foo", null));
     };
     
-    /** Test the <code>Sarissa.getXmlHttpRequest()</code> method */
-    this.testGetXmlHttpRequest = function(){
-		this.assert(Sarissa.getXmlHttpRequest());
-    };
     
     /** Test the <code>Sarissa.serialize()</code> method */
     this.testSerialize = function(){
@@ -94,7 +90,7 @@ function SarissaTestCase() {
         /** Test the <code>Sarissa.getParseErrorText()</code> */
     this.testGetText = function(){
         var oDom = Sarissa.getDomDocument("","foo", null);
-        oDom.loadXML("<root><element>hfyrhy 5h yf</element>gfdsgf</root>");
+        oDom.loadXML("<root><element>hfyrhy <![CDATA[5h ]]>yf</element>gfdsgf</root>");
         this.assertEquals(Sarissa.getText(oDom.documentElement, false), "gfdsgf");
         this.assertEquals(Sarissa.getText(oDom, true), "hfyrhy 5h yfgfdsgf");
     };
