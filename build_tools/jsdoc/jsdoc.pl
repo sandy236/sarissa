@@ -147,7 +147,9 @@ sub output_class_templates {
     
     # Note the class name for later, including classes that aren't defined
     # but are used for inheritance
-    @CLASSNAMES = sort { lc $a->{classname} cmp lc $b->{classname}} 
+    my %seen;
+    @CLASSNAMES =  sort { lc $a->{classname} cmp lc $b->{classname}} 
+    grep { !$seen{$_->{classname}}++ }
         (map {classname => $_} ,
         grep { not defined $CLASSES->{$_}->{constructor_vars}->{private} 
                 or $OPTIONS{PRIVATE} }
@@ -159,7 +161,6 @@ sub output_class_templates {
 
     @FILENAMES = map {filename => $_, mangledfilename => mangle($_)}, 
         sort {lc($a) cmp lc($b)} grep {length $_} keys %FILE_OVERVIEWS;
-    
     for (my $i = 0; $i < @CLASSNAMES; $i++){
         my $classname = $CLASSNAMES[$i]->{classname};
         next unless $$CLASSES{$classname};
@@ -310,7 +311,7 @@ sub output_index_and_help_templates {
 
     # Output the main index template
     &output_template(INDEX_TMPL, 'index.html', {  
-        DEFAULT_CLASSNAME   => $summary 
+        DEFAULT_CLASSNAME   =>  @FILENAMES > 1  
                                 ? 'overview-summary' 
                                 : $DEFAULT_CLASSNAME,
         multifile           => @FILENAMES > 1 });
@@ -352,6 +353,15 @@ sub output_classes_frames_templates {
 #
 sub output_overview_summaries {
     my ($summary) = @_;
+
+    my @overviews = map { 
+        name        =>  $_,
+        link        =>  &mangle("overview-summary-$_.html"),
+        overview    =>
+            get_summary(
+                $FILE_OVERVIEWS{$_}{fileoverview}[0] || '&nbsp;') 
+        }, sort {lc($a) cmp lc($b)}  keys(%FILE_OVERVIEWS);
+
     &output_template(OVERVIEW_TMPL, 'overview-summary.html', {  
         generic             => 1,
         project_name        => $OPTIONS{PROJECT_NAME},
@@ -359,14 +369,23 @@ sub output_overview_summaries {
         page_footer         => $OPTIONS{PAGE_FOOTER},
         ctime               => $TIME,
         project_summary     => $summary,
-        is_file_summary     => 0});
+        is_file_summary     => 0,
+        overviews           => \@overviews });
 
     for my $filename (keys %FILE_OVERVIEWS){
+        my @classes = grep {
+            ($$CLASSES{$_}->{constructor_vars}->{filename} || '') eq $filename
+        } keys %$CLASSES;
+        my @class_overviews = map { 
+            name        => $_, 
+            link        => "$_.html",
+            overview    => get_summary(
+                $CLASSES->{$_}->{constructor_vars}->{class}[0] || '&nbsp;')
+        },  @classes;
         my %overview = %{$FILE_OVERVIEWS{$filename}};
         my $src = delete $overview{src};
-        my $summary = keys(%overview) 
-            ? $overview{fileoverview}[0]
-            : "No overview generated for '$filename'";
+        my $summary =   $overview{fileoverview}[0] || 
+            "No overview generated for '$filename'";
         $summary .= "<BR/><BR/>";
         while (my ($name, $val) = each %overview){
             $summary .= &{$FILE_ATTRS_MAP{$name}}($val)
@@ -380,7 +399,8 @@ sub output_overview_summaries {
             page_footer         => $OPTIONS{PAGE_FOOTER},
             ctime               => $TIME,
             project_summary     => $summary,
-            is_file_summary     => 1});
+            is_file_summary     => 1,
+            overviews           => \@class_overviews });
     }
 
 }
@@ -1107,7 +1127,7 @@ sub fetch_args {
     my ($vars, $arg_list_ref) = @_;
     return unless $vars and $$arg_list_ref;
     my (@args, %used);
-    for my $arg (split /\W+/, ($$arg_list_ref =~ /\(([^)]*)/)[0]){
+    for my $arg (split /\W+(?<!\$)/, ($$arg_list_ref =~ /\(([^)]*)/)[0]){
         for (@{$vars->{param}}){
             my ($type, $link, $name, $value) = 
                 /(?:
@@ -1116,7 +1136,7 @@ sub fetch_args {
                         (?:\s+(\S+)\s*)?        # optional link
                     \})?
                     \s*
-                    (\w+)                       # parameter name
+                    (\$?\w+)                    # parameter name
                     (.*)                        # description
                 /x;
             next unless $name eq $arg;
@@ -1126,14 +1146,14 @@ sub fetch_args {
                 $link ||= "$type.html";
                 $type =  qq|<a href="$link">$type</a>| ;
             }
-            my $type_regex = qr{\b$arg\b};
+            my $type_regex = qr{\Q$arg\E\b};
             $$arg_list_ref =~ s/($type_regex)/&lt;$type&gt; $1/ if $type;
             push @args, { varname => $name, vardescrip => $value};
         }
     }
     for (@{$vars->{param}}){
         my ($type, $link, $name, $value) 
-            = /(?:\{\s*(\w+(?:\.\w+)*)(?:\s+(\S+)\s*)?\})?\s*(\w+)(.*)/;
+            = /(?:\{\s*(\w+(?:\.\w+)*)(?:\s+(\S+)\s*)?\})?\s*(\$?\w+)(.*)/;
         next if $used{$name};
         push @args, { varname => $name, vardescrip => $value };
     }

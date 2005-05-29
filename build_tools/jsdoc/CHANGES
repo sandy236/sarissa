@@ -1,4 +1,39 @@
-JSDOc 1.9.3
+JSDoc 1.9.4.2.1
+===============
+
+- Further fix for typed parameter names starting with a dollar sign
+
+JSDoc 1.9.4.2
+=============
+
+- Added ability to handle parameter names starting with a dollar sign
+
+JSDoc 1.9.4.1
+=============
+
+- Only use the first sentence for file and class summary on the 
+  overview pages
+
+- Add a non-breaking space in the overview summary tables when there is no
+  appropriate value to display
+
+JSDoc 1.9.4
+===========
+
+- If there are multiple source files documented, the index page defaults
+  to the overview summary for the main frame
+
+- Made JSDoc site link open in parent frame
+
+- Added overview and file summary tables (similar to package overview table
+  in JavaDoc)
+
+JSDoc 1.9.3.1
+=============
+
+- Fixed duplicate class-tree output
+
+JSDoc 1.9.3
 ===========
 
 - Added alpha release of XML and XMI output formats

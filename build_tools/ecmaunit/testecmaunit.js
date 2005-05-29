@@ -8,7 +8,7 @@
  *
  *****************************************************************************/
 
-// $Id: testecmaunit.js 4667 2004-05-27 09:53:14Z philikon $
+// $Id: testecmaunit.js 10147 2005-03-28 12:20:46Z guido $
 
 function TestTestCase() {
     this.name = 'TestTestCase';
@@ -21,31 +21,32 @@ function TestTestCase() {
 
     this.testAssert = function() {
         this.assert(true);
-	this.assert(false);
+	this.assertThrows(this.assert, undefined, this, false);
     };
         
     this.testAssertEquals = function() {
         this.assertEquals('foo', 'foo');
-	this.assertEquals('foo', 'bar');
+	this.assertThrows(this.assertEquals, undefined, this, 'foo', 'bar');
     };
 
     this.testAssertTrue = function() {
         this.assertTrue(1);
 	this.assertTrue('foo');
-	this.assertTrue(false);
+	this.assertThrows(this.assertTrue, undefined, this, false);
     };
 
     this.testAssertFalse = function() {
         this.assertFalse(0);
 	this.assertFalse('');
-	this.assertFalse(true);
+	this.assertThrows(this.assertFalse, undefined, this, true);
     };
 
     this.testAssertThrows = function() {
         this.assertThrows(function() {throw('foo')}, 'foo');
 	this.assertThrows(function() {throw(new Array(1,2))}, new Array(1,2));
 	this.assertThrows(function() {throw('bar')});
-	this.assertThrows(function() {}, 'baz');
+	this.assertThrows(this.assertThrows, undefined, this, 
+                            function() {}, 'baz');
     };
 
     this.tearDown = function() {
@@ -58,6 +59,7 @@ function TestTestCase() {
 TestTestCase.prototype = new TestCase;
 
 function TestTestCase2() {
+    /* an example unit test */
     this.name = 'TestTestCase2';
 
     this.setUp = function() {
