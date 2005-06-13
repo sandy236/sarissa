@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
- /**
+<!--
+/**
  * ====================================================================
  * About
  * ====================================================================
- * All XSLT Minesweeper
+ * Minesweeper
  * @version @sarissa.version@
- * @author: Copyright Sean Whalen
+ * @author: Copyright Sean Whalen, Manos Batsis
+ *
+ * This module is a port of the famous Minesweeper game in pure XSLT and JS
+ *
+ *	This stylesheet receives an XML list of XY values and builds an HTML table of button elements 
+ * from that data.  For example, A list of 100 XY points would become a 10 by 10 table.  
+ * The process uses the "make-board" template to loop through the vertical (Y-axis) points.  For each 
+ * "V" value, the template calls the "make-row" template, which does the actual work 
+ * of writing the HTML.  When the "make-row" routine finishes, the "make-board" template calls itself
+ * using the current V value, incremented by one, as a parameter. 
+ *
+ *	There are two different looping styles used.  The make-board template uses recursion, 
+ * and the make-row template uses a for-each loop.  With a more complicated xpath expression
+ * the make-board code could have gotten a distinct list of V values, and the used a for-each loop.
+ *
  * ====================================================================
  * Licence
  * ====================================================================

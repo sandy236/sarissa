@@ -6,7 +6,7 @@
         <a href="#overview">Oveview</a>
       </li>
       <li>
-        <a href="#ecmaunit">Test with ECMAUnit</a>
+        <a href="#ecmaunit">How to test Sarissa in your browser with ECMAUnit</a>
       </li>
       <li>
         <a href="#getxmldom">How to obtain a DOM Document Object</a>
@@ -57,8 +57,9 @@
            known as "AJAX" development. 
     </p>
     <p>
-           Supported browsers are Gecko based like Mozilla and Firefox, Internet Explorer 
-           and, last but not least, KHTML based browsers like Konqueror and Safari (no XSLT/XPath in these two yet). 
+           Supported browsers are Mozilla - Firefox and family, Internet Explorer with MSXML3.0 and up,  
+           Konqueror (KDE 3.3+ for sure), Safari (um, could use some help from Mac users here) and Opera.
+           Konq, Safari and Opera offer no XSLT/XPath scripting support AFAIK.
     </p>
     <p>
     	This document provides an overview of Sarissa along with examples of common tasks. 
@@ -79,7 +80,7 @@
       </p>
       <p>
 	  Gredits (People): Many thanks to Axel Hecht, Jonas Sicking, the folks at netscape.public.mozilla.* forums, Dimitre Novatchev, 
-	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson, Rob Flaherty, David Carlisle, Bryan Batchelder, R. Mark Volkmann. 
+	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson, Rob Flaherty, David Carlisle, Bryan Batchelder, R. Mark Volkmann. The Minesweeper game featured as a sample application was written by Sean Whalen, who is also the maintainer. 
 	  My deepest apologies to anyone I fail to mention; please send over an email if your name should be here.
 	  </p>
 	  <p>
@@ -104,7 +105,7 @@
     </div>
     <div class="section">
       <h3>
-        <a id="ecmaunit">Test with ECMAUnit</a>
+        <a id="ecmaunit">How to test Sarissa in your browser with ECMAUnit</a>
       </h3>
       <p>
        Sarissa tests are written using <a href="http://kupu.oscom.org/download/">ECMAUnit</a>, a unit testing framework for ECMAScript (a.k.a. JavaScript). You can test Sarissa against your browser <a href="../testsarissa.html">here</a>.
@@ -271,12 +272,12 @@ alert(Sarissa.serialize(oDomDoc));// show the file contents
       <p>
             You can also make a DOM Document "load" using an String
             variable with XML content. It's pretty simple using the
-            <code>loadXML</code> method:
+            <code>DOMParser</code> object:
          </p>
       <pre xml:space="preserve">
 var oDomDoc = Sarissa.getDomDocument();
 var xmlString = "&lt;root&gt;my xml!&lt;/root&gt;";
-oDomDoc.loadXML(xmlString);
+oDomDoc = (new DOMParser()).parseFromString(xmlString);
 alert(Sarissa.serialize(oDomDoc));
 </pre>
     </div>

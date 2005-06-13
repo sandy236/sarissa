@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 	<title>Sarissa test page</title>
 	<style type="text/css" rel="stylesheet">
@@ -43,8 +44,10 @@ div.placeholder{border:1px solid black;}
     	runTestCase(new SarissaTestCase());
         runTestCase(new XMLHttpRequestTestCase());
         runTestCase(new XMLSerializerTestCase());
+        runTestCase(new DOMParserTestCase());
     	runTestCase(new XMLDocumentTestCase());
     	runTestCase(new XMLElementTestCase());
+        document.getElementById("reportLink").setAttribute("href", "mailto:mbatsis@users.sf.net?subject=sarissa%20tests%20for%20"+(escape(navigator.userAgent))+"&body="+(escape(document.body.innerHTML)));
     };
     
 //]]>
@@ -52,10 +55,9 @@ div.placeholder{border:1px solid black;}
 </head>
 	<body>
 		<h1>Sarissa Unit Tests</h1>
-		<button onclick="alert('window.DOMParser'+window.DOMParser)">Test</button>
-		<button onclick="alert('XMLDocument.loadXML = '+XMLDocument.loadXML)">Test</button>
-                <button onclick="runTestCases()">Run Testcases</button>
-		<button onclick="alert(document.body.innerHTML)">markup</button>
+        <button onclick="runTestCases()">Run Testcases</button>
+        <br />
+        <a id="reportLink" href="javascript:alert('Run the tests first!')">Send Report via Email</a>
         <br />
         <fieldset>
             <legend>Parse error text:</legend>

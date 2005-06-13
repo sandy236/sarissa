@@ -1,5 +1,8 @@
 0.9.6
 	* Deprecated stuff as warned in 0.9.4 ;-)
+	* Big change: loadXML is no longer used, as there's no way to emulate it in Opera.
+	  So i just removed it directly; to load an XML string to a DOM, you have to use the 
+	  DOMParser object.
 	* Added Minesweeper as first sample application, original code kindly donated by
 	  Sean Whalen (now maintainer, welcome Sean!)
 	* Fixed Opera and Safari issues  thanks to Phil Endecott and Conrad Chu

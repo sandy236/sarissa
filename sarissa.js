@@ -229,7 +229,6 @@ if(_SARISSA_IS_IE){
     };
 }
 else{ /* end IE initialization, try to deal with real browsers now ;-) */
-
    if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
         if(window.XMLDocument){
             /**
@@ -306,25 +305,6 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 };
                 return oDoc;
             };
-
-            if(window.DOMParser && window.XMLDocument && !window.XMLDocument.loadXML){
-                /**
-                * <p>Parses the String given as parameter to build the document content
-                * for the object, exactly like IE's loadXML()</p>
-                * @argument strXML The XML String to load as the Document's childNodes
-                * @returns the old Document structure serialized as an XML String
-                */
-                XMLDocument.prototype.loadXML = function(strXML){
-                    Sarissa.__setReadyState__(this, 1);
-                    var sOldXML = Sarissa.serialize(this);
-                    var oDoc = (new DOMParser()).parseFromString(strXML, "text/xml");
-                    Sarissa.__setReadyState__(this, 2);
-                    Sarissa.copyChildNodes(oDoc, this);
-                    Sarissa.__setReadyState__(this, 3);
-                    Sarissa.__handleLoad__(this);
-                    return sOldXML;
-                };
-            };//if(window.DOMParser && !XMLDocument.loadXML)
         };//if(window.XMLDocument)
 
         /**
@@ -375,15 +355,36 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
 //==========================================
 // Common stuff
 //==========================================
+if(!window.DOMParser){
+    /** 
+    * DOMParser is a utility class, used to construct DOMDocuments from XML strings
+    * @constructor
+    */
+    DOMParser = function() {
+    };
+    /** 
+    * Construct a new DOM Document from the given XMLstring
+    * @param sXml the given XML string
+    * @param contentType the content type of the document the given string represents (one of text/xml, application/xml, application/xhtml+xml). 
+    * @return a new DOM Document from the given XML string
+    */
+    DOMParser.prototype.parseFromString = function(sXml, contentType){
+        var doc = Sarissa.getDomDocument();
+        doc.loadXML(sXml);
+        return doc;
+    };
+    
+};
+
 if(window.XMLHttpRequest){
     Sarissa.IS_ENABLED_XMLHTTP = true;
 }
-else if(SARISSA_IS_IE){
+else if(_SARISSA_IS_IE){
     /**
      * Emulate XMLHttpRequest
      * @constructor
      */
-    window.XMLHttpRequest = function() {
+    XMLHttpRequest = function() {
         return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
     };
     Sarissa.IS_ENABLED_XMLHTTP = true;

@@ -7,7 +7,7 @@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  *
  * This module contains unit tests for Sarissa that run using EcmaUnit by Guido Wesdorp and
- * Philipp von Weitershausen, see http http://kupu.oscom.org/download/ecmaunit-0.2.html
+ * Philipp von Weitershausen, see http http://kupu.oscom.org/download/ecmaunit-0.3.html
  * Thanks for the great work guys!
  *
  * ====================================================================
@@ -65,8 +65,7 @@ function SarissaTestCase() {
     
     /** Test the <code>Sarissa.getParseErrorText()</code> */
     this.testGetParseErrorTextError = function(){
-        var oDom = Sarissa.getDomDocument("","foo", null);
-        oDom.loadXML("<root><element>hfyrhy 5h yf<element></root>");
+        var oDom = (new DOMParser()).parseFromString("<root><element>hfy>rhy 5h yf<element></root>", "text/xml");
         document.getElementById("parseError").appendChild(document.createTextNode(Sarissa.getParseErrorText(oDom)));
         this.assert(Sarissa.getParseErrorText(oDom));
     };
@@ -87,12 +86,18 @@ function SarissaTestCase() {
         this.assertFalse(from.hasChildNodes());
     };
 
-        /** Test the <code>Sarissa.getParseErrorText()</code> */
+    /** Test the <code>Sarissa.getText()</code> */
+    this.testGetTextWithCdata = function(){
+        var oDom = (new DOMParser()).parseFromString("<root><element>this has <![CDATA[ CDATA ]]></element> and some more text</root>", "text/xml");
+        this.assertEquals(Sarissa.getText(oDom.documentElement, true), "this has  CDATA  and some more text");
+        this.assertEquals(Sarissa.getText(oDom, true), "this has  CDATA  and some more text");
+    };
+
+    /** Test the <code>Sarissa.getParseErrorText()</code> */
     this.testGetText = function(){
-        var oDom = Sarissa.getDomDocument("","foo", null);
-        oDom.loadXML("<root><element>hfyrhy <![CDATA[5h ]]>yf</element>gfdsgf</root>");
-        this.assertEquals(Sarissa.getText(oDom.documentElement, false), "gfdsgf");
-        this.assertEquals(Sarissa.getText(oDom, true), "hfyrhy 5h yfgfdsgf");
+        var oDom = (new DOMParser()).parseFromString("<root>This text<element> has no CDATA</element> in it</root>", "text/xml");
+        this.assertEquals(Sarissa.getText(oDom.documentElement, true), "This text has no CDATA in it");
+        this.assertEquals(Sarissa.getText(oDom, true), "This text has no CDATA in it");
     };
     
     this.testXmlize = function(){
@@ -128,12 +133,11 @@ XMLHttpRequestTestCase.prototype = new TestCase;
 
 /** @constructor */
 function XMLSerializerTestCase(){
-	/** @final */
+    /** @final */
     this.name = 'XMLSerializerTestCase';
 
     /** Test the serializeToString method */
     this.testSerializeToString = function(){
-        this.name = 'XMLSerializerTestCase';
         var serializer = new XMLSerializer();
         var oDoc = Sarissa.getDomDocument("","foo", null);
         // TODO: validate with a regexp 
@@ -142,9 +146,25 @@ function XMLSerializerTestCase(){
 };
 XMLSerializerTestCase.prototype = new TestCase;
 
+
+/** @constructor */
+function DOMParserTestCase(){
+    /** @final */
+    this.name = 'DOMParserTestCase';
+
+    /** Test the serializeToString method */
+    this.testParseFromString = function(){
+        var parser = new DOMParser();
+        var oDoc = parser.parseFromString("<root />", "text/xml");
+        // TODO: validate with a regexp 
+        this.assertEquals(oDoc.documentElement.tagName, "root");
+    };
+};
+DOMParserTestCase.prototype = new TestCase;
+
 /** Test the <code>XMLDocument.selectNodes()</code> method */
 testSelectNodes = function() {
-    this.xmlDoc.loadXML("<root/>");
+    this.xmlDoc = (new DOMParser()).parseFromString("<root/>");
     var nodeList = this.xmlDoc.selectNodes("*");
     this.assertEquals(nodeList.length, 1);
     this.assertEquals(nodeList.item(0), nodeList[0]);
@@ -152,7 +172,7 @@ testSelectNodes = function() {
 
 /** Test the <code>XMLDocument.selectSingleNode()</code> method */
 testSelectSingleNode = function() {
-    this.xmlDoc.loadXML("<root/>");
+    this.xmlDoc = (new DOMParser()).parseFromString("<root/>");
     var node = this.xmlDoc.selectSingleNode("*");
     this.assert(node);
     this.assertEquals(node.tagName, "root");
@@ -161,36 +181,31 @@ testSelectSingleNode = function() {
 var isXmlDocumentAsyncLoadOK = false;
 /** @constructor */
 function XMLDocumentTestCase() {
-	/** @final */
-	this.name = 'XMLDocumentTestCase';
-	
-	this.xmlDoc = null;
-	
-	this.setUp = function() {
-        this.xmlDoc = Sarissa.getDomDocument();
-	};
-    
-    
-    /** Test the <code>XMLDocument.loadXML()</code> method */
-    this.testLoad = function() {
-        this.xmlDoc.async = false;
-        this.xmlDoc.load("test.xml");
-        this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
-    };
-    
-    /** Test the <code>XMLDocument.loadXML()</code> method */
-    this.testLoadXML = function() {
-    	this.xmlDoc.loadXML("<root/>");
-		this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
-    };
-    
-    
-    if(Sarissa.IS_ENABLED_SELECT_NODES){
-        /** Test the <code>XMLDocument.selectNodes()</code> method */
-        this.testSelectNodes = testSelectNodes
+	if(window.XMLDocument){
+	   /** @final */
+	   this.name = 'XMLDocumentTestCase';
+	   
+	   this.xmlDoc = null;
+	   
+	   this.setUp = function() {
+            this.xmlDoc = Sarissa.getDomDocument();
+	   };
         
-        /** Test the <code>XMLDocument.selectSingleNode()</code> method */
-        this.testSelectSingleNode = testSelectSingleNode;
+        
+        /** Test the <code>XMLDocument.load()</code> method */
+        this.testLoad = function() {
+            this.xmlDoc.async = false;
+            this.xmlDoc.load("test.xml");
+            this.assertEquals(this.xmlDoc.documentElement.tagName, "root");
+        };
+
+        if(Sarissa.IS_ENABLED_SELECT_NODES){
+            /** Test the <code>XMLDocument.selectNodes()</code> method */
+            this.testSelectNodes = testSelectNodes
+            
+            /** Test the <code>XMLDocument.selectSingleNode()</code> method */
+            this.testSelectSingleNode = testSelectSingleNode;
+        };
     };
     
 };
@@ -199,21 +214,23 @@ XMLDocumentTestCase.prototype = new TestCase;
 
 /** @constructor */
 function XMLElementTestCase() {
-	/** @final */
-	this.name = 'XMLElementTestCase';
-	
-	this.xmlDoc = null;
-	
-	this.setUp = function() {
-        this.xmlDoc = Sarissa.getDomDocument();
-	};
-
-    if(Sarissa.IS_ENABLED_SELECT_NODES){
-        /** Test the <code>XMLElement.selectNodes()</code> method */
-        this.testSelectNodes = testSelectNodes
-        
-        /** Test the <code>XMLElement.selectSingleNode()</code> method */
-        this.testSelectSingleNode = testSelectSingleNode;
+    if(window.XMLElement){
+	   /** @final */
+	   this.name = 'XMLElementTestCase';
+	   
+	   this.xmlDoc = null;
+	   
+	   this.setUp = function() {
+            this.xmlDoc = Sarissa.getDomDocument();
+	   };
+    
+        if(Sarissa.IS_ENABLED_SELECT_NODES){
+            /** Test the <code>XMLElement.selectNodes()</code> method */
+            this.testSelectNodes = testSelectNodes
+            
+            /** Test the <code>XMLElement.selectSingleNode()</code> method */
+            this.testSelectSingleNode = testSelectSingleNode;
+        };
     };
 };
 XMLElementTestCase.prototype = new TestCase;
