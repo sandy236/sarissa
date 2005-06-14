@@ -502,14 +502,17 @@ Sarissa.clearChildNodes = function(oNode) {
     };
 };
 /**
- * <p> Replaces the childNodes of the toDoc object with the childNodes of
- * the fromDoc object</p>
- * <p> <b>Note:</b> The second object's original content is deleted before the copy operation</p>
+ * <p> Copies the childNodes of nodeFrom to nodeTo</p>
+ * <p> <b>Note:</b> The second object's original content is deleted before 
+ * the copy operation, unless you supply a true third parameter</p>
  * @argument nodeFrom the Node to copy the childNodes from
  * @argument nodeTo the Node to copy the childNodes to
+ * @argument bPreserveExisting whether to preserve the original content of nodeTo, default is false
  */
-Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
-    Sarissa.clearChildNodes(nodeTo);
+Sarissa.copyChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
+    if(!bPreserveExisting){
+        Sarissa.clearChildNodes(nodeTo);
+    };
     var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
     var nodes = nodeFrom.childNodes;
     if(typeof(ownerDoc.importNode) == "function"){
@@ -522,6 +525,38 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo) {
             nodeTo.appendChild(nodes[i].cloneNode(true));
         };
     };
+};
+
+/**
+ * <p> Moves the childNodes of nodeFrom to nodeTo</p>
+ * <p> <b>Note:</b> The second object's original content is deleted before 
+ * the move operation, unless you supply a true third parameter</p>
+ * @argument nodeFrom the Node to copy the childNodes from
+ * @argument nodeTo the Node to copy the childNodes to
+ * @argument bPreserveExisting whether to preserve the original content of nodeTo, default is false
+ */
+Sarissa.moveChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
+    if(!bPreserveExisting){
+        Sarissa.clearChildNodes(nodeTo);
+    };
+    
+    var nodes = nodeFrom.childNodes;
+    if(nodeFrom.ownerDocument == nodeTo.ownerDocument){
+        nodeTo.appendChild(nodes[i]);
+    }else{
+        var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
+        if(typeof(ownerDoc.importNode) == "function"){
+            for(var i=0;i < nodes.length;i++) {
+                nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
+            };
+        }
+        else{
+            for(var i=0;i < nodes.length;i++) {
+                nodeTo.appendChild(nodes[i].cloneNode(true));
+            };
+        };
+    };
+    Sarissa.clearChildNodes(nodeFrom);
 };
 
 /** 

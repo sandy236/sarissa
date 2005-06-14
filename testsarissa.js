@@ -79,6 +79,15 @@ function SarissaTestCase() {
         this.assertEquals(from.documentElement.tagName, to.documentElement.tagName);
     };
     
+    /** Test the <code>Sarissa.moveChildNodes()</code> method */
+    this.testMoveChildNodes = function(){
+        var from = (new DOMParser()).parseFromString("<root><elem/><elem/><elem/><elem/></root>", "text/xml");
+        var to = Sarissa.getDomDocument("","bar", null);
+        Sarissa.moveChildNodes(from.documentElement, to.documentElement);
+        this.assertEquals(to.getElementsByTagName("elem").length, 4);
+        this.assertEquals(from.getElementsByTagName("elem").length, 0);
+    };
+    
     /** Test the <code>Sarissa.clearChildNodes()</code> method */
     this.testClearChildNodes = function(){
         var from = Sarissa.getDomDocument("","foo", null);

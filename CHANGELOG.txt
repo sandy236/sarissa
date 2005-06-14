@@ -6,7 +6,8 @@
 	* Added Minesweeper as first sample application, original code kindly donated by
 	  Sean Whalen (now maintainer, welcome Sean!)
 	* Fixed Opera and Safari issues  thanks to Phil Endecott and Conrad Chu
-	* Fixt Sarissa.getText bug (ignored CDATA) thanks to Noah Bast
+	* Fixed Sarissa.getText bug (ignored CDATA) thanks to Noah Bast
+	* Added Sarissa.moveChildNodes and a third optional parameter to Sarissa.copyChildNodes (preserved old behavior by default)
 	* Upgraded JSDoc and ECMAUnit
 
 0.9.5.2 
