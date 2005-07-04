@@ -65,7 +65,9 @@ function SarissaTestCase() {
     
     /** Test the <code>Sarissa.getParseErrorText()</code> */
     this.testGetParseErrorTextError = function(){
-        var oDom = (new DOMParser()).parseFromString("<root><element>hfy>rhy 5h yf<element></root>", "text/xml");
+        var oDom = Sarissa.getDomDocument();
+        oDom.async = false;
+        oDom.load("test-bad.xml");
         document.getElementById("parseError").appendChild(document.createTextNode(Sarissa.getParseErrorText(oDom)));
         this.assert(Sarissa.getParseErrorText(oDom));
     };
@@ -81,7 +83,10 @@ function SarissaTestCase() {
     
     /** Test the <code>Sarissa.moveChildNodes()</code> method */
     this.testMoveChildNodes = function(){
-        var from = (new DOMParser()).parseFromString("<root><elem/><elem/><elem/><elem/></root>", "text/xml");
+        var from = Sarissa.getDomDocument("","root", null);
+        for(i=0;i<4;i++){
+            from.documentElement.appendChild(from.createElement("elem"));
+        };
         var to = Sarissa.getDomDocument("","bar", null);
         Sarissa.moveChildNodes(from.documentElement, to.documentElement);
         this.assertEquals(to.getElementsByTagName("elem").length, 4);
@@ -95,16 +100,26 @@ function SarissaTestCase() {
         this.assertFalse(from.hasChildNodes());
     };
 
-    /** Test the <code>Sarissa.getText()</code> */
+    /** Test the <code>Sarissa.getText()</code> 
     this.testGetTextWithCdata = function(){
-        var oDom = (new DOMParser()).parseFromString("<root><element>this has <![CDATA[ CDATA ]]></element> and some more text</root>", "text/xml");
-        this.assertEquals(Sarissa.getText(oDom.documentElement, true), "this has  CDATA  and some more text");
-        this.assertEquals(Sarissa.getText(oDom, true), "this has  CDATA  and some more text");
-    };
+        var oDom = Sarissa.getDomDocument("", "root", null);
+        oDom.documentElement.appendChild(document.createTextNode("This text"));
+        var elem = document.createElement("element");
+        elem.appendChild(document.createCDATASection(" has CDATA"));
+        oDom.documentElement.appendChild(elem);
+        oDom.documentElement.appendChild(document.createTextNode(" in it"));
+        this.assertEquals(Sarissa.getText(oDom.documentElement, true), "This text has CDATA in it");
+        this.assertEquals(Sarissa.getText(oDom, true), "This text has CDATA in it");
+    };*/
 
     /** Test the <code>Sarissa.getParseErrorText()</code> */
     this.testGetText = function(){
-        var oDom = (new DOMParser()).parseFromString("<root>This text<element> has no CDATA</element> in it</root>", "text/xml");
+        var oDom = Sarissa.getDomDocument("", "root", null);
+        oDom.documentElement.appendChild(document.createTextNode("This text"));
+        var elem = document.createElement("element");
+        elem.appendChild(document.createTextNode(" has no CDATA"));
+        oDom.documentElement.appendChild(elem);
+        oDom.documentElement.appendChild(document.createTextNode(" in it"));
         this.assertEquals(Sarissa.getText(oDom.documentElement, true), "This text has no CDATA in it");
         this.assertEquals(Sarissa.getText(oDom, true), "This text has no CDATA in it");
     };
@@ -181,7 +196,7 @@ testSelectNodes = function() {
 
 /** Test the <code>XMLDocument.selectSingleNode()</code> method */
 testSelectSingleNode = function() {
-    this.xmlDoc = (new DOMParser()).parseFromString("<root/>");
+    this.xmlDoc = Sarissa.getDomDocument("", "root", null);
     var node = this.xmlDoc.selectSingleNode("*");
     this.assert(node);
     this.assertEquals(node.tagName, "root");

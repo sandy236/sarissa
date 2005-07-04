@@ -497,7 +497,8 @@ Sarissa.stripTags = function (s) {
  * @argument oNode the Node to empty
  */
 Sarissa.clearChildNodes = function(oNode) {
-    while(oNode.hasChildNodes()){
+    // need to also check for firstChild due to opera 8 bug
+    while(oNode.hasChildNodes() && oNode.firstChild){{
         oNode.removeChild(oNode.firstChild);
     };
 };
@@ -515,7 +516,7 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
     };
     var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
     var nodes = nodeFrom.childNodes;
-    if(typeof(ownerDoc.importNode) == "function"){
+    if(ownerDoc.importNode && (!_SARISSA_IS_IE)) {
         for(var i=0;i < nodes.length;i++) {
             nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
         };
@@ -541,11 +542,12 @@ Sarissa.moveChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
     };
     
     var nodes = nodeFrom.childNodes;
+    // if within the same doc, just move, else copy and delete
     if(nodeFrom.ownerDocument == nodeTo.ownerDocument){
         nodeTo.appendChild(nodes[i]);
     }else{
         var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
-        if(typeof(ownerDoc.importNode) == "function"){
+         if(ownerDoc.importNode && (!_SARISSA_IS_IE)) {
             for(var i=0;i < nodes.length;i++) {
                 nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
             };
@@ -555,8 +557,9 @@ Sarissa.moveChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
                 nodeTo.appendChild(nodes[i].cloneNode(true));
             };
         };
+        Sarissa.clearChildNodes(nodeFrom);
     };
-    Sarissa.clearChildNodes(nodeFrom);
+    
 };
 
 /** 

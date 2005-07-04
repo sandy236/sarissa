@@ -277,9 +277,10 @@ alert(Sarissa.serialize(oDomDoc));// show the file contents
       <pre xml:space="preserve">
 var oDomDoc = Sarissa.getDomDocument();
 var xmlString = "&lt;root&gt;my xml!&lt;/root&gt;";
-oDomDoc = (new DOMParser()).parseFromString(xmlString);
+oDomDoc = (new DOMParser()).parseFromString(xmlString, "text/xml");
 alert(Sarissa.serialize(oDomDoc));
 </pre>
+  <p>Unforunatelly, that wont work in Safari.</p>      
     </div>
     <div class="section">
       <h3>
@@ -342,7 +343,7 @@ var xslStr = "&lt;?xml version='1.0' encoding='UTF-8'?&gt;"+
     	"&lt;xsl:template match='/'&gt;&lt;p class='test' title='{$title}'&gt;test&lt;/p&gt;"+
         "&lt;/xsl:template&gt;&lt;xsl:template match='@*'&gt;"+
     	"&lt;/xsl:template&gt;&lt;/xsl:stylesheet&gt;";
-xslDoc.loadXML(xslStr);
+xslDoc = (new DOMParser()).parseFromString(xslStr, "text/xml");
 
 // make the stylesheet reusable by importing it in the 
 // XSLTProcessor
@@ -416,7 +417,7 @@ function testXpath()
         "&lt;xsl:output method='xml' version='1.0' encoding='UTF-8' indent='yes'/&gt;"+
         "&lt;xsl:template match='*'&gt;&lt;/xsl:template&gt;&lt;xsl:template match='@*'&gt;"+
         "&lt;/xsl:template&gt;&lt;/xsl:stylesheet&gt;";
-    xmlDoc.loadXML(xmlStr);
+        xmlDoc.(new DOMParser()).parseFromString(xmlStr, "text/xml");
 	
     <span style="bold">// the following two lines are needed for IE</span>
     xmlDoc.setProperty("SelectionNamespaces", "xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
