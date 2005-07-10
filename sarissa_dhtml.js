@@ -46,12 +46,12 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
                 Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
             };
         };
-	    xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
+        xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
         xmlhttp.send(null);
         oTargetElement.style.cursor = "auto";
     }
     catch(e){
-    	oTargetElement.style.cursor = "auto";
+        oTargetElement.style.cursor = "auto";
         throw e;
     };
 };
@@ -89,17 +89,17 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc) {
                 if(oNode.nodeType == Node.DOCUMENT_NODE || oNode.ownerDocument.documentElement == oNode) {
                     oTargetElement.innerHTML = Sarissa.serialize(oNode);
                 }
-                else if(oNode.nodeType == Node.ELEMENT_NODE) {
-                    oTargetElement.appendChild(oTargetElement.importNode(oNode, true));
+                else{
+                    oTargetElement.appendChild(oTargetElement.ownerDocument.importNode(oNode, true));
                 };
             };  
         };
     }
     catch(e) {
-	throw e;
+    	throw e;
     }
     finally{
-    	oTargetElement.style.cursor = "auto";
+        oTargetElement.style.cursor = "auto";
     };
 };
 
