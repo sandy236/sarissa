@@ -4,7 +4,7 @@
  * ====================================================================
  * Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs.
  * The library supports Gecko based browsers like Mozilla and Firefox,
- * Internet Explorer (5.5+ with MSXML3.0+), Konqueror, Safari and Opera
+ * Internet Explorer (5.5+ with MSXML3.0+), Konqueror, Safari and a little of Opera
  * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  * ====================================================================
@@ -13,7 +13,7 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 or
  * the GNU Lesser General Public License version 2.1 as published by
- * the Free Software Foundation (your choice of the two).
+ * the Free Software Foundation (your choice between the two).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,9 +58,8 @@ var _SARISSA_HAS_DOM_IMPLEMENTATION = document.implementation && true;
 var _SARISSA_HAS_DOM_CREATE_DOCUMENT = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.createDocument;
 var _SARISSA_HAS_DOM_FEATURE = _SARISSA_HAS_DOM_IMPLEMENTATION && document.implementation.hasFeature;
 var _SARISSA_IS_MOZ = _SARISSA_HAS_DOM_CREATE_DOCUMENT && _SARISSA_HAS_DOM_FEATURE;
-var _SARISSA_IS_SAFARI = navigator.userAgent.toLowerCase().indexOf("applewebkit") != -1 || navigator.vendor.indexOf("Apple") != -1;
+var _SARISSA_IS_SAFARI = (navigator.userAgent && navigator.vendor && (navigator.userAgent.toLowerCase().indexOf("applewebkit") != -1 || navigator.vendor.indexOf("Apple") != -1));
 var _SARISSA_IS_IE = document.all && window.ActiveXObject && navigator.userAgent.toLowerCase().indexOf("msie") > -1  && navigator.userAgent.toLowerCase().indexOf("opera") == -1;
-
 if(!window.Node || !window.Node.ELEMENT_NODE){
     var Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5,  ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
 };
@@ -216,7 +215,7 @@ if(_SARISSA_IS_IE){
     };
 }
 else{ /* end IE initialization, try to deal with real browsers now ;-) */
-   if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
+    if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
         if(window.XMLDocument){
             /**
             * <p>Emulate IE's onreadystatechange attribute</p>
@@ -292,9 +291,44 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 };
                 return oDoc;
             };
+            
+            /**
+             * <p>Ensures the document was loaded correctly, otherwise sets the
+             * parseError to -1 to indicate something went wrong. Internal use</p>
+             * @private
+             */
+            Sarissa.__handleLoad__ = function(oDoc){
+                if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
+                    oDoc.parseError = -1;
+                Sarissa.__setReadyState__(oDoc, 4);
+            };
+            /**
+            * <p>Attached by an event handler to the load event. Internal use.</p>
+            * @private
+            */
+            _sarissa_XMLDocument_onload = function(){
+                Sarissa.__handleLoad__(this);
+            };
+            /**
+             * <p>Sets the readyState property of the given DOM Document object.
+             * Internal use.</p>
+             * @private
+             * @argument oDoc the DOM Document object to fire the
+             *          readystatechange event
+             * @argument iReadyState the number to change the readystate property to
+             */
+            Sarissa.__setReadyState__ = function(oDoc, iReadyState){
+                oDoc.readyState = iReadyState;
+                if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
+                    oDoc.onreadystatechange();
+            };
+            Sarissa.getDomDocument = function(sUri, sName){
+                var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
+                oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
+                return oDoc;
+            };
         }//if(window.XMLDocument)
-        else if(window.Document && (!Document.load) && document.implementation && document.implementation.hasFeature && document.implementation.hasFeature('LS', '3.0')){
-            alert("not window.XMLDocument");
+        else if(document.implementation && document.implementation.hasFeature && document.implementation.hasFeature('LS', '3.0')){
             Document.prototype.async = true;
             Document.prototype.onreadystatechange = null;
             Document.prototype.parseError = 0;
@@ -330,46 +364,6 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 return document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
             };        
         };
-        if(!Sarissa.getDomDocument){
-            /**
-             * <p>Ensures the document was loaded correctly, otherwise sets the
-             * parseError to -1 to indicate something went wrong. Internal use</p>
-             * @private
-             */
-            Sarissa.__handleLoad__ = function(oDoc){
-                if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
-                    oDoc.parseError = -1;
-                Sarissa.__setReadyState__(oDoc, 4);
-            };
-            
-            /**
-            * <p>Attached by an event handler to the load event. Internal use.</p>
-            * @private
-            */
-            _sarissa_XMLDocument_onload = function(){
-                Sarissa.__handleLoad__(this);
-            };
-            
-            /**
-             * <p>Sets the readyState property of the given DOM Document object.
-             * Internal use.</p>
-             * @private
-             * @argument oDoc the DOM Document object to fire the
-             *          readystatechange event
-             * @argument iReadyState the number to change the readystate property to
-             */
-            Sarissa.__setReadyState__ = function(oDoc, iReadyState){
-                oDoc.readyState = iReadyState;
-                if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
-                    oDoc.onreadystatechange();
-            };
-            
-            Sarissa.getDomDocument = function(sUri, sName){
-                var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
-                oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
-                return oDoc;
-            };
-        };
         
     };//if(_SARISSA_HAS_DOM_CREATE_DOCUMENT)
 };
@@ -377,7 +371,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
 // Common stuff
 //==========================================
 if(!window.DOMParser){
-    /**
+    /*
     * DOMParser is a utility class, used to construct DOMDocuments from XML strings
     * @constructor
     */
@@ -455,17 +449,16 @@ if(!Sarissa.getParseErrorText){
      */
     Sarissa.getParseErrorText = function (oDoc){
         var parseErrorText = Sarissa.PARSED_OK;
-        if(oDoc.parseError != 0){
+        if(oDoc && oDoc.parseError && oDoc.parseError != 0){
             /*moz*/
             if(oDoc.documentElement.tagName == "parsererror"){
                 parseErrorText = oDoc.documentElement.firstChild.data;
                 parseErrorText += "\n" +  oDoc.documentElement.firstChild.nextSibling.firstChild.data;
             }/*konq*/
-            else if(oDoc.documentElement.tagName == "html"){
-                alert(Sarissa.serialize(oDoc.documentElement));
-                parseErrorText = Sarissa.getText(oDoc.documentElement.getElementsByTagName("h1")[0], false) + "\n";
+            else{
+                parseErrorText = Sarissa.getText(oDoc.documentElement);/*.getElementsByTagName("h1")[0], false) + "\n";
                 parseErrorText += Sarissa.getText(oDoc.documentElement.getElementsByTagName("body")[0], false) + "\n";
-                parseErrorText += Sarissa.getText(oDoc.documentElement.getElementsByTagName("pre")[0], false);
+                parseErrorText += Sarissa.getText(oDoc.documentElement.getElementsByTagName("pre")[0], false);*/
             };
         };
         return parseErrorText;
