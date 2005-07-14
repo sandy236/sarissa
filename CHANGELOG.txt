@@ -5,9 +5,10 @@
       Erik Arvidsson that suggested this could easily be wrapped to emulate 
       DOMParser. Many thanks to cedric for pointing out the above (between other things).
     * Removed XSLTProcessor.tranfrormToFragment (didn't work anyway)
-	* Added .load support for Opera thanks to cedric
-	* Added support for HTML nodes in Sarissa.serialize
-	* Made Safari sniffing more strict thanks to Phil Green who pointed out spoofing is easy 
+    * Added .load support for Opera thanks to cedric
+    * Added support for HTML nodes in Sarissa.serialize
+    * Tried to make Safari sniffing more strict thanks to Phil Green who pointed out spoofing is easy
+    * Fixed bugs thanks to feedback by Vincenzo Alcamo
 
 
 0.9.6

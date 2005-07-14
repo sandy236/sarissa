@@ -21,7 +21,7 @@
 			<fileset dir="${basedir}" includes="build_tools/ecmaunit/*.*" excludes="**/cvs/**"/>
 			<fileset dir="${src.dir}" includes="sarissa*.js" excludes="**/cvs/**"/>
 			<fileset dir="${src.dir}" includes="testsarissa.*" excludes="**/cvs/**"/>
-			<fileset dir="${src.dir}" includes="test.xml" excludes="**/cvs/**"/>
+			<fileset dir="${src.dir}" includes="test*.xml" excludes="**/cvs/**"/>
 			<fileset dir="${src.dir}" includes="CHANGELOG.txt" excludes="**/cvs/**"/>
 		</copy>
 		<copy todir="${dist.dir}/temp/doc">

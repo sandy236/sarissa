@@ -80,7 +80,10 @@
       </p>
       <p>
 	  Gredits (People): Many thanks to Axel Hecht, Jonas Sicking, the folks at netscape.public.mozilla.* forums, Dimitre Novatchev, 
-	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson, Rob Flaherty, David Carlisle, Bryan Batchelder, R. Mark Volkmann. The Minesweeper game featured as a sample application was written by Sean Whalen, who is also the maintainer. 
+	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson, Rob Flaherty, David Carlisle, Bryan Batchelder, R. Mark Volkmann, 
+	  Brad Koehn,  Phil Endecott, Conrad Chu, Sean Whalen,  Franky Braem,  Nate Steiner, Erik Arvidsson, cedric, Phil Green, Vincenzo Alcamo.
+	  
+	  
 	  My deepest apologies to anyone I fail to mention; please send over an email if your name should be here.
 	  </p>
 	  <p>
@@ -90,12 +93,14 @@
 	  <p>
 		  Sarissa was inspired by articles and code available on the web, most notably the 
 		  <a href="http://webfx.eae.net/dhtml/ieemu/">IE Emu Series</a> [webfx.eae.net] at webfx and  
-		  <a href="http://www.webreference.com/programming/javascript/domwrapper/">Cross-Browser DOM Wrapper article</a> [webreference.com].
+		  <a href="http://www.webreference.com/programming/javascript/domwrapper/">Cross-Browser DOM Wrapper article</a> [webreference.com]. 
+		  
 	  </p>
 	  <p>Projects using Sarissa:</p>
 	  <ul>
-	  	<li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a>
+	  	<li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a></li>
 	  	<li><a href="http://chezphil.org/anyterm/">Anyterm</a>, a web based terminal interface</li>
+		<li>The Minesweeper game featured as a sample application was written by Sean Whalen, who is also the maintainer.</li>
 	  </ul>
 	  <p>
 	  	Nearby, Dimitri Glazkov's XPath over HTML for MSIE (html-xpath) project at 

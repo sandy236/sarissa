@@ -208,14 +208,51 @@ if(_SARISSA_IS_IE){
      * @return The parameter value if reviously set by setParameter, null otherwise
      */
     XSLTProcessor.prototype.getParameter = function(nsURI, name){
-        if(this.paramsSet[""+nsURI] && this.paramsSet[""+nsURI][name])
-            return this.paramsSet[""+nsURI][name];
-        else
+        nsURI = nsURI || "";
+        if(nsURI in this.paramsSet && name in this.paramsSet[nsURI]){
+            return this.paramsSet[nsURI][name];
+        }else{
             return null;
+        };
     };
 }
 else{ /* end IE initialization, try to deal with real browsers now ;-) */
     if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
+        /**
+         * <p>Ensures the document was loaded correctly, otherwise sets the
+         * parseError to -1 to indicate something went wrong. Internal use</p>
+         * @private
+         */
+        Sarissa.__handleLoad__ = function(oDoc){
+            if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
+                oDoc.parseError = -1;
+            Sarissa.__setReadyState__(oDoc, 4);
+        };
+        /**
+        * <p>Attached by an event handler to the load event. Internal use.</p>
+        * @private
+        */
+        _sarissa_XMLDocument_onload = function(){
+            Sarissa.__handleLoad__(this);
+        };
+        /**
+         * <p>Sets the readyState property of the given DOM Document object.
+         * Internal use.</p>
+         * @private
+         * @argument oDoc the DOM Document object to fire the
+         *          readystatechange event
+         * @argument iReadyState the number to change the readystate property to
+         */
+        Sarissa.__setReadyState__ = function(oDoc, iReadyState){
+            oDoc.readyState = iReadyState;
+            if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
+                oDoc.onreadystatechange();
+        };
+        Sarissa.getDomDocument = function(sUri, sName){
+            var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
+            oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
+            return oDoc;
+        };
         if(window.XMLDocument){
             /**
             * <p>Emulate IE's onreadystatechange attribute</p>
@@ -240,16 +277,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
             // BTW the try>catch block is for 1.4; I haven't found a way to check if
             // the property is implemented without
             // causing an error and I dont want to use user agent stuff for that...
-            var _SARISSA_SYNC_NON_IMPLEMENTED = false;
-            try{
-                /**
-                * <p>Emulates IE's async property for Moz versions prior to 1.4.
-                * It controls whether loading of remote XML files works
-                * synchronously or asynchronously.</p>
-                */
-                XMLDocument.prototype.async = true;
-                _SARISSA_SYNC_NON_IMPLEMENTED = true;
-            }catch(e){/* trap */};
+            var _SARISSA_SYNC_NON_IMPLEMENTED = false;// ("async" in XMLDocument.prototype) ? false: true;
             /**
             * <p>Keeps a handle to the original load() method. Internal use and only
             * if Mozilla version is lower than 1.4</p>
@@ -292,41 +320,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 return oDoc;
             };
             
-            /**
-             * <p>Ensures the document was loaded correctly, otherwise sets the
-             * parseError to -1 to indicate something went wrong. Internal use</p>
-             * @private
-             */
-            Sarissa.__handleLoad__ = function(oDoc){
-                if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
-                    oDoc.parseError = -1;
-                Sarissa.__setReadyState__(oDoc, 4);
-            };
-            /**
-            * <p>Attached by an event handler to the load event. Internal use.</p>
-            * @private
-            */
-            _sarissa_XMLDocument_onload = function(){
-                Sarissa.__handleLoad__(this);
-            };
-            /**
-             * <p>Sets the readyState property of the given DOM Document object.
-             * Internal use.</p>
-             * @private
-             * @argument oDoc the DOM Document object to fire the
-             *          readystatechange event
-             * @argument iReadyState the number to change the readystate property to
-             */
-            Sarissa.__setReadyState__ = function(oDoc, iReadyState){
-                oDoc.readyState = iReadyState;
-                if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
-                    oDoc.onreadystatechange();
-            };
-            Sarissa.getDomDocument = function(sUri, sName){
-                var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
-                oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
-                return oDoc;
-            };
+            
         }//if(window.XMLDocument)
         else if(document.implementation && document.implementation.hasFeature && document.implementation.hasFeature('LS', '3.0')){
             Document.prototype.async = true;
@@ -364,7 +358,6 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 return document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
             };        
         };
-        
     };//if(_SARISSA_HAS_DOM_CREATE_DOCUMENT)
 };
 //==========================================
@@ -393,7 +386,7 @@ if(!window.DOMParser){
             xmlhttp.send(null);
             return xmlhttp.responseXML;
         };
-    }else if(Sarissa.getDomDocument && Sarissa.getDomDocument() && Sarissa.getDomDocument().loadXML){
+    }else if(Sarissa.getDomDocument && Sarissa.getDomDocument() && "loadXML" in Sarissa.getDomDocument()){
         DOMParser.prototype.parseFromString = function(sXml, contentType){
             var doc = Sarissa.getDomDocument();
             doc.loadXML(sXml);
@@ -472,8 +465,7 @@ Sarissa.getText = function(oNode, deep){
         var nodeType = node.nodeType;
         if(nodeType == Node.TEXT_NODE || nodeType == Node.CDATA_SECTION_NODE){
             s += node.data;
-        }
-        else if(deep == true
+        }else if(deep == true
                     && (nodeType == Node.ELEMENT_NODE
                         || nodeType == Node.DOCUMENT_NODE
                         || nodeType == Node.DOCUMENT_FRAGMENT_NODE)){
@@ -530,8 +522,8 @@ Sarissa.stripTags = function (s) {
  * @argument oNode the Node to empty
  */
 Sarissa.clearChildNodes = function(oNode) {
-    // need to also check for firstChild due to opera 8 bug
-    while(oNode.hasChildNodes() && oNode.firstChild){
+    // need to check for firstChild due to opera 8 bug with hasChildNodes
+    while(oNode.firstChild){
         oNode.removeChild(oNode.firstChild);
     };
 };
@@ -570,8 +562,8 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
  * the move operation, unless you supply a true third parameter</p>
  * @argument nodeFrom the Node to copy the childNodes from
  * @argument nodeTo the Node to copy the childNodes to
- * @argument bPreserveExisting whether to preserve the original content of nodeTo, default is false
- */
+ * @argument bPreserveExisting whether to preserve the original content of nodeTo, default is
+ */ 
 Sarissa.moveChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
     if((!nodeFrom) || (!nodeTo)){
         throw "Both source and destination nodes must be provided";
@@ -582,22 +574,22 @@ Sarissa.moveChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
     var nodes = nodeFrom.childNodes;
     // if within the same doc, just move, else copy and delete
     if(nodeFrom.ownerDocument == nodeTo.ownerDocument){
-        nodeTo.appendChild(nodes[i]);
+        while(nodeFrom.firstChild){
+            nodeTo.appendChild(nodeFrom.firstChild);
+        };
     }else{
         var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
-         if(ownerDoc.importNode && (!_SARISSA_IS_IE)) {
-            for(var i=0;i < nodes.length;i++) {
-                nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
-            };
-        }
-        else{
-            for(var i=0;i < nodes.length;i++) {
-                nodeTo.appendChild(nodes[i].cloneNode(true));
-            };
+        if(ownerDoc.importNode && (!_SARISSA_IS_IE)) {
+           for(var i=0;i < nodes.length;i++) {
+               nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
+           };
+        }else{
+           for(var i=0;i < nodes.length;i++) {
+               nodeTo.appendChild(nodes[i].cloneNode(true));
+           };
         };
         Sarissa.clearChildNodes(nodeFrom);
     };
-    
 };
 
 /** 

@@ -339,7 +339,7 @@ function HTMLReporter(outputelement, verbose) {
                 var exception = exceptions[i][2];
                 var raw = exceptions[i][3];
                 var div = this.document.createElement('div');
-                var lines = exception.split('\n');
+                var lines = exception.toString().split('\n');
                 var text = this.document.createTextNode(
                     testcase + '.' + attr + ', exception ');
                 div.appendChild(text);
