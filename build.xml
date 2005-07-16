@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE includes [
+  <!ENTITY jslint SYSTEM "build_tools/fulljslint.js">
+]>   
 <project name="sarissa" default="dist" basedir=".">
 	<description> Ant build file for Sarissa project (because building a javascript project with Ant
 		is cool) More info at http://sarissa.sf.net </description>
@@ -77,4 +80,64 @@
 			<fileset dir="${dist.dir}" includes="${ant.project.name}${sarissa.version}.zip"/>
 		</ftp>
 	</target>
-</project>
+ 
+    <target name="jslint">
+        <scriptdef name="jslint" language="javascript">
+            <element name="fileset" type="fileset"/>
+// include jslint, The JavaScript Verifier   
+&jslint;
+         
+// Our code now
+<![CDATA[
+// used to format JSLint's output for the command line
+function html2text( html ){
+         return html.replace( /<[^>]*>/g, '' ).
+            replace( /&quot;/g, '"' ).
+            replace( /&lt;/g, '<' ).
+            replace( /&amp;/g, '&' );
+}
+         
+function go(sScript){
+         jslint.laxLineEnd = false;
+         jslint.plusplus = true;
+         jslint.cap = false;
+         jslint.jscript = false;
+         jslint(sScript);
+         var r = jslint.report();
+         project.log(html2text(r));
+};
+
+var filesets = elements.get("fileset");
+project.log("Number of filesets = " + filesets.size());
+// iterate over given filesets
+for (i = 0; i < filesets.size(); ++i) {
+    var fileset = filesets.get(i);
+    var fileSetBaseDir = fileset.getDir(project);
+    project.log("Processing fileset " + i + ", basedir = " + fileSetBaseDir);
+    var directoryScanner = fileset.getDirectoryScanner(project);
+    var filePaths = directoryScanner.getIncludedFiles();
+    // iterate over files in current fileset
+    for(i=0; i < filePaths.length; i++){
+        var file = new java.io.File(fileSetBaseDir, filePaths[i]);
+        project.log("\nProcessing: "+file.getAbsolutePath());
+        var bufferedReader = new java.io.BufferedReader(new java.io.FileReader(file));
+        var sScript = "";
+        while ((line = bufferedReader.readLine())){
+            sScript += (line + "\n");
+        };
+        
+        // feed jslint   
+        go(sScript);
+    };
+};
+            
+]]>   
+        </scriptdef>
+     
+        <jslint>
+            <fileset dir="${src.dir}">
+                <include name="*js"/>
+             </fileset>
+         </jslint>   
+    </target>   
+ </project>
