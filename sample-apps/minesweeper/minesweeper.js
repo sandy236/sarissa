@@ -186,7 +186,7 @@ function loadBoard() {
     jDictionary = new Object ();
     var xmlDocument =  Sarissa.getDomDocument();
     var xmlString = "<SweeperMap></SweeperMap>";
-    xmlDocument.loadXML(xmlString);
+    xmlDocument.(new DOMParser()).parseFromString(xmlString, "text/xml");
     var ele = xmlDocument.createElement('range'); 
     ele.setAttribute('hMax', hMax);
     ele.setAttribute('vMax', vMax);

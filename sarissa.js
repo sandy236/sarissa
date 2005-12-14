@@ -110,18 +110,25 @@ if(_SARISSA_IS_IE){
     // see non-IE version
     Sarissa.getDomDocument = function(sUri, sName){
         var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
-        // if a root tag name was provided, we need to load it in the DOM
-        // object
+        // if a root tag name was provided, we need to load it in the DOM object
         if (sName){
-            // if needed, create an artifical namespace prefix the way Moz
-            // does
-            if (sUri){
-                oDoc.loadXML("<a" + _sarissa_iNsCounter + ":" + sName + " xmlns:a" + _sarissa_iNsCounter + "=\"" + sUri + "\" />");
-                // don't use the same prefix again
-                ++_sarissa_iNsCounter;
-            }
-            else
-                oDoc.loadXML("<" + sName + "/>");
+            // create an artifical namespace prefix 
+            // or reuse existing prefix if applicable
+            var prefix = "";
+            if(sUri){
+                if(sName.indexOf(":") > 1){
+                    prefix = sName.substring(0, sName.indexOf(":"));
+                    sName = sName.substring(sName.indexOf(":"));
+                }else{
+                    prefix = "a" + (_sarissa_iNsCounter++);
+                };
+            };
+            // use namespaces if a namespace URI exists
+            if(sUri){
+                oDoc.loadXML('<' + prefix+':'+sName + " xmlns:" + prefix + "=\"" + sUri + "\"" + " />");
+            } else {
+                oDoc.loadXML('<' + sName + " />");
+            };
         };
         return oDoc;
     };
@@ -188,7 +195,7 @@ if(_SARISSA_IS_IE){
      * @argument value The new parameter value
      */
     XSLTProcessor.prototype.setParameter = function(nsURI, name, value){
-        /* nsURI is optional but cannot be null */
+            /* nsURI is optional but cannot be null */
         if(nsURI){
             this.processor.addParameter(name, value, nsURI);
         }else{
@@ -215,8 +222,7 @@ if(_SARISSA_IS_IE){
             return null;
         };
     };
-}
-else{ /* end IE initialization, try to deal with real browsers now ;-) */
+}else{ /* end IE initialization, try to deal with real browsers now ;-) */
     if(_SARISSA_HAS_DOM_CREATE_DOCUMENT){
         /**
          * <p>Ensures the document was loaded correctly, otherwise sets the
@@ -249,7 +255,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 oDoc.onreadystatechange();
         };
         Sarissa.getDomDocument = function(sUri, sName){
-            var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
+            var oDoc = document.implementation.createDocument(sUri?sUri:null, sName?sName:null, null);
             oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
             return oDoc;
         };
@@ -263,6 +269,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
             * <ul><li>1 == LOADING,</li>
             * <li>2 == LOADED,</li>
             * <li>3 == INTERACTIVE,</li>
+       
             * <li>4 == COMPLETED</li></ul>
             */
             XMLDocument.prototype.readyState = 0;
@@ -304,8 +311,7 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                         Sarissa.__setReadyState__(this, 2);
                         Sarissa.copyChildNodes(tmp.responseXML, this);
                         Sarissa.__setReadyState__(this, 3);
-                    }
-                    else {
+                    }else{
                         this._sarissa_load(sURI);
                     };
                 }
@@ -320,9 +326,8 @@ else{ /* end IE initialization, try to deal with real browsers now ;-) */
                 return oDoc;
             };
             
-            
-        }//if(window.XMLDocument)
-        else if(document.implementation && document.implementation.hasFeature && document.implementation.hasFeature('LS', '3.0')){
+        //if(window.XMLDocument)   
+        }else if(document.implementation && document.implementation.hasFeature && document.implementation.hasFeature('LS', '3.0')){
             Document.prototype.async = true;
             Document.prototype.onreadystatechange = null;
             Document.prototype.parseError = 0;
@@ -382,7 +387,7 @@ if(!window.DOMParser){
                 throw "Cannot handle content type: \"" + contentType + "\"";
             };
             var xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("GET", "data:text/xml;charset=utf-8," + encodeURIComponent(str), false);
+            xmlhttp.open("GET", "data:text/xml;charset=utf-8," + encodeURIComponent(sXml), false);
             xmlhttp.send(null);
             return xmlhttp.responseXML;
         };
@@ -397,8 +402,7 @@ if(!window.DOMParser){
 
 if(window.XMLHttpRequest){
     Sarissa.IS_ENABLED_XMLHTTP = true;
-}
-else if(_SARISSA_IS_IE){
+}else if(_SARISSA_IS_IE){
     /**
      * Emulate XMLHttpRequest
      * @constructor
@@ -422,10 +426,11 @@ if(!window.document.importNode && _SARISSA_IS_IE){
         */
         window.document.importNode = function(oNode, bChildren){
             var importNode = document.createElement("div");
-            if(bChildren)
+            if(bChildren){
                 importNode.innerHTML = Sarissa.serialize(oNode);
-            else
+            }else{
                 importNode.innerHTML = Sarissa.serialize(oNode.cloneNode(false));
+            };
             return importNode.firstChild;
         };
         }catch(e){};
@@ -447,9 +452,8 @@ if(!Sarissa.getParseErrorText){
             if(oDoc.documentElement.tagName == "parsererror"){
                 parseErrorText = oDoc.documentElement.firstChild.data;
                 parseErrorText += "\n" +  oDoc.documentElement.firstChild.nextSibling.firstChild.data;
-            }/*konq*/
-            else{
-                parseErrorText = Sarissa.getText(oDoc.documentElement);/*.getElementsByTagName("h1")[0], false) + "\n";
+            }else{
+                parseErrorText = (oDoc && oDoc) ? Sarissa.getText(oDoc) : "Unknown Error, ";/*.getElementsByTagName("h1")[0], false) + "\n";
                 parseErrorText += Sarissa.getText(oDoc.documentElement.getElementsByTagName("body")[0], false) + "\n";
                 parseErrorText += Sarissa.getText(oDoc.documentElement.getElementsByTagName("pre")[0], false);*/
             };
@@ -544,12 +548,11 @@ Sarissa.copyChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
     };
     var ownerDoc = nodeTo.nodeType == Node.DOCUMENT_NODE ? nodeTo : nodeTo.ownerDocument;
     var nodes = nodeFrom.childNodes;
-    if(ownerDoc.importNode && (!_SARISSA_IS_IE)) {
+    if((!_SARISSA_IS_IE) && ownerDoc.importNode)  {
         for(var i=0;i < nodes.length;i++) {
             nodeTo.appendChild(ownerDoc.importNode(nodes[i], true));
         };
-    }
-    else{
+    }else{
         for(var i=0;i < nodes.length;i++) {
             nodeTo.appendChild(nodes[i].cloneNode(true));
         };

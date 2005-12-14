@@ -39,6 +39,10 @@ function SarissaTestCase() {
     this.testGetEmptyDomDocument = function(){
 		this.assert(Sarissa.getDomDocument());
     };
+    /** Test the <code>Sarissa.getDomDocument()</code> method */
+    this.testPrefixPreservationDomDocument = function(){
+		this.assertEquals(Sarissa.getDomDocument("someuri", "someprefix:test").documentElement.tagName, "someprefix:test");
+    };
     
     /** Test the <code>Sarissa.getDomDocument()</code> method */
     this.testGetDomDocument = function(){

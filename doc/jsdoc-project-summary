@@ -191,7 +191,7 @@ var xmlhttp = new XMLHttpRequest();
 xmlhttp.open("GET", "http://foo.org/someDocument.xml", false);
 // if needed set header information 
 // using the setRequestHeader method
-xmlhttp.send(null);
+xmlhttp.send('');
 alert(Sarissa.serialize(xmlhttp.responseXML));
 </pre>
       <p>
@@ -409,7 +409,9 @@ oDomDoc.setProperty("SelectionNamespaces",
 &lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"&gt;
 &lt;head&gt;
     &lt;title&gt;Untitled&lt;/title&gt;
-    &lt;script type="text/javascript" src="Sarissa_0-9b3.js"&gt;
+    &lt;script type="text/javascript" src="sarissa.js"&gt;
+    &lt;/script&gt;
+    &lt;script type="text/javascript" src="sarissa_ieemu_xpath.js"&gt;
     &lt;/script&gt;
     &lt;script type="text/javascript"&gt;
     &lt;!--
@@ -422,7 +424,7 @@ function testXpath()
         "&lt;xsl:output method='xml' version='1.0' encoding='UTF-8' indent='yes'/&gt;"+
         "&lt;xsl:template match='*'&gt;&lt;/xsl:template&gt;&lt;xsl:template match='@*'&gt;"+
         "&lt;/xsl:template&gt;&lt;/xsl:stylesheet&gt;";
-        xmlDoc.(new DOMParser()).parseFromString(xmlStr, "text/xml");
+        xmlDoc = (new DomParser()).parseFromString(xmlStr, "text/xml");
 	
     <span style="bold">// the following two lines are needed for IE</span>
     xmlDoc.setProperty("SelectionNamespaces", "xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");

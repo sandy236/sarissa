@@ -35,7 +35,7 @@
  * @param xsltproc (optional) the transformer to use on the returned
  *                  content before updating the target element with it
  */
-Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
+Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, skipCache) {
     try{
         oTargetElement.style.cursor = "wait";
         var xmlhttp = new XMLHttpRequest();
@@ -47,6 +47,10 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc) {
             };
         };
         xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
+        if (skipCache) {
+            var oldage = "Sat, 1 Jan 2000 00:00:00 GMT";
+            xmlhttp.setRequestHeader("If-Modified-Since", oldage);
+        };
         xmlhttp.send(null);
         oTargetElement.style.cursor = "auto";
     }
@@ -81,7 +85,7 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc) {
                 oNode = xsltproc.transformToDocument(oNode);
             };
             // be smart, maybe the user wants to display the source instead
-            if(oTargetElement.tagName.toLowerCase == "textarea" || oTargetElement.tagName.toLowerCase == "input") {
+            if(oTargetElement.tagName.toLowerCase() == "textarea" || oTargetElement.tagName.toLowerCase() == "input") {
                 oTargetElement.value = Sarissa.serialize(oNode);
             }
             else {
