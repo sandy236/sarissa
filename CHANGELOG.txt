@@ -19,10 +19,13 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 	* Fixed Sarissa.getDomDocument inconsistencies between Moz/IE thanks 
 	   to David Flanagan
 	* Added skipCache param in Sarissa.updateContentFromURI thanks to Paul Everitt
+	* Fixed Sarissa.getDomDocument in Safari thanks to Paul Everitt
 	* Fixed XPath example errors in documentation thanks to Phil Nash
 	* Fixed bug in Sarissa.updateContentFromNode() thanks to Don Hopkins
 	* Enchanced documentation to work around a moz bug (xmlhttp.send(null) 
 	  sends no content-length header) thanks to Mike Branstein
+	*Fixed bug where window.Node was overwritten in Moz when sarissa was evaluated
+	 dynamically (talk about extreme usecases) thanks to John Hax
 
 0.9.6.1
     * Fixed bug in Sarissa.updateContentFromNode thanks to Franky Braem
