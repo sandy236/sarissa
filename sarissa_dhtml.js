@@ -28,14 +28,19 @@
  *
  */
 /**
- * Update an element with response of a GET request on the given URL. 
+ * Update an element with response of a GET request on the given URL.  Passing a configured XSLT 
+ * processor will result in transforming and updating oNode before using it to update oTargetElement.
+ * You can also pass a callback function to be executed when the update is finished. The function will be called as 
+ * <code>functionName(oNode, oTargetElement);</code>
  * @addon
  * @param sFromUrl the URL to make the request to
  * @param oTargetElement the element to update
  * @param xsltproc (optional) the transformer to use on the returned
  *                  content before updating the target element with it
+ * @param callback (optional) a Function object to execute once the update is finished successfuly
+ * @param skipCache (optional) whether to skip any cache
  */
-Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, skipCache) {
+Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, callback, skipCache) {
     try{
         oTargetElement.style.cursor = "wait";
         var xmlhttp = new XMLHttpRequest();
@@ -43,7 +48,7 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, skip
         function sarissa_dhtml_loadHandler() {
             if (xmlhttp.readyState == 4) {
                 oTargetElement.style.cursor = "auto";
-                Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
+                Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc, callback);
             };
         };
         xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
@@ -61,12 +66,16 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, skip
 };
 
 /**
- * Update an element's content with the given DOM node.
+ * Update an element's content with the given DOM node. Passing a configured XSLT 
+ * processor will result in transforming and updating oNode before using it to update oTargetElement.
+ * You can also pass a callback function to be executed when the update is finished. The function will be called as 
+ * <code>functionName(oNode, oTargetElement);</code>
  * @addon
- * @param sFromUrl the URL to make the request to
+ * @param oNode the URL to make the request to
  * @param oTargetElement the element to update
  * @param xsltproc (optional) the transformer to use on the given 
  *                  DOM node before updating the target element with it
+ * @param callback (optional) a Function object to execute once the update is finished successfuly.
  */
 Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc) {
     try {
@@ -97,6 +106,9 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc) {
                     oTargetElement.appendChild(oTargetElement.ownerDocument.importNode(oNode, true));
                 };
             };  
+        };
+        if (callback) {
+            callback(oNode, oTargetElement);
         };
     }
     catch(e) {

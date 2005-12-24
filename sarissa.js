@@ -326,7 +326,7 @@ if(_SARISSA_IS_IE){
                 };
                 return oDoc;
             };
-        //if(window.XMLDocument)   
+        //if(window.XMLDocument) , now mainly for opera  
         }else if(document.implementation && document.implementation.hasFeature && document.implementation.hasFeature('LS', '3.0')){
             Document.prototype.async = true;
             Document.prototype.onreadystatechange = null;
@@ -362,7 +362,43 @@ if(_SARISSA_IS_IE){
             Sarissa.getDomDocument = function(sUri, sName){
                 return document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
             };        
-        }; 
+        }
+        else {
+			Sarissa.getDomDocument = function(sUri, sName){
+				var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
+                // attachb to the new object as we have no prototype to use, this is for safari
+				if(!oDoc.load) {
+    				oDoc.load = function(sURI) {
+    					var oldDoc = document.implementation.createDocument("", "", null);
+    					Sarissa.copyChildNodes(this, oDoc);
+    					this.parseError = 0;
+    					Sarissa.__setReadyState__(this, 1);
+    					if(this.async == false) {
+    						var tmp = new XMLHttpRequest();
+    						tmp.open("GET", sURI, false);
+    						tmp.send(null);
+    						Sarissa.__setReadyState__(this, 2);
+    						Sarissa.copyChildNodes(tmp.responseXML, oldDoc2);
+    						Sarissa.__setReadyState__(this, 3);
+    						Sarissa.__setReadyState__(this, 4);
+    					}
+    					else {
+    						var xmlhttp = new XMLHttpRequest();
+    						xmlhttp.open('GET', sURI, true);
+    						xmlhttp.onreadystatechange = function(){
+    						    if (xmlhttp.readyState == 4) {
+    							    Sarissa.copyChildNodes(xmlhttp.responseXML, oldDoc2);			
+    							};
+     							Sarissa.__setReadyState__(oldDoc2, xmlhttp.readyState);
+    						};
+    						xmlhttp.send(null);
+    					};
+    					return oldDoc;
+    				};
+				};
+				return oDoc;
+			};
+        };
     };//if(_SARISSA_HAS_DOM_CREATE_DOCUMENT)
 };
 //==========================================
