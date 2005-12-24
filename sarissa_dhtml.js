@@ -53,8 +53,8 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, call
         };
         xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
         if (skipCache) {
-            var oldage = "Sat, 1 Jan 2000 00:00:00 GMT";
-            xmlhttp.setRequestHeader("If-Modified-Since", oldage);
+             var oldage = "Sat, 1 Jan 2000 00:00:00 GMT";
+             xmlhttp.setRequestHeader("If-Modified-Since", oldage);
         };
         xmlhttp.send(null);
         oTargetElement.style.cursor = "auto";
