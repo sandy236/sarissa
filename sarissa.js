@@ -370,7 +370,7 @@ if(_SARISSA_IS_IE){
 				if(!oDoc.load) {
     				oDoc.load = function(sURI) {
     					var oldDoc = document.implementation.createDocument("", "", null);
-    					Sarissa.copyChildNodes(this, oDoc);
+    					Sarissa.copyChildNodes(this, oldDoc);
     					this.parseError = 0;
     					Sarissa.__setReadyState__(this, 1);
     					if(this.async == false) {
@@ -378,7 +378,7 @@ if(_SARISSA_IS_IE){
     						tmp.open("GET", sURI, false);
     						tmp.send(null);
     						Sarissa.__setReadyState__(this, 2);
-    						Sarissa.copyChildNodes(tmp.responseXML, oldDoc2);
+    						Sarissa.copyChildNodes(tmp.responseXML, oDoc);
     						Sarissa.__setReadyState__(this, 3);
     						Sarissa.__setReadyState__(this, 4);
     					}
@@ -387,9 +387,9 @@ if(_SARISSA_IS_IE){
     						xmlhttp.open('GET', sURI, true);
     						xmlhttp.onreadystatechange = function(){
     						    if (xmlhttp.readyState == 4) {
-    							    Sarissa.copyChildNodes(xmlhttp.responseXML, oldDoc2);			
+    							    Sarissa.copyChildNodes(xmlhttp.responseXML, oDoc);			
     							};
-     							Sarissa.__setReadyState__(oldDoc2, xmlhttp.readyState);
+     							Sarissa.__setReadyState__(oDoc, xmlhttp.readyState);
     						};
     						xmlhttp.send(null);
     					};
