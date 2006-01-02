@@ -360,12 +360,12 @@ if(_SARISSA_IS_IE){
             * @returns a new DOM Document
             */
             Sarissa.getDomDocument = function(sUri, sName){
-                return document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
+                return document.implementation.createDocument(sUri?sUri:null, sName?sName:null, null);
             };        
         }
         else {
 			Sarissa.getDomDocument = function(sUri, sName){
-				var oDoc = document.implementation.createDocument(sUri?sUri:"", sName?sName:"", null);
+				var oDoc = document.implementation.createDocument(sUri?sUri:null, sName?sName:null, null);
                 // attachb to the new object as we have no prototype to use, this is for safari
 				if(!oDoc.load) {
     				oDoc.load = function(sURI) {
