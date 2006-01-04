@@ -369,7 +369,7 @@ if(_SARISSA_IS_IE){
                 // attachb to the new object as we have no prototype to use, this is for safari
 				if(!oDoc.load) {
     				oDoc.load = function(sURI) {
-    					var oldDoc = document.implementation.createDocument("", "", null);
+    					var oldDoc = document.implementation.createDocument("", null, null);
     					Sarissa.copyChildNodes(this, oldDoc);
     					this.parseError = 0;
     					Sarissa.__setReadyState__(this, 1);
