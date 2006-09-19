@@ -129,8 +129,8 @@ my $before = q/
 
 my $after_re = qr/^\s*(?:$JSDOC_COMMENT)?\s*Foo.prototype.bar
                             \s*=\s*
-                            function\(\s*\)\s*\{\s*return\s*"Eep!";\s*\};\s*
-                            Foo\.prototype\.baz\s*=\s*"Ha!";\s*$/x;
+                            function\(\s*\)\s*\{[^\}]*}\s*;\s*
+                            Foo\.prototype\.baz\s*=\s*"[^"]+"\s*;\s*$/x;
 
 like(preprocess_source($before), $after_re, 
     'Unpack prototype block assignment');
@@ -229,16 +229,14 @@ $after_re = qr{
 
     /\*\*\s*
     \*\s*This\sis\smy\sfunction\s*\*/\s*
-    MyClass\.prototype\.myFunction\s*=\s*function\s*\(\s*\)\s*\{\s* 
-        return\s+null\s*;\s*\};\s*
+    MyClass\.prototype\.myFunction\s*=\s*function\s*\(\s*\)\s*\{ 
+        [^\}]*\}\s*;\s*
         
     /\*\*\s*
      \*\s*This\sis\sa\sprivate\sfunction\s*
       \@private\s*\*/\s*
     MyClass\.prototype\.myPrivateFunction\s*=\s*function\(\s*x\s*\)\s*
-    \{\s*
-        return\s+null\s*;\s*
-    \}\s*$
+    \{[^\}]*\}\s*$
 }x;
 
 like(preprocess_source($before), $after_re, 
@@ -274,20 +272,43 @@ like(preprocess_source($before), $after_re,
 
 $before = 'Shape.prototype.MyFunc = function(){return null;}';
 $after_re = qr{^\s*Shape\.prototype\.MyFunc\s*=
-                \s*function\(\)\{\s*return\s+null\s*;\s*\}}x;
+                \s*function\(\)\{[^\}]*\}}x;
 like(preprocess_source($before), $after_re,
     "Testing marking of void anonymous method");
 
 $before = "function x(){return null;}";
-$after_re = qr{\s*function\sx\(\)\s*\{\s*return\s+null\s*;\s*\}\s*$};
+$after_re = qr{\s*function\sx\(\)\s*\{[^\}]*\}\s*$};
 like(preprocess_source($before), $after_re,
     "Leave non-void methods without docstrings alone");
 
 $before = "/** My test function */\nfunction x(){return null;}";
 $after_re = qr{\s*/\*\*\s*My\stest\sfunction\s*\*/\s*
-                function\sx\(\)\s*\{\s*return\s+null\s*;\s*\}\s*$}x;
+                function\sx\(\)\s*\{[^\}]*\}\s*$}x;
 like(preprocess_source($before), $after_re,
     "Leave non-void methods with docstrings alone");
+
+reset_parser();
+$src = q#
+/**
+ * @constructor
+ */
+function MyClass(){
+    this.af = afunc;
+    this.bf = bfunc;
+    this.cf = cfunc;
+    function afunc(){}
+    function bfunc(){}
+    function cfunc(){}
+}
+#;
+$classes = parse_code_tree(\$src);
+ok(eq_set(
+        [ map { $_->{mapped_name} }
+            @{$classes->{MyClass}->{instance_methods}}],
+        ['af', 'bf', 'cf', 'afunc', 'bfunc', 'cfunc']),
+    "Ensure instance methods in constructor are correctly assigned");
+   
+
 
 reset_parser();
 $src = 'function MyFunction(){ return ""; }';
@@ -395,7 +416,6 @@ like(preprocess_source($before), $after_re,
 $before = 'MyClass.prototype.__defineSetter__("myProp", function(){return null;});';
 $after_re = qr{
    ^\s*MyClass\.prototype\.myProp\s*=\s*null\s*;\s*$}x;
-   #\s*function\s*\(\s*\)\s*\{\s*return\s+null\s*;\s*\}\s*;\s*$}x;
 
 like(deconstruct_getset($before), $after_re,
    "Testing behaviour of __defineSetter__");
@@ -458,6 +478,21 @@ $classes = parse_code_tree(\$src);
 ok(defined($classes->{MyClass}), 
     'A function must be upgraded to a class if the @base tag is used');
 
+#
+# Allow an anonymous function to be assigned to a global variable,
+# resulting in a new class
+#
+reset_parser();
+$src = '
+/**
+ * Some function
+ * @constructor
+ */
+var SomeClass = function(){ this.x = 2; }
+';
+$classes = parse_code_tree(\$src);
+ok(defined($classes->{SomeClass}),
+    "Allow anonymous function to be assigned to a global variable");
 
 #
 # Make sure that dynamically binding methods to a object at a later time
@@ -640,3 +675,5 @@ ok(defined($classes->{package}),
     'Super-package-classes must be recognized without the @addon tag');
 ok(defined($classes->{'package.MyClass'}),
     'Sub-package-classes must be recognized without the @addon tag');
+
+

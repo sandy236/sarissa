@@ -5,7 +5,7 @@
  * About
  * ====================================================================
  * Minesweeper
- * @version @sarissa.version@
+ * @version 0.9.6.1
  * @author: Copyright Sean Whalen, Manos Batsis
  *
  * This module is a port of the famous Minesweeper game in pure XSLT and JS
@@ -79,7 +79,7 @@
    <xsl:variable name="loopH" select="@h"/>
    <td>
     <input type="button" name="myButton" oncontextmenu="return false"
-     style="background-color:#88AABB; border: outset ridge; border-width: 4; width: 30;">
+     style="background-color:#88AABB; border-width: 4; width: 30;">
      <xsl:attribute name="id">
       <xsl:value-of select="$loopH"/>/<xsl:value-of select="$thisV"/>
      </xsl:attribute>

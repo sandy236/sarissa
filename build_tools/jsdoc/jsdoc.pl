@@ -21,22 +21,22 @@ use JavaScript::Syntax::HTML qw(to_html);
 
 
 use constant LOCATION           => dirname($0) . '/';
-use constant MAIN_TMPL          => LOCATION . "main.tmpl";
-use constant ALLCLASSES_TMPL    => LOCATION . 'allclasses-frame.tmpl';
-use constant ALLCLASSES_NOFRAME_TMPL    => LOCATION . 'allclasses-noframe.tmpl';
-use constant OVERVIEW_FRAME_TMPL        => LOCATION . 'overview-frame.tmpl';
-use constant TREE_TMPL          => LOCATION . 'overview-tree.tmpl';
-use constant OVERVIEW_TMPL      => LOCATION . 'overview-summary.tmpl';
-use constant INDEX_TMPL         => LOCATION . 'index.tmpl';
+use constant MAIN_TMPL          => "main.tmpl";
+use constant ALLCLASSES_TMPL    => 'allclasses-frame.tmpl';
+use constant ALLCLASSES_NOFRAME_TMPL    => 'allclasses-noframe.tmpl';
+use constant OVERVIEW_FRAME_TMPL        => 'overview-frame.tmpl';
+use constant TREE_TMPL          => 'overview-tree.tmpl';
+use constant OVERVIEW_TMPL      => 'overview-summary.tmpl';
+use constant INDEX_TMPL         => 'index.tmpl';
 use constant DEFAULT_DEST_DIR   => 'js_docs_out/';
 use constant STYLESHEET         => 'stylesheet.css';
-use constant HELP_TMPL          => LOCATION . 'help-doc.tmpl';
-use constant INDEX_ALL_TMPL     => LOCATION . 'index-all.tmpl';
-use constant CONSTANTS_TMPL     => LOCATION . 'constant-values.tmpl';
+use constant HELP_TMPL          => 'help-doc.tmpl';
+use constant INDEX_ALL_TMPL     => 'index-all.tmpl';
+use constant CONSTANTS_TMPL     => 'constant-values.tmpl';
 
 use vars qw/ $CLASSES $DEFAULT_CLASSNAME @CLASSNAMES @INDEX %TMPL_CACHE
             %CLASS_ATTRS_MAP %METHOD_ATTRS_MAP %FILE_ATTRS_MAP %OPTIONS 
-            @FILENAMES %FILE_OVERVIEWS $TIME/;
+            @FILENAMES %FILE_OVERVIEWS $TIME $CURRENT_CLASS /;
 
 #
 # Begin main execution
@@ -62,7 +62,9 @@ if (@ARGV < 1 || $OPTIONS{HELP} || !(@sources = &load_sources())){
 }
 
 # Parse the code tree
-&configure_parser(GLOBALS_NAME => $OPTIONS{GLOBALS_NAME});
+&configure_parser(
+    GLOBALS_NAME        => $OPTIONS{GLOBALS_NAME}, 
+    NO_LEXICAL_PRIVATES => $OPTIONS{NO_LEXICAL_PRIVATES});
 $CLASSES = &parse_code_tree(@sources);
 %FILE_OVERVIEWS = %{delete $CLASSES->{__FILES__}};
 die "Nothing to document, exiting\n" unless keys %{$CLASSES};
@@ -89,6 +91,11 @@ if ($OPTIONS{FORMAT} eq 'html'){
 #
 sub output_template {
     my ($tmplname, $outname, $params, $relaxed) = (@_);
+
+    $OPTIONS{TEMPLATEDIR} =~ s/(\S+)\/$/$1/;
+
+    $tmplname = $OPTIONS{TEMPLATEDIR} . "/$tmplname";
+    die "Template file '$tmplname' not found"  unless -e $tmplname;
   
     # Caching templates seems to improve performance quite a lot
     if (!$TMPL_CACHE{$tmplname}){
@@ -163,6 +170,7 @@ sub output_class_templates {
         sort {lc($a) cmp lc($b)} grep {length $_} keys %FILE_OVERVIEWS;
     for (my $i = 0; $i < @CLASSNAMES; $i++){
         my $classname = $CLASSNAMES[$i]->{classname};
+        $CURRENT_CLASS = $classname;
         next unless $$CLASSES{$classname};
 
         # Template Parameters
@@ -243,9 +251,14 @@ sub output_class_templates {
 #
 sub process_file_overviews {
     for my $filename (map{$_->{filename}} @FILENAMES){
-        format_vars($FILE_OVERVIEWS{$filename});
-        $FILE_OVERVIEWS{$filename} = 
+        my $overview = $FILE_OVERVIEWS{$filename};
+        my $src = $overview->{src};
+        $overview->{src} = '';
+        format_vars($overview);
+        $overview = 
             resolve_inner_links($FILE_OVERVIEWS{$filename});
+        $overview->{src} = $src;
+        $FILE_OVERVIEWS{$filename} = $overview;
     }
 }
 
@@ -253,7 +266,7 @@ sub process_file_overviews {
 # Output all the non-class template files
 #
 sub output_aux_templates(){
-   
+
     unless ($OPTIONS{LOGO} and -f $OPTIONS{LOGO} and -r $OPTIONS{LOGO}){
         $OPTIONS{LOGO} and warn "Can't read $OPTIONS{LOGO}";
         $OPTIONS{LOGO} = '';
@@ -272,7 +285,12 @@ sub output_aux_templates(){
     &output_index_and_help_templates($summary);
     &output_overview_summaries($summary);
     &output_const_summary();
-    copy (LOCATION . STYLESHEET, $OPTIONS{OUTPUT} . STYLESHEET);
+    my $stylesheet = LOCATION . STYLESHEET;
+    if ($OPTIONS{TEMPLATEDIR} ne LOCATION){
+        $stylesheet = $OPTIONS{TEMPLATEDIR} . '/' . STYLESHEET;
+        die "Stylesheet '$stylesheet' not found" unless -e $stylesheet;
+    }
+    copy ($stylesheet, $OPTIONS{OUTPUT} . STYLESHEET);
 }
 
 sub get_overall_summary {
@@ -376,12 +394,14 @@ sub output_overview_summaries {
         my @classes = grep {
             ($$CLASSES{$_}->{constructor_vars}->{filename} || '') eq $filename
         } keys %$CLASSES;
-        my @class_overviews = map { 
-            name        => $_, 
-            link        => "$_.html",
-            overview    => get_summary(
-                $CLASSES->{$_}->{constructor_vars}->{class}[0] || '&nbsp;')
-        },  @classes;
+        my @class_overviews = sort { lc($a->{name}) cmp lc($b->{name}) } 
+            map { 
+                name        => $_, 
+                link        => "$_.html",
+                overview    => get_summary(
+                    $CLASSES->{$_}->{constructor_vars}->{class}[0] || '&nbsp;')
+            },  grep { !$CLASSES->{$_}->{constructor_vars}->{private} 
+                || $OPTIONS{PRIVATE} } @classes;
         my %overview = %{$FILE_OVERVIEWS{$filename}};
         my $src = delete $overview{src};
         my $summary =   $overview{fileoverview}[0] || 
@@ -391,6 +411,20 @@ sub output_overview_summaries {
             $summary .= &{$FILE_ATTRS_MAP{$name}}($val)
                 if $FILE_ATTRS_MAP{$name};
         }
+        my @methods =  
+            map {
+                is_private      => $_->{is_private},
+                method_summary  => $_->{method_summary},
+                is_class_method => $_->{is_class_method},
+                method_anchor   => 
+                    sprintf('%s%s', $_->{is_class_method} ? '!s!' : '', 
+                        $_->{method_name}),
+                method_arguments=> $_->{method_arguments},
+                method_name     => $_->{method_name},
+                type            => $_->{type},
+                file_link       => $OPTIONS{GLOBALS_NAME} . ".html"
+            }, @{&map_methods($$CLASSES{$OPTIONS{GLOBALS_NAME}}, $filename)};
+
         &output_template(OVERVIEW_TMPL, "overview-summary-$filename.html", {
             generic             => 0,
             sourcecode          => $OPTIONS{NO_SRC} ? '' : &to_html($src),
@@ -400,6 +434,7 @@ sub output_overview_summaries {
             ctime               => $TIME,
             project_summary     => $summary,
             is_file_summary     => 1,
+            methods             => \@methods,
             overviews           => \@class_overviews });
     }
 
@@ -449,6 +484,24 @@ sub output_multiple_files_templates {
             ($$CLASSES{$_}->{constructor_vars}->{filename} || '') eq $fname
         } keys %$CLASSES;
 
+        #methods under GLOBAL (detached) class
+        my @methods;
+        for (my $i = 0; $i < @CLASSNAMES; $i++){
+            if($CLASSNAMES[$i]->{classname} eq $OPTIONS{GLOBALS_NAME}){
+                my $class = $$CLASSES{$CLASSNAMES[$i]->{classname}};
+                for my $method ( 
+                        sort {lc $a->{mapped_name} cmp lc $b->{mapped_name} }  
+                            @{$class->{class_methods}}){
+                    if(defined($fname) 
+                            && $fname eq $method->{vars}->{filename}){
+                        $method->{filename} = $fname;
+                        push(@methods, $method);
+                    }
+                }
+                last;
+            }
+        }
+		
         &output_template(ALLCLASSES_TMPL, 
             sprintf('overview-%s.html', $fname), {  
                 filename    => $fname, 
@@ -457,8 +510,9 @@ sub output_multiple_files_templates {
                                         target="classFrame">%s</a>', 
                                         mangle($fname), $fname)
                                 : $fname,
-                CLASSNAMES  => [map {classname => $_}, sort @classes] }); 
-
+                CLASSNAMES  => [map {classname => $_}, 
+                    grep { !$$CLASSES{$_}->{constructor_vars}->{private} 
+                        || $OPTIONS{PRIVATE} } sort @classes] }); 
     }
 }
 
@@ -487,6 +541,12 @@ sub build_class_tree {
             $base = "<a href='$base.html'>$base</a>" 
                 unless (!$OPTIONS{PRIVATE} 
                     && $$CLASSES{$base}->{constructor_vars}->{private});
+        } elsif ($class->{constructor_vars}->{base}){
+            if (my ($bcname, $url) = 
+                    $class->{constructor_vars}->{base}->[0] 
+                        =~ /^(\S+)\s(\S.*)$/){
+                $base = "<a href='$url'>$base</a>"; 
+            }
         }
         push @family, $base;
         $class = $$CLASSES{$class->{extends}};
@@ -525,6 +585,9 @@ sub show_usage(){
                         overview summary of the project 
 
     --no-sources        Don't include the source code view
+
+    --extensions        Provide a comma-separated list of file extensions
+                        to be considered as JavaScript source files
                         
     --package-naming    Use package-style naming (i.e. keep directory names
                         in the file path). This is useful if you have multiple
@@ -537,6 +600,12 @@ sub show_usage(){
     --format            Set the output format. The options are html, xml 
                         and xmi, defaulting to html. The others are currently
                         alpha software.
+
+    --template-dir      Provide another directory containing HTML templates
+
+    --no-lexical-privates   Ignore "private" variables and functions that are 
+                            lexically defined within constructors
+                        
     \n};
 
 }
@@ -546,6 +615,8 @@ sub show_usage(){
 #
 sub load_sources(){
     my (@filenames, @sources);
+    my $ext_re = sprintf('%s', 
+        join '|', split /\s*,\s*/, $OPTIONS{EXTENSIONS});
     for my $arg (@ARGV){
         if (-d $arg) {
             $arg =~ s/(.*[^\/])$/$1\//; 
@@ -556,7 +627,7 @@ sub load_sources(){
                         relname => $OPTIONS{PACKAGENAMING} 
                                 ? substr($_, length($arg))
                                 : (fileparse($_))[0] 
-                    } if ((-f and -r and /.+\.js$/i) && 
+                    } if ((-f and -r and /.+\.$ext_re$/oi) && 
                                 (/^\Q$arg\E[^\/]+$/ || $OPTIONS{RECURSIVE}))
                 }, 
                 no_chdir => 1 }, $arg);
@@ -616,21 +687,27 @@ sub get_summary {
 #
 # Set up all the instance and class methods for one template
 # PARAM: A reference to a class
+# PARAM: Optional filename, only maps methods for that file (used for GLOBAL)
 #
 sub map_methods{
-    my $class = shift;
+    my ($class, $fname) = @_;
     my @methods;
     for my $mtype (qw(instance_methods class_methods)){
         next unless $class->{$mtype};
+				
         for my $method ( 
             sort {lc $a->{mapped_name} cmp lc $b->{mapped_name} }  
                     @{$class->{$mtype}}){
+                next if $fname && $fname ne $method->{vars}->{filename};
                 &resolve_synonyms($method->{vars}); 
                 next if (!$OPTIONS{PRIVATE} && $method->{vars}->{private});
+				
                 $method->{vars}->{returns}[0] = 
                     $method->{vars}->{returns}[0] || $method->{vars}->{return};
+				
                 my @args = &fetch_args($method->{vars}, \$method->{argument_list});
                 @args = map { &format_vars($_); $_ } @args; 
+				
                 &format_vars($method->{vars});
                 my $desc = &resolve_inner_links($method->{description});
                 my $type = &map_return_type($method);
@@ -664,11 +741,11 @@ sub map_return_type {
     if (defined($method->{vars}->{type})){
         $name = $method->{vars}->{type}[0];
     } elsif (defined($method->{vars}->{returns}[0])){
-        if ($method->{vars}->{returns}[0] =~ s/\s*\{(\w+)(?:\s+([^}]+))?\}//){
+        if ($method->{vars}->{returns}[0] =~ s/\s*\{(\S+)(?:\s+([^}]+))?\}//){
             $name = $1;
             $link = $2;
         }
-         
+        $method->{vars}->{type} = [$name];
     }
     $name =~ s/^\s*(\S.*?)\s*$/$1/;
     if ($$CLASSES{$name} || $link){
@@ -690,6 +767,7 @@ sub map_fields {
         next unless $class->{$type};
         for (sort {lc $a->{field_name} cmp lc $b->{field_name} } 
                 @{$class->{$type}}){
+				
             &resolve_synonyms($_->{field_vars});
             next if (!$OPTIONS{PRIVATE} && $_->{field_vars}->{private});
             my $description = &resolve_inner_links($_->{field_description});
@@ -975,20 +1053,25 @@ sub parse_cmdline {
     $OPTIONS{LOGO} = '';
     $OPTIONS{GLOBALS_NAME} = 'GLOBALS';
     $OPTIONS{FORMAT} = 'html';
+    $OPTIONS{EXTENSIONS} = 'js';
+    $OPTIONS{TEMPLATEDIR} = LOCATION;
     GetOptions(
-        'private|p'         => \$OPTIONS{PRIVATE},
-        'directory|d=s'     => \$OPTIONS{OUTPUT},
-        'help|h'            => \$OPTIONS{HELP},
-        'recursive|r'       => \$OPTIONS{RECURSIVE},
-        'page-footer=s'     => \$OPTIONS{PAGE_FOOTER},
-        'project-name=s'    => \$OPTIONS{PROJECT_NAME},
-        'project-summary=s' => \$OPTIONS{PROJECT_SUMMARY},
-        'logo=s'            => \$OPTIONS{LOGO},
-        'globals-name=s'    => \$OPTIONS{GLOBALS_NAME},
-        'quiet|q'           => \$OPTIONS{QUIET},
-        'no-sources'        => \$OPTIONS{NO_SRC},
-        'package-naming'    => \$OPTIONS{PACKAGENAMING},
-        'format=s'          => \$OPTIONS{FORMAT});
+        'private|p'             => \$OPTIONS{PRIVATE},
+        'directory|d=s'         => \$OPTIONS{OUTPUT},
+        'help|h'                => \$OPTIONS{HELP},
+        'recursive|r'           => \$OPTIONS{RECURSIVE},
+        'page-footer=s'         => \$OPTIONS{PAGE_FOOTER},
+        'project-name=s'        => \$OPTIONS{PROJECT_NAME},
+        'project-summary=s'     => \$OPTIONS{PROJECT_SUMMARY},
+        'logo=s'                => \$OPTIONS{LOGO},
+        'globals-name=s'        => \$OPTIONS{GLOBALS_NAME},
+        'quiet|q'               => \$OPTIONS{QUIET},
+        'no-sources'            => \$OPTIONS{NO_SRC},
+        'package-naming'        => \$OPTIONS{PACKAGENAMING},
+        'format=s'              => \$OPTIONS{FORMAT},
+        'extensions=s'          => \$OPTIONS{EXTENSIONS},
+        'no-lexical-privates'   => \$OPTIONS{NO_LEXICAL_PRIVATES},
+        'template-dir=s'        => \$OPTIONS{TEMPLATEDIR});
     $OPTIONS{OUTPUT} =~ s/([^\/])$/$1\//;
 }
 
@@ -1001,12 +1084,14 @@ sub resolve_inner_links {
     return $doc;
 }
 
+
 #
 # Formats a {@link } item
 #
 sub format_link {
     my ($link) = shift;
-    $link =~ s/\s*(.*?)\s*/$1/;
+    die unless $CURRENT_CLASS;
+    $link =~ s/^\s*(.*?)\s*$/$1/;
     $link =~ s/<[^>]*>//g; 
     my ($class, $method, $label, $url); 
     my $class_re = qr/\w+(?:\.\w+)*/;
@@ -1016,7 +1101,7 @@ sub format_link {
             if (($url, $label) = $link =~ /^(https?:\/\/\S+)\s+(.*?)\s*$/){
                 return "<a href='$url'>$label</a>";
             } else {
-               return $link;
+                return $link;
             }
     }
     if ($class){
@@ -1029,23 +1114,28 @@ sub format_link {
         $label = $class unless $label;
         qq{<a href="$class.html#">$label</a>};
     } else {
+        my $clss = $CLASSES->{$class || $CURRENT_CLASS};
+        my @methods = (@{$clss->{instance_methods}},
+                        @{$clss->{class_methods}});
+        my @fields = (@{$clss->{instance_fields}}, @{$clss->{class_fields}});
+        my @statics = (@{$clss->{class_methods}}, @{$clss->{class_fields}});
+        my $ismethod = grep { $_->{mapped_name} eq $method } @methods; 
+        my $isfield = grep { $_->{field_name} eq $method } @fields 
+            unless $ismethod;
+        my $isstatic = grep { 
+            ($_->{field_name} || $_->{mapped_name}) eq $method } @statics;
         if ($class){
-            my @methods = (@{$CLASSES->{$class}->{instance_methods}},
-                           @{$CLASSES->{$class}->{class_methods}});
-            my @fields = (@{$CLASSES->{$class}->{instance_fields}},
-                           @{$CLASSES->{$class}->{class_fields}});
-            my $ismethod = grep { $_->{mapped_name} eq $method } @methods; 
-            my $isfield = grep { $_->{field_name} eq $method } @fields
-                unless $ismethod;
             $label = "$class.$method" . ($ismethod ? '()' : '') unless $label;
             if ($ismethod or $isfield){
+                $method = ($isstatic ? "!s!" : "") . $method;
                 qq{<a href="$class.html#$method">$label</a>};
             } else {
                 warn "\@link can't find reference $method in $class\n";
                 $link;
             }
         } else {
-            $label = "$method()" unless $label;
+            $label =  $method . ($ismethod ? "()" : "") unless $label;
+            $method = ($isstatic ? "!s!" : "") . $method;
             qq{<a href="#$method">$label</a>};
         }
     }
@@ -1118,7 +1208,6 @@ sub initialize_param_maps {
                                                       see requires);
 }
 
-
 # 
 # Parse the @param or @argument values into name/value pairs and 
 # return the list of them
@@ -1132,7 +1221,7 @@ sub fetch_args {
             my ($type, $link, $name, $value) = 
                 /(?:
                     \{\s*
-                        (\w+(?:\.\w+)*)         # type name
+                        (\S+)                   # type name
                         (?:\s+(\S+)\s*)?        # optional link
                     \})?
                     \s*
@@ -1147,13 +1236,14 @@ sub fetch_args {
                 $type =  qq|<a href="$link">$type</a>| ;
             }
             my $type_regex = qr{\Q$arg\E\b};
-            $$arg_list_ref =~ s/($type_regex)/&lt;$type&gt; $1/ if $type;
+            $$arg_list_ref =~ s/(?<!gt; )($type_regex)/&lt;$type&gt; $1/ 
+                if $type;
             push @args, { varname => $name, vardescrip => $value};
         }
     }
     for (@{$vars->{param}}){
         my ($type, $link, $name, $value) 
-            = /(?:\{\s*(\w+(?:\.\w+)*)(?:\s+(\S+)\s*)?\})?\s*(\$?\w+)(.*)/;
+            = /(?:\{\s*(\S+)(?:\s+(\S+)\s*)?\})?\s*(\$?\w+)(.*)/;
         next if $used{$name};
         push @args, { varname => $name, vardescrip => $value };
     }

@@ -3,7 +3,16 @@
 	<h3>TOC</h3>
     <ul>
       <li>
-        <a href="#overview">Oveview</a>
+        <a href="#overview">Overview</a>
+      </li>
+      <li>
+        <a href="#license">License(s)</a>
+      </li>
+      <li>
+      	<a href="#creditspeople">Credits (People)</a>
+      </li>
+      <li>
+      	<a href="#creditssoftware">Credits (Software)</a>
       </li>
       <li>
         <a href="#ecmaunit">How to test Sarissa in your browser with ECMAUnit</a>
@@ -15,23 +24,11 @@
         <a href="#getxmlhttp">How to obtain a XMLHTTP Request Object</a>
       </li>
       <li>
-        <a href="#loadremote">How to load an DOM Document Object from a
-            remote source</a>
-        <ul>
-          <li>
-            <a href="#async">Asynchronous Loading</a>
-          </li>
-          <li>
-            <a href="#sync">Synchronous Loading</a>
-          </li>
-        </ul>
-      </li>
-      <li>
         <a href="#loadstring">How to load an XML Document Object from an
             XML String</a>
       </li>
       <li>
-        <a href="#parseerror">Checking for parsing errors</a>
+        <a href="#parseerror">How to check for parsing errors</a>
       </li>
       <li>
         <a href="#transform">
@@ -48,7 +45,7 @@
 	</div>
     <div class="section">
       <h3>
-        <a id="overview">Oveview</a>
+        <a id="overview">Overview</a>
       </h3>
       <p>
            Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs. It offers various  
@@ -57,14 +54,14 @@
            known as "AJAX" development. 
     </p>
     <p>
-           Supported browsers are Mozilla - Firefox and family, Internet Explorer with MSXML3.0 and up,  
-           Konqueror (KDE 3.3+ for sure), Safari (um, could use some help from Mac users here) and Opera.
-           Konq, Safari and Opera offer no XSLT/XPath scripting support AFAIK.
+		Supported browsers are Mozilla - Firefox and family, Internet Explorer with MSXML3.0 and up,  
+		Konqueror (KDE 3.3+ for sure), Safari and Opera.
+		Konq, Safari and Opera offer no XSLT/XPath scripting support AFAIK.
     </p>
     <p>
-    	This document provides an overview of Sarissa along with examples of common tasks. 
-    	The API documentation follows (thanks to <a href="http://jsdoc.sourceforge.net" title="Link to JSDoc project at SourceForge">JSDoc</a>).
-    	This documentation is distributed under the GNU Free Documentation License (<a href="fdl.txt">fdl.txt</a>).
+	    	This document provides an overview of Sarissa along with examples of common tasks. 
+	    	The API documentation follows (thanks to <a href="http://jsdoc.sourceforge.net" title="Link to JSDoc project at SourceForge">JSDoc</a>).
+	    	This documentation is distributed under the GNU Free Documentation License (<a href="fdl.txt">fdl.txt</a>).
     </p>
     <p>
         The latest version of Sarissa can always be found on 
@@ -72,23 +69,42 @@
 		the Sourceforge project page.</a> Please send comments, corrections etc via email or the 
 		<a href="https://sourceforge.net/forum/forum.php?forum_id=256492" title="Link to Sarissa forum at SourceForge.net">Sarissa forum.</a>. 
       </p>
+    </div>
+    <div class="section">
+      <h3>
+        <a id="license">License(s)</a>
+      </h3>
       <p>
         Sarissa is distributed under the GNU GPL version 2 (see <a href="gpl.txt">gpl.txt</a>) or higher, 
-        and GNU LGPL version 2.1 (see <a href="lgpl.txt">lgpl.txt</a>) or higher. In
-		case your copy of Sarissa does not include the license texts, you may find
-		them online in various formats at <a href="http://www.gnu.org">http://www.gnu.org</a>.
+        GNU LGPL version 2.1 (see <a href="lgpl.txt">lgpl.txt</a>) or higher and Apache Software License 2.0 or higher 
+         (see <a href="asl.txt">asl.txt</a>). This means you can choose one of the three and use that if you like. If 
+         you make modifications under the ASL, i would appreciate it if you submitted those.
+         In case your copy of Sarissa does not include the license texts, you may find
+		them online in various formats at <a href="http://www.gnu.org">http://www.gnu.org</a> and 
+		<a href="http://www.apache.org">http://www.apache.org</a>.
       </p>
+     </div>
+     <div class="section">
+      <h3>
+        <a id="creditspeople">Credits (People)</a>
+      </h3>
+     
       <p>
-	  Gredits (People): Many thanks to Axel Hecht, Jonas Sicking, the folks at netscape.public.mozilla.* forums, Dimitre Novatchev, 
-	  Ken Sall, Paul Everitt, Christian Stocker,  Marcus Andersson, Rob Flaherty, David Carlisle, Bryan Batchelder, R. Mark Volkmann, 
-	  Brad Koehn,  Phil Endecott, Conrad Chu, Sean Whalen,  Franky Braem,  Nate Steiner, Erik Arvidsson, cedric, Phil Green, Vincenzo Alcamo.
-	  
-	  
-	  My deepest apologies to anyone I fail to mention; please send over an email if your name should be here.
+	  See <a href="../CHANGELOG.txt">CHANGELOG.txt</a>.	  
+	  My deepest apologies to anyone I fail to mention (because i do); please send over an email and I will fix it :-)
 	  </p>
+	</div>
+	
+	<div class="section">
+      <h3>
+        <a id="creditssoftware">Credits (Software)</a>
+      </h3>
 	  <p>
-	  Gredits (Software): Sarissa is documented with <a href="http://jsdoc.sourceforge.net" title="Link to JSDoc project at SourceForge">JSDoc</a>, 
+	  Sarissa is documented with <a href="http://jsdoc.sourceforge.net" title="Link to JSDoc project at SourceForge">JSDoc</a>, 
 	  tested with <a href="http://kupu.oscom.org/download/">ECMAUnit</a> and built using <a href="http://ant.apache.org/">Apache Ant</a>. 
+	  In the Ant build file Sarissa scripts are also checked using some custom code and <a href="http://www.JSLint.com">JSLint</a> 
+	  (Cool license). If you want to use JSLint in your ant builds you might want to check out build.xml from CVS 
+	  and head for the <code>jslint</code> target. 
 	  </p>
 	  <p>
 		  Sarissa was inspired by articles and code available on the web, most notably the 
@@ -96,16 +112,22 @@
 		  <a href="http://www.webreference.com/programming/javascript/domwrapper/">Cross-Browser DOM Wrapper article</a> [webreference.com]. 
 		  
 	  </p>
-	  <p>Projects using Sarissa:</p>
+	  <p>Here are some projects using Sarissa, please let me know if you want yours included here:</p>
 	  <ul>
 	  	<li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a></li>
-	  	<li><a href="http://chezphil.org/anyterm/">Anyterm</a>, a web based terminal interface</li>
-		<li>The Minesweeper game featured as a sample application was written by Sean Whalen, who is also the maintainer.</li>
+	  	<li><a href="http://communitymapbuilder.org/">MapBuilder</a> is a modern standards-based web mapping client</li>
+	  	<li><a href="http://plone.org/">Plone</a> is a user-friendly and powerful open source Content Management System</li>
+	  	<li><a href="http://anyterm.org/">Anyterm</a>, a web based terminal interface for your servers (it sounds crazy at first but you quickly find yourself wondering "how come i never thought of that")</li>
+	  	<li><a href="http://communik8r.org/">Communik8r</a> is a new email application for phpGroupWare. communik8r uses AJAX, IMAP sockets and client side XSLT</li>
+		<li>The <a href="../sample-apps/minesweeper/index.html">Minesweeper game</a> featured as a sample application was written by Sean Whalen, who is also the maintainer.</li>
+		<li>Jay Kimble's <a href="http://codebetter.com/blogs/jay.kimble/archive/2005/08/16/130777.aspx">JAAJAX Lib for .Net</a></li>
+		<li>Jason Diamond's <a href="http://jason.diamond.name/weblog/category/my-ajax-dot-net">My Ajax.NET library</a></li>
+		<li><a href="http://www.mojoportal.com/">MojoPortal</a>, an Object Oriented web site framework written in C# that runs under ASP.NET on Windows or under Mono on Linux or Mac OS X</li>
 	  </ul>
 	  <p>
 	  	Nearby, Dimitri Glazkov's XPath over HTML for MSIE (html-xpath) project at 
 	  	<a href="http://sourceforge.net/projects/html-xpath">http://sourceforge.net/projects/html-xpath</a> 
-	  	can be used as a complement to Sarissa. Moz already has DOM3 like HTML XPath support. 
+	  	can be used as a complement to Sarissa. Moz already has DOM3 XPath support for HTML. 
 	  </p>
     </div>
     <div class="section">
@@ -113,7 +135,8 @@
         <a id="ecmaunit">How to test Sarissa in your browser with ECMAUnit</a>
       </h3>
       <p>
-       Sarissa tests are written using <a href="http://kupu.oscom.org/download/">ECMAUnit</a>, a unit testing framework for ECMAScript (a.k.a. JavaScript). You can test Sarissa against your browser <a href="../testsarissa.html">here</a>.
+       Sarissa tests are written using <a href="http://kupu.oscom.org/download/">ECMAUnit</a>, a unit testing framework for ECMAScript (a.k.a. JavaScript). 
+       You can test Sarissa against your browser <a href="test/testsarissa.html">here</a>. Please note that some tests may fail if you run those directly from your filesystem.
          </p>
     </div>
     <div class="section">
@@ -175,7 +198,8 @@ var oDomDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
 var xmlhttp = new XMLHttpRequest();
 </pre>
       <p>
-            For users under IE, an XMLHTTP object is returned using the most
+            In IE 7 this works ASIS. For users under IE prior to version 7, 
+            an XMLHTTP object is returned using the most
             recent MSXML ProgID found in the client system. So, supposing that
             the user has MSXML4.0 installed, the above is equal to:
          </p>
@@ -210,67 +234,10 @@ xmlhttp.onreadystatechange = function()
 {
 	if(xmlhttp.readyState == 4)
 		alert("Finished loading!");
-}
-</pre>
-    </div>
-    <div class="section">
-      <h3>
-        <a id="loadremote">How to load an DOM Document Object from a remote
-            source</a>
-      </h3>
-      <p>
-            Loading a document is as simple as calling the <code>load</code>
-            method of a DOM Document object, passing a URL as the parameter.
-            Loading can be performed synchronously or asynchronously. This is
-            controled by setting the <code>async</code> property of a DOM
-            Document before calling the <code>load</code> method.The default
-            value of the <code>async</code> property is true, resulting in
-            asynchronous loading, meaning that the next statement is executed
-            immediately. Setting it to false causes execution to freeze; the
-            statement after the <code>load</code> will only be called when the
-            document has fully loaded and parsed into memory.
-         </p>
-      <p class="note">
-        <span class="bold">Note</span>: In Mozilla versions prior to 1.4, synchronous loading
-            will only work for documents on a server, not the filesystem in the
-            same machine as the browser. This is because I extended the
-            <code>load</code> method to use an XMLHttpRequest internally to
-            implement synchronous loading for DOM Document objects. In Mozilla 1.4 and 
-			above this property is natively implemented.
-         </p>
-      <h4>
-            Examples of synchronous/asynchronous loading
-         </h4>
-      <div>
-        <h5>
-          <a id="async">Asynchronous Loading</a>
-        </h5>
-        <pre xml:space="preserve">
-var oDomDoc = Sarissa.getDomDocument();
-oDomDoc.async = true; // this line can be ommited - true is the default
-// we add a listener for the load event to know when loading is finished
-function myHandler {
-	if(oDomDoc.readyState == 4)
-    alert(Sarissa.serialize(oDomDoc));// show the file contents
 };
-
-oDomDoc.onreadystatechange = myHandler;
-oDomDoc.load("someDocument.xml");
 </pre>
-      </div>
-      <div>
-        <h5>
-          <a id="sync">Synchronous Loading</a>
-        </h5>
-        <pre xml:space="preserve">
-var oDomDoc = Sarissa.getDomDocument();
-oDomDoc.async = false; // this is the important part
-oDomDoc.load("someDocument.xml");
-alert(Sarissa.serialize(oDomDoc));// show the file contents
-</pre>
-      </div>
     </div>
-    <div class="section">
+        <div class="section">
       <h3>
         <a id="loadstring">How to load an XML Document Object from an XML String</a>
       </h3>
@@ -284,15 +251,41 @@ var oDomDoc = Sarissa.getDomDocument();
 var xmlString = "&lt;root&gt;my xml!&lt;/root&gt;";
 oDomDoc = (new DOMParser()).parseFromString(xmlString, "text/xml");
 alert(Sarissa.serialize(oDomDoc));
-</pre>
-  <p>Unforunatelly, that wont work in Safari.</p>      
+</pre>  
     </div>
     <div class="section">
       <h3>
         <a id="parseerror">How to check for parsing errors</a>
       </h3>
+      	<p>
+			You can chack for and get a human-readable description of the error using 
+			the Sarissa getParseErrorText method, passing the document as the argument: 
+		</p>
+		<pre>
+if(Sarissa.getParseErrorText(oDomDoc) == Sarissa.PARSED_OK){
+	// The document was parsed/loaded just fine, go on
+	doSomething(oDomDoc);
+} 
+else{
+	// The document was not loaded correctly! Inform the user:
+	alert(Sarissa.getParseErrorText(oDomDoc));
+};
+</pre>
+		<p>
+			Sarissa.getParseErrorText will return one of:
+		</p>
+		<ul>
+			<li><code>Sarissa.PARSED_OK</code> if the document was parsed with no errors</li>
+			<li><code>Sarissa.PARSED_EMPTY</code> if the document is empty (this may occur instead of an error using XmlHttpRequest)</li>
+			<li><code>Sarissa.PARSED_UNKNOWN_ERROR</code> if the document was not loaded for an unknown reason</li>
+			<li>A human readable description of the parsing error</li>
+		</ul> 
+		<p>
+			<span class="bold">Tip</span>: Wrap the result of Sarissa.getParseErrorText
+			in a <code>&quot;pre&quot;</code> element if you want to render it.
+		</p>
       <p>
-            After a document has loaded, you can check for parsing errors using
+            If you have used the deprecated .load methods, you can also use
             the <code>parseError</code> property. The property always gives an
             integer, anything other than zero signals an error.
          </p>
@@ -300,23 +293,11 @@ alert(Sarissa.serialize(oDomDoc));
 // ...
 oDomDoc.async = false;
 oDomDoc.load("someDocument.xml");
-if(oDomDoc.parseError != 0)
+if(oDomDoc.parseError.errorCode != 0)
    alert("not well formed or other error!");
 else
    alert("loaded ok");
 </pre>
-		<p>
-			You can also get a human-readable description of the error using 
-			the Sarissa getParseErrorText method, passing the document as the argument: 
-		</p>
-		<pre>
-Sarissa.getParseErrorText(oDomDoc);
-</pre>
-		<p>
-			The method returns the error description as a simple string. 
-			<span class="bold">Tip</span>: Wrap this string in a 
-			<code>&quot;pre&quot;</code> element if you want to render it.
-		</p>
     </div>
     <div class="section">
       <h3>
@@ -386,18 +367,20 @@ test("test 1");
 			for a certain document:
          </p>
       <pre xml:space="preserve">
-oDomDoc.setProperty("SelectionLanguage", "XPath");</pre>
+oDomDoc.setProperty("SelectionLanguage", "XPath");
+</pre>
       <p>In IE, using <code>selectNodes</code> or <code>selectSingleNode</code> without the above first will give an error. 
 		Also, the same method with different parameters is used to allow IE to resolve namespace prefixes, for example:</p>
       <pre xml:space="preserve">
 oDomDoc.setProperty("SelectionNamespaces", 
                     "xmlns:xhtml='http://www.w3.org/1999/xhtml'");
-	</pre>
+</pre>
       <p>If you want to allow IE to resolve multiple namespace prefixes, use a space delimited list like:</p>
       <pre xml:space="preserve">
 oDomDoc.setProperty("SelectionNamespaces", 
                     "xmlns:xhtml='http://www.w3.org/1999/xhtml' 
-                     xmlns:xsl='http://www.w3.org/1999/XSL/Transform'")</pre>
+                     xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
+</pre>
       <p>Mozilla does not need any of the above. DOM L3 XPath is always available and namespaces are resolved err... automatically. 
 		Below is an example of using <code>selectNodes</code> and <code>selectSingleNode</code> when Sarissa is available to provide 
 		cross browser XPath functionality. For more documentation on these proprietary methods check with the documentation at the MSDN website (<a href="http://msdn.microsoft.com" title="link to Microsoft developer website">http://msdn.microsoft.com</a>).
@@ -452,7 +435,7 @@ function testSelectNodesOn(domNode, sXpath)
 &lt;button onclick="testXpath()"&gt;test xpath&lt;/button&gt;
 &lt;/body&gt;
 &lt;/html&gt;
-		</pre>
+</pre>
     </div>
     <div class="section">
       <h3>
@@ -479,7 +462,7 @@ book.publisher = publisher;
 // serialize to an XML string
 var s = Sarissa.xmlize(book, "book");
 alert("Generated XML:\n"+s)
-      	</pre>
+</pre>
 		<p>will generate the markup below:</p>
 		<pre xml:space="preserve">
 &lt;book&gt;
@@ -487,7 +470,12 @@ alert("Generated XML:\n"+s)
       &lt;array-item key="0"&gt;Kingdom of fools&lt;/array-item&gt;
       &lt;array-item key="1"&gt;Fall&lt;/array-item&gt;
       &lt;array-item key="2"&gt;Final battle&lt;/array-item&gt;
-      &lt;array-item key="3"&gt;Characters that need to be escaped: &amp;lt;&amp;lt; &amp;lt;&amp;lt; &amp;quot;&amp;apos; &amp;quot;&amp;quot;&amp;quot;&amp;amp;&amp;amp;&amp;apos;&amp;apos; &amp;lt; &amp;gt; &amp;amp; &amp;apos; &amp;quot; &lt;/array-item&gt;
+      &lt;array-item key="3"&gt;
+         Characters that need to be escaped: &amp;lt;&amp;lt; &amp;lt;&amp;lt; 
+         &amp;quot;&amp;apos; 
+         &amp;quot;&amp;quot;&amp;quot;&amp;amp;&amp;amp;&amp;apos;&amp;apos; 
+         &amp;lt; &amp;gt; &amp;amp; &amp;apos; &amp;quot; 
+      &lt;/array-item&gt;
       &lt;array-item key="4"&gt;Epilogue&lt;/array-item&gt;
    &lt;/chapters&gt;
    &lt;editor&gt;Manos Batsis&lt;/editor&gt;
@@ -495,8 +483,7 @@ alert("Generated XML:\n"+s)
       &lt;name&gt;Some Publisher&lt;/name&gt;
    &lt;/publisher&gt;
 &lt;/book&gt;
-
-		</pre>
+</pre>
     </div>
     
 	<p>

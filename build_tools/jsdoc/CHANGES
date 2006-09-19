@@ -1,3 +1,128 @@
+JSDoc 1.9.9.2
+=============
+
+- Fixed disappearing argument list for package-style class constructors
+
+JSDoc 1.9.9.1
+=============
+
+- Fixed bug in template dir designation that caused JSDoc to crash if
+  run from an absolute path
+
+JSDoc 1.9.9
+===========
+
+- Added a commandline parameter for supplying a template directory
+    
+- Adding sorting of class names on overview-summary-$filename.js
+  (sf.net bug #1416564)
+    
+- Fix for broken anchors from the overview-summary-$filename page to static 
+  methods (SF.net bug #1416543)
+
+JSDoc 1.9.8.1
+=============
+
+- Don't touch the file source (src) when processing the file overview data
+
+- Pick up functions as constructors of the @class tag is used
+
+JSDoc 1.9.8
+===========
+
+- Allow the @base tag to accept the form: @base ClassName URL (RFE 1114510)
+
+- Be more lenient with @param and @return types (RFE 1104728)
+
+- Corrected CSS error, changed "pts" to "pt"
+
+JSDoc 1.9.7
+===========
+
+- Added "--no-lexical-privates" option to ignore locally-defined values 
+  from within constructors
+
+- Fixed linking to static fields/methods
+
+JSDoc 1.9.6.2
+=============
+
+- Set correct permissions on files in packaging script
+
+- Fixed compile error on some versions of perl
+
+- Create distinct anchors for static methods and fields in HTML so that
+  if there is a static and instance method of the same name, the links work
+  correctly
+
+JSDoc 1.9.6.1
+=============
+
+- Updated unit tests for clearing of function contents
+
+- Removed collapsing of string literals; this was originally added for version
+  1.9.5.1 to avoid segfaults, but the decision has been made that it is up
+  to the user to use a version of perl that doesn't segfault instead of 
+  trying to work around it in perl code.
+
+- Added (experimental) @exec tag for initialization blocks that should be 'run'
+
+JSDoc 1.9.6
+===========
+
+- Fix for incorrect return type and parameter types for static method 
+  listing in file overview
+
+- Clear out unused nested functions with the preprocessor to avoid problems
+
+JSDoc 1.9.5.8
+=============
+
+- Yet another fix for __defineGetter__ and __defineSetter__
+
+JSDoc 1.9.5.7
+=============
+
+- Fixed bug in syntax highlighting for single-line inline comments
+
+- Fixed bug in preprocessing of __defineGetter__ and __defineSetter__
+
+JSDoc 1.9.5.6
+=============
+
+- Fixed incorrect listing of private classes when --private not enabled
+
+JSDoc 1.9.5.4
+=============
+
+- Corrected bug with function assignment inside constructor
+
+JSDoc 1.9.5.3
+=============
+
+- Added ability to specify different file extensions on commandline
+
+JSDoc 1.9.5.2
+=============
+
+- Fixed formatted text munging for @class description
+
+- Added support for @package tag to be used with XMI export
+
+JSDoc 1.9.5.1
+=============
+
+- Added collapsing of string literals during preprocessing
+
+JSDoc 1.9.5
+===========
+
+- Added listing of global (static) methods to file overview summary, code
+  submitted by Jeremy Gillick
+
+- Allow a global variable to be defined as a class from an anonymous
+  function declaration
+
 JSDoc 1.9.4.2.1
 ===============
 

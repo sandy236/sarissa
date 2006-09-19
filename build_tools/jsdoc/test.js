@@ -130,7 +130,7 @@ function Shape_SetCoords(coordinates){
  * @param other There is no other param, but it can still be documented if
  *              optional parameters are used
  * @throws NonExistantColorException (no, not really!)
- * @see #setColor
+ * @see #getColor
  */
 function Shape_SetColor(color){
    this.color = color;
@@ -234,7 +234,7 @@ function Rectangle_GetHeight(){
 /**
  * Set the width value for this Rectangle.
  * @param {int} width The width value to be set
- * @see #setWidth
+ * @see #getWidth
  */
 function Rectangle_SetWidth(width){
    this.width = width;

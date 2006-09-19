@@ -70,7 +70,7 @@ function enterButton (e) {
 
 
 function extrabutton() {
-    alert("full map:  " +  Sarissa.serialize( fragment));
+    alert("full map:  " +  new XMLSerializer().serializeToString( fragment));
 };
  
 
@@ -186,7 +186,7 @@ function loadBoard() {
     jDictionary = new Object ();
     var xmlDocument =  Sarissa.getDomDocument();
     var xmlString = "<SweeperMap></SweeperMap>";
-    xmlDocument.(new DOMParser()).parseFromString(xmlString, "text/xml");
+    xmlDocument = (new DOMParser()).parseFromString(xmlString, "text/xml");
     var ele = xmlDocument.createElement('range'); 
     ele.setAttribute('hMax', hMax);
     ele.setAttribute('vMax', vMax);
@@ -228,14 +228,12 @@ function loadBoard() {
     xsltProc.importStylesheet(xslMapBuilder);
     var frag2 = xsltProc.transformToDocument( fragment);
     // TODO use Sarissa to get the error
-    if (frag2.parseError != 0) {
-        alert ("err = " +   frag2.parseError);
-        alert ("err = " +   frag2.parseError.reason);
-        alert("frag2 " +  Sarissa.serialize( frag2 ));
+    if (Sarissa.getParseErrorText(frag2) != Sarissa.PARSED_OK) {
+        alert ("err = " +   Sarissa.getParseErrorText(frag2));
     };
     document.getElementById("gameArea").innerHTML = ""; 
     //document.getElementById("gameArea").appendChild( xsltProcIE.transformToDocument(fragment)) ; 
-    document.getElementById("gameArea").innerHTML =  Sarissa.serialize(frag2);
+    document.getElementById("gameArea").innerHTML =  new XMLSerializer().serializeToString(frag2);
     loadDictionary (fragment);
 };
 

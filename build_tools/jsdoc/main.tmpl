@@ -136,7 +136,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    <TR BGCOLOR="white" CLASS="TableRowColor">
    <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
    <CODE><TMPL_IF NAME="is_private">&lt;private&gt;&nbsp;</TMPL_IF><TMPL_IF NAME="is_class_field">&lt;static&gt; </TMPL_IF><TMPL_IF NAME="is_final">&nbsp;&lt;final&gt;</TMPL_IF>&nbsp;<TMPL_VAR NAME="type"></CODE></FONT></TD>
-   <TD><CODE><B><A HREF="#<TMPL_VAR name="field_name">"><TMPL_VAR name="field_name"></A></B></CODE>
+   <TD><CODE><B><A HREF="#<TMPL_IF NAME="is_class_field">!s!</TMPL_IF><TMPL_VAR name="field_name">"><TMPL_VAR name="field_name"></A></B></CODE>
    <BR>
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TMPL_VAR name="field_summary"></TD>
    </TR>
@@ -212,7 +212,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
       <TD>
 	 <CODE>
 	    <B>
-	       <A HREF="#<TMPL_VAR name="method_name">"><TMPL_VAR name="method_name"></A></B><TMPL_VAR name="method_arguments">
+	       <A HREF="#<TMPL_IF NAME="is_class_method">!s!</TMPL_IF><TMPL_VAR name="method_name">"><TMPL_VAR name="method_name"></A></B><TMPL_VAR name="method_arguments">
 	 </CODE>
 	 <BR>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -253,7 +253,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
    </TABLE>
 
    <TMPL_LOOP NAME="fields">
-   <A NAME="<TMPL_VAR NAME="field_name">"><!-- --></A>
+   <A NAME="<TMPL_IF NAME="is_class_field">!s!</TMPL_IF><TMPL_VAR NAME="field_name">"><!-- --></A>
    <H3><TMPL_VAR NAME="field_name"></H3>
    <PRE><TMPL_IF NAME="is_private">&lt;private&gt;&nbsp;</TMPL_IF><TMPL_IF NAME="is_class_field">&lt;static&gt;&nbsp;</TMPL_IF><TMPL_IF NAME="is_final">&lt;final&gt;&nbsp;</TMPL_IF><TMPL_VAR NAME="type">&nbsp;<B><TMPL_VAR NAME="field_name"></B></PRE>
    <UL>
@@ -340,7 +340,7 @@ DETAIL:&nbsp;<A HREF="#field_detail">FIELD</A>&nbsp;|&nbsp;<A HREF="#constructor
 
 <!-- One single method detail entry -->
 <TMPL_LOOP name="methods">
-   <A NAME="<TMPL_VAR name="method_name">"><!-- --></A>
+   <A NAME="<TMPL_IF NAME="is_class_method">!s!</TMPL_IF><TMPL_VAR name="method_name">"><!-- --></A>
    <H3><TMPL_VAR name="method_name"></H3>
    <PRE><TMPL_IF NAME="is_class_method">&lt;static&gt; </TMPL_IF><TMPL_IF NAME="is_private">&nbsp;&lt;private&gt; </TMPL_IF><TMPL_VAR NAME="type"> <B><TMPL_VAR name="method_name"></B><TMPL_VAR name="method_arguments"></PRE>
    <TMPL_IF name="method_description">

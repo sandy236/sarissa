@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE includes [
   <!ENTITY jslint SYSTEM "build_tools/fulljslint.js">
-]>   
+]>
 <project name="sarissa" default="dist" basedir=".">
-	<description> Ant build file for Sarissa project (because building a javascript project with Ant
-		is cool) More info at http://sarissa.sf.net </description>
+	<description> 
+ ################################################################
+ Ant build file for Sarissa project (because building a 
+ javascript project with Ant sounds so stupid, it is cool). 
+ More info at http://sarissa.sf.net
+		
+ This build file uses JSLint, Copyright (c) 2002 Douglas 
+ Crockford  (www.JSLint.com). Cool license.
+ 
+ Sarissa is free software distributed under the 
+  * GNU GPL version 2 (see doc/gpl.txt) or higher, 
+  * GNU LGPL version 2.1 (see doc/lgpl.txt) or higher and 
+  * Apache Software License 2.0 or higher (see doc/asl.txt). 
+ This means you can choose one or more out of the three and use 
+ follow that.
+		
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
+ KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ WARRANTIES OF MERCHANTABILITY,FITNESS FOR A PARTICULAR PURPOSE 
+ AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+################################################################
+	</description>
 	<property file="manos.properties"/>
 	<property name="dist.dir" location="dist"/>
 	<property name="doc.dir" location="doc"/>
@@ -19,27 +43,18 @@
 		<tstamp/>
 		<mkdir dir="${dist.dir}/temp"/>
 		<mkdir dir="${dist.dir}/temp/doc"/>
-		<mkdir dir="${dist.dir}/temp/sample-apps"/>
 		<copy todir="${dist.dir}/temp">
-			<fileset dir="${basedir}" includes="build_tools/ecmaunit/*.*" excludes="**/cvs/**"/>
-			<fileset dir="${src.dir}" includes="sarissa*.js" excludes="**/cvs/**"/>
-			<fileset dir="${src.dir}" includes="testsarissa.*" excludes="**/cvs/**"/>
-			<fileset dir="${src.dir}" includes="test*.xml" excludes="**/cvs/**"/>
-			<fileset dir="${src.dir}" includes="CHANGELOG.txt" excludes="**/cvs/**"/>
-		</copy>
-		<copy todir="${dist.dir}/temp/doc">
-			<fileset dir="${doc.dir}" includes="samples/*" excludes="**/cvs/**"/>
-			<fileset dir="${doc.dir}" includes="*.txt" excludes="**/cvs/**"/>
-		</copy>
-		<copy todir="${dist.dir}/temp/sample-apps">
-			<fileset dir="sample-apps">
-				<include name="minesweeper/**/*"/>
-				<exclude name="**/cvs/**"/>
-			</fileset>
+			<fileset dir="${basedir}" includes="build_tools/ecmaunit/*.*"     excludes="**/cvs/**"/>
+			<fileset dir="${basedir}" includes="sarissa*.js"                  excludes="**/cvs/**"/>
+			<fileset dir="${basedir}" includes="CHANGELOG.txt"                excludes="**/cvs/**"/>
+			<fileset dir="${basedir}" includes="doc/**/*.*"                   excludes="**/cvs/**,jsdoc-project-summary"/>
+			<fileset dir="${basedir}" includes="sample-apps/minesweeper/**/*" excludes="**/cvs/**"/>
 		</copy>
 		<replace dir="${dist.dir}/temp" token="@sarissa.version@" value="${sarissa.version}"/>
-		<fixcrlf srcdir="${dist.dir}/temp" tab="remove" tablength="4" javafiles="no"
-			includes="**/*.js"/>
+		<!-- convert tabs to spaces, and make files more friendly to windows user's editors (EOL, EOF) -->
+		<fixcrlf srcdir="${dist.dir}/temp" tab="remove" tablength="4" javafiles="no" eol="lf" eof="remove" 
+			excludes="build_tools/**/*" 
+			includes="**/*.js, **/*.html, **/*.xml, **/*.txt"/>
 	</target>
 	<target name="jsdoc" depends="init" description="Generates the JSdoc documentation in
 		jsdoc.out.dir">
@@ -48,11 +63,15 @@
 			<arg line="${jsdoc.dist.dir}/jsdoc.pl  --public
                 			--directory ${jsdoc.out.dir} 
 	   			--project-name ${ant.project.name} 
-	   			--project-summary doc/jsdoc-project-summary ${dist.dir}/temp/sarissa.js ${dist.dir}/temp/sarissa_dhtml.js ${dist.dir}/temp/sarissa_ieemu_xslt.js ${dist.dir}/temp/sarissa_ieemu_xpath.js" />
+	   			--project-summary doc/jsdoc-project-summary ${dist.dir}/temp/sarissa.js ${dist.dir}/temp/sarissa_dhtml.js ${dist.dir}/temp/sarissa_ieemu_load.js ${dist.dir}/temp/sarissa_ieemu_xslt.js ${dist.dir}/temp/sarissa_ieemu_xpath.js" />
 		</exec>
+		<replace dir="${jsdoc.out.dir}" includes="**/*.html" token="white" value="#eeeeee"/>
+		<replace dir="${jsdoc.out.dir}" includes="**/*.html" token="#EEEEFF" value="#b8cade"/>
+		<copy todir="${jsdoc.out.dir}" overwrite="true">
+			<fileset dir="${doc.dir}" includes="**/*.css" />
+		</copy>
 	</target>
-	<target name="website.upload" depends="dist" description="Update SourceForge website using the
-		JSDoc generated API documentation">
+	<target name="website.upload" depends="dist" description="Update SourceForge website using the JSDoc generated API documentation">
 		<scp trust="yes" 
 			todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.webserver}:${sourceforge.htdocs.dir}">
 			<fileset dir="${dist.dir}/temp" includes="**/*.*"/>
@@ -81,7 +100,7 @@
 		</ftp>
 	</target>
  
-    <target name="jslint">
+    <target name="jslint" description="Run JSLint against the Sarissa scripts">
         <scriptdef name="jslint" language="javascript">
             <element name="fileset" type="fileset"/>
 // include jslint, The JavaScript Verifier   

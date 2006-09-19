@@ -204,7 +204,7 @@ sub parse_code_tree {
 #
 sub parse_jsdoc_comment {
     my ($doc, $raw) = @_; 
-
+    
     # Remove excess '*' characters
     $doc =~ s/^[*\s]*([^*].*?)[*\s]*$/$1/s;
     $doc =~ s/^\s*\*//gm;
@@ -239,7 +239,7 @@ sub parse_jsdoc_comment {
             /gsx) {
             my ($name, $val) = ($1, $2);
             $vars{$name} = [] unless defined $vars{$name};
-            $val =~ s/\n/ /g unless $raw;
+            $val =~ s/\n/ /g unless $raw or $name eq 'class';
             push(@{$vars{$name}}, ($val =~ /^\s*(.*)\s*$/s)[0]);
         }
         $parsed{vars} = \%vars;
@@ -702,10 +702,10 @@ sub preprocess_source {
     # can be recognized as a nested class. Yes, I know it's bad...
     $src =~ s!
         ($JSDOC_COMMENT\s*)
-        (\w+(?:\.\w+)*?)
+        (?:var\s*)?(\w+(?:\.\w+)*?)
         \s*=
-        (\s*function)(?=\s*$BAL_PAREN\s*\{)
-        !index($1, '@constructor') == -1 ? "$1$2 = $3" : "$1$2 = function(){};\n$1$3 $2"!egx;
+        (\s*function)(?=\s*($BAL_PAREN)\s*\{)
+        !index($1, '@constructor') == -1 ? "$1$2 = $3" : "$1$2 = function$4 {};\n$1$3 $2"!egx;
 
     # remove all uninteresting comments, but only if they're not inside
     # of other comments     
@@ -760,8 +760,43 @@ sub preprocess_source {
           (?:\w+(?:\.\w+)*\s*=\s*function\s*(?:\w+\s*)?$BAL_PAREN\s*)
        )$BAL_BRACE)
        /&mark_void_method($1, $2)/egx;
-    
-    $src;
+
+    # Clear nested functions (will save trouble later on)
+    $src =~ s/($JSDOC_COMMENT?)\s*
+       (\w+(?:\.\w+)*\s*=\s*)?
+       (function(?:\s+\w+(?:\.\w+)*)?\s*$BAL_PAREN\s*)
+       ($BAL_BRACE)
+       /&clear_nested($1, $2, $3, $4)/egx;
+
+    return $src;
+}
+
+sub clear_nested {
+    my ($doc, $assign_to, $declaration, $funcbody) = @_;
+    $assign_to ||= '';
+    if ($doc =~ /^(?=.*\@constructor|\@class)(?=.*\@exec)/){
+        warn "\@constructor or \@class can't be used together with \@exec\n";
+    }
+    if ($doc !~ /\@(constructor|class|exec)/ 
+            or $assign_to =~ /^\w+\.prototype\./) {
+        return "$doc\n$assign_to$declaration" . "{}\n";
+    } elsif ($doc =~ /\@(constructor|class)/) {
+        return "$doc\n$assign_to$declaration$funcbody";
+    } else {
+        my @visible_funcs = $funcbody =~ /
+                    ((?:$JSDOC_COMMENT)?
+                    (?:\w+\.\w+(?:\.\w+)*)\s*=\s*
+                    (?:
+                        $FUNC_DEF
+                        |
+                        $ANON_FUNCTION
+                        |
+                        $FUNC_CALL
+                        |
+                        \w+
+                    )\s*;)/gx;
+        return join("\n", @visible_funcs);
+    }
 }
 
 #
@@ -877,7 +912,7 @@ sub deconstruct_prototype {
 #
 sub deconstruct_constructor {
     my ($doc, $func_def) = @_;
-    return "$doc$func_def" unless $doc =~ /\@constructor/;
+    return "$doc$func_def" unless $doc =~ /\@(constructor|class)/;
     my ($classname) = $func_def =~ /function\s+(\w+(?:\.\w+)*)/;
     $func_def =~ s/
         (\{.*\})$
@@ -888,21 +923,25 @@ sub deconstruct_constructor {
 sub deconstruct_inner_constructor {
     my ($classname, $inner_src) = @_;
     $inner_src = substr($inner_src, 1, -1);
-    my @doc_n_fnames = $inner_src =~ /($JSDOC_COMMENT?)\s*function\s+(\w+)/;
-    $inner_src =~ s/
-        ($JSDOC_COMMENT)?
-        \s*
-        var
-        \s+
-        (\w+)/&annotate_comment($1) . "\n$classname\.prototype\.$2"/egx;
+    my @doc_n_fnames = $inner_src =~ /($JSDOC_COMMENT?)\s*function\s+(\w+)/g;
 
-    $inner_src =~ s/
-        ($JSDOC_COMMENT)?\s*
-        ^\s*
-        function
-        \s+
-        (\w+)
-        /&annotate_comment($1) . "\n$classname\.prototype\.$2 = function"/egmx;
+    unless ($CONFIG{NO_LEXICAL_PRIVATES}){
+        $inner_src =~ s/
+            ($JSDOC_COMMENT)?
+            \s*
+            var
+            \s+
+            (\w+)/&annotate_comment($1) . "\n$classname\.prototype\.$2"/egx;
+
+        $inner_src =~ s/
+            ($JSDOC_COMMENT)?\s*
+            ^\s*
+            function
+            \s+
+            (\w+)
+            /&annotate_comment($1) . 
+                "\n$classname\.prototype\.$2 = function"/egmx;
+    }
 
     { 
         no warnings;
@@ -942,7 +981,7 @@ sub deconstruct_getset {
     my $crack = sub { 
         my $code = shift; $code =~ s/^.(.*).$/$1/s;
         my ($name) = split ",", $code; 
-        $name =~ s/.*?(['"])([^'"]+)\1/$2/;
+        $name = ($name =~ /.*?(['"])([^'"]+)\1/)[1];
         $name;
     };
     for my $prefix ('get', 'set'){
@@ -952,7 +991,7 @@ sub deconstruct_getset {
             \.prototype)
             \.__${fname}__\s*($BAL_PAREN)/
             my $name = $crack->($2);
-            "$1.$name = null"/ex;
+            "$1.$name = null"/gex;
     }
     $src;
 }

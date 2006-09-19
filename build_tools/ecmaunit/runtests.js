@@ -8,7 +8,7 @@
  *
  *****************************************************************************/
 
-// $Id: runtests.js 4680 2004-05-27 12:47:05Z philikon $
+// $Id$
 
 /*
   Test runner for command-line environments, such as spidermonkey

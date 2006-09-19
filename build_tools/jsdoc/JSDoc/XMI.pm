@@ -6,36 +6,38 @@ use HTML::Template;
 use Data::Dumper;
 
 =head1 DESCRIPTION
-    
-    @classes
-        $classname
-        $classid
-        $classuuid
-        $classvisibility (public|protected|private)
-       
-        @specializationids
-            $specializationid
 
-        $generalizationid
+    @packages    
 
-        @attributes
-            $attributeid
-            $attributeuuid
-            $attributename
-            $attributevisibility (public|protected|private)
-            $ownerscope (instance|classifier)
+        @classes
+            $classname
             $classid
-            $typeid
+            $classuuid
+            $classvisibility (public|protected|private)
+           
+            @specializationids
+                $specializationid
 
-        @methods
-            $methodid
-            $methoduuid
-            $methodname
-            $methodvisibility (public|protected|private)
-            $ownerscope (instance|classifier)
-            $returnid
-            $returnuuid
-            $returntypeid
+            $generalizationid
+
+            @attributes
+                $attributeid
+                $attributeuuid
+                $attributename
+                $attributevisibility (public|protected|private)
+                $ownerscope (instance|classifier)
+                $classid
+                $typeid
+
+            @methods
+                $methodid
+                $methoduuid
+                $methodname
+                $methodvisibility (public|protected|private)
+                $ownerscope (instance|classifier)
+                $returnid
+                $returnuuid
+                $returntypeid
 
     @datatypes
         $datatypeid
@@ -68,12 +70,12 @@ sub output {
         filename    => $self->{location} . 'xmi.tmpl',
         die_on_bad_params => 1);
 
-    my @classes = $self->get_classes($classes);
+    my @packages = $self->get_packages($classes);
     my @datatypes = $self->get_datatypes;
     my @generalizations = $self->get_generalizations;
     
     $template->param(
-        classes         => \@classes, 
+        packages        => \@packages, 
         datatypes       => \@datatypes,
         generalizations => \@generalizations );
     return $template->output;
@@ -90,6 +92,19 @@ sub get_uuid {
         push @uuid, $chars[rand(@chars)];
     }
     join("", @uuid);
+}
+
+sub get_packages {
+    my ($self, $classes) = @_;
+    my %packages;
+    push(@{$packages{$_->{package}}}, $_) 
+        for $self->get_classes($classes);
+    map { 
+        name        => $_, 
+        classes     => $packages{$_},
+        packageid   => $self->get_id,
+        packageuuid => $self->get_uuid 
+    }, keys %packages;
 }
 
 sub get_classes {
@@ -118,7 +133,10 @@ sub get_classes {
 
         $class->{generalizationid} = 
             $self->get_generalizationid($classes->{$cname});
-       
+
+        $class->{package} = 
+            defined($classes->{$cname}->{constructor_vars}->{package})
+            ? $classes->{$cname}->{constructor_vars}->{package}->[0] : '';
 
         push @classes, $class;
     }
