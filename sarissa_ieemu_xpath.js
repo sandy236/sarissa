@@ -180,7 +180,7 @@ if(_SARISSA_HAS_DOM_FEATURE && document.implementation.hasFeature("XPath", "3.0"
     */
     XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
         var ctx = contextNode?contextNode:null;
-        return this.selectNodes(sExpr, ctx);
+        return this.selectNodes(sExpr, ctx, true);
     };
     /**
     * <p>Extends the Element to emulate IE's selectSingleNode.</p>
