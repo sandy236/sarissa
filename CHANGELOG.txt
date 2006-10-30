@@ -21,6 +21,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * Fixed transformToDocument for MSXML 3 (probably the SP2 poopd version) thanks to bug 
       submitter Waleed K. Abdulla and the anonymous poster with the fix [1549749]
     * Fixed transformToFragment bug thanks to Robert Sanders
+    * Fixed Sarissa.copyChildNodes thanks to Waleed K. Abdulla
 
 0.9.7.3
     * Fixed transformToFragment bug in IE thanks to Simon Biickert
