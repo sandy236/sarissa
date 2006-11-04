@@ -17,11 +17,14 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 
 0.9.7.4
     * Emulated XMLDocument via Document and fixed XPath thanks to Joao Eiras and Michael(tm) Smith
-    * Fixed warnings in IE (removed MSXML 5.0 progIds) thanks to Duncan Booth
+    * Removed MSXML 4/5 progIds (warnings/bugs) thanks to Duncan Booth and Rick Oosterholt
     * Fixed transformToDocument for MSXML 3 (probably the SP2 poopd version) thanks to bug 
       submitter Waleed K. Abdulla and the anonymous poster with the fix [1549749]
     * Fixed transformToFragment bug thanks to Robert Sanders
     * Fixed Sarissa.copyChildNodes thanks to Waleed K. Abdulla
+    * Fixed selectSingleNode bug thanks to Joao Eiras 
+    * Made document.importNode a bit smarter to stop IE from getting too clever for it's own good
+      thanks to Duncan Booth
 
 0.9.7.3
     * Fixed transformToFragment bug in IE thanks to Simon Biickert
