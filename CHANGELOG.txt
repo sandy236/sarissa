@@ -25,6 +25,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * Fixed selectSingleNode bug thanks to Joao Eiras 
     * Made document.importNode a bit smarter to stop IE from getting too clever for it's own good
       thanks to Duncan Booth
+    * Fixed XSLT document() function for MSXML 6 thanks to Ron MacCracken
 
 0.9.7.3
     * Fixed transformToFragment bug in IE thanks to Simon Biickert
