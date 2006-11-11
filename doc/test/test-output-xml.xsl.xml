@@ -3,6 +3,7 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns="http://www.w3.org/1999/xhtml">
 	
+	<xsl:output method="xml"/>
 	<xsl:param name="user" select="'anonymous'"/>
 	
 	<xsl:template match="/">

@@ -7,13 +7,7 @@
 	<xsl:param name="user" select="'anonymous'"/>
 	
 	<xsl:template match="/">
-		User: <xsl:value-of select="$user"/>
-		<xsl:apply-templates/>
-		<foo>foo</foo>
-	</xsl:template>
-	
-	<xsl:template match="greeting">
-		<xsl:apply-templates/>
+		<xsl:text>some text</xsl:text>
 	</xsl:template>
 	
 </xsl:stylesheet>
