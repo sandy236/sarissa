@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE includes [
+<!DOCTYPE project [
   <!ENTITY jslint SYSTEM "build_tools/fulljslint.js">
 ]>
 <project name="sarissa" default="dist" basedir=".">
@@ -63,7 +63,7 @@
 			<arg line="${jsdoc.dist.dir}/jsdoc.pl  --public
                 			--directory ${jsdoc.out.dir} 
 	   			--project-name ${ant.project.name} 
-	   			--project-summary doc/jsdoc-project-summary ${dist.dir}/temp/sarissa.js ${dist.dir}/temp/sarissa_dhtml.js ${dist.dir}/temp/sarissa_ieemu_load.js ${dist.dir}/temp/sarissa_ieemu_xslt.js ${dist.dir}/temp/sarissa_ieemu_xpath.js" />
+	   			--project-summary doc/jsdoc-project-summary.xml ${dist.dir}/temp/sarissa.js ${dist.dir}/temp/sarissa_dhtml.js ${dist.dir}/temp/sarissa_ieemu_load.js ${dist.dir}/temp/sarissa_ieemu_xslt.js ${dist.dir}/temp/sarissa_ieemu_xpath.js" />
 		</exec>
 		<replace dir="${jsdoc.out.dir}" includes="**/*.html" token="white" value="#eeeeee"/>
 		<replace dir="${jsdoc.out.dir}" includes="**/*.html" token="#EEEEFF" value="#b8cade"/>
