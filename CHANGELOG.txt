@@ -15,8 +15,12 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+
 0.9.7.4 
-    * Emulated XMLDocument via Document and fixed XPath thanks to Joao Eiras and Michael(tm) Smith
+    * Fixed document.importNode check for IE 7 thanks to Waleed K. Abdulla
+
+0.9.7.4 
+    * Emulated XMLDocument via Document for Opera and fixed XPath thanks to Joao Eiras and Michael(tm) Smith
     * Removed MSXML 4/5 progIds (warnings/bugs) thanks to Duncan Booth and Rick Oosterholt
     * Fixed transformToDocument for MSXML 3 (probably the SP2 pooped version) thanks to bug 
       submitter Waleed K. Abdulla and the anonymous poster with the fix [1549749]
