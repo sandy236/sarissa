@@ -10,7 +10,6 @@
 		<div>
 			<p id="user">User: <xsl:value-of select="$user"/></p>
 			<xsl:apply-templates/>
-			<hr />
 		</div>
 	</xsl:template>
 	

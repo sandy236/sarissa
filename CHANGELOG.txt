@@ -16,7 +16,10 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 
-0.9.7.4 
+0.9.7.6 
+    * Fixed MXXMLWriter warning and XHTML transformToFragment testcase thanks to Waleed K. Abdulla
+    
+0.9.7.5 
     * Fixed document.importNode check for IE 7 thanks to Waleed K. Abdulla
 
 0.9.7.4 
