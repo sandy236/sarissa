@@ -16,6 +16,9 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 
+0.9.7.7
+    * Fixed Sarissa.updateContentFromURI bug (1614011) thanks to Arjen Duursma 
+
 0.9.7.6 
     * Fixed MXXMLWriter warning and XHTML transformToFragment testcase thanks to Waleed K. Abdulla
     * Fixed some typos/errors that broke Safari
