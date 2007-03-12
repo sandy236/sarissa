@@ -132,6 +132,8 @@
 		<li>Jason Diamond's <a href="http://jason.diamond.name/weblog/category/my-ajax-dot-net">My Ajax.NET library</a></li>
 		<li><a href="http://www.mojoportal.com/">MojoPortal</a>, an Object Oriented web site framework written in C# that runs under ASP.NET on Windows or under Mono on Linux or Mac OS X</li>
 		<li><a href="http://www.taleful.com/">Taleful.com</a> is an interactive storytelling website. This website was created to give people a place where they can express themselves and share their stories. All are welcome to come, read and post stories, share 	and collaborate with others in joint story projects, receive creative writing feedback and enhance their imagination.</li>
+	    <li><a href="ttp://www.csscripting.com/">Freja</a> (Framework for REstful Javascript Applications) is not yet another Ajax library. It is an Open-Source, MVC, High Level Ajax based Javascript Framework that lets you use your favorite javascript library if you wish. It actually plays well with other javascript toolkits and libraries (prototype, scriptaculous, dojo, etc..). </li>
+	    <li>The <a href="">HyperScope</a> is a high-performance thought processor that enables you to navigate, view, and link to documents in sophisticated ways. It is a completely client-side system implemented with Dojo and Sarissa.</li>
 	  </ul>
 	  <p>
 	  	Nearby, Dimitri Glazkov's XPath over HTML for MSIE (html-xpath) project at 
