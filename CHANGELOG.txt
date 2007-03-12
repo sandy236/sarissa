@@ -16,6 +16,12 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 
+0.9.7.8 
+    * TODO: fix deprecated IE XSLt emu checks
+    * Fixed spelling errors and had drinks thanks to Greg Higgins (TODO: burn paypal to the ground)
+    * Added support for Text Nodes in document.importNode implementation for IE
+    * Fixed clearParameters bug in MSXML 3.0 thanks to Hartmut Wynen
+     
 0.9.7.7
     * Fixed Sarissa.updateContentFromURI bug (1614011) thanks to Arjen Duursma 
 
