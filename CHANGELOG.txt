@@ -21,6 +21,8 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * Fixed spelling errors and had drinks thanks to Greg Higgins (TODO: burn paypal to the ground)
     * Added support for Text Nodes in document.importNode implementation for IE
     * Fixed clearParameters bug in MSXML 3.0 thanks to Hartmut Wynen
+    * Enchanced setParameter to allow clearing parameters when null is passed as a param value 
+      thanks to Hartmut Wynen
      
 0.9.7.7
     * Fixed Sarissa.updateContentFromURI bug (1614011) thanks to Arjen Duursma 
