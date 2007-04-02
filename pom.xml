@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  /*
+  * Copyright 2004-2005 Emmanouil Batsis
+  * 
+  * Licensed under the GNU General Public License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  * 
+  *      http://www.gnu.org/licenses/gpl.txt
+  * 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  * 
+  */
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+  http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>gr.abiss.js</groupId>
+  <artifactId>sarissa</artifactId>
+  <name>Sarissa</name>
+  <version>0.9.7.6-SNAPSHOT</version>
+  <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
+    APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
+    or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
+    what is lately known as "AJAX" development. Supported browsers are Mozilla - Firefox and family,
+    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari and Opera. Konq,
+    Safari and Opera offer no XSLT/XPath scripting support AFAIK. </description>
+  <url>http://dev.abiss.gr/sarissa/</url>
+  <inceptionYear>2003</inceptionYear>
+  <organization>
+    <name>Abiss.gr</name>
+    <url>http://www.abiss.gr</url>
+  </organization>
+  <mailingLists>
+    <mailingList>
+      <name>${pom.name} User Mailing list</name>
+      <subscribe>http://lists.sourceforge.net/lists/listinfo/${pom.artifactId}-users</subscribe>
+      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/${pom.artifactId}-users</unsubscribe>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=${pom.artifactId}-users</archive>
+    </mailingList>
+  </mailingLists>
+  <developers>
+    <developer>
+      <id>manos</id>
+      <name>Manos Batsis</name>
+      <email>manos (AT) abiss.gr</email>
+      <organization>Abiss.gr</organization>
+      <roles>
+        <role>Beach Bum</role>
+      </roles>
+      <timezone>+2</timezone>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>The GNU General Public License, Version 2</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:cvs:pserver:anonymous@${pom.artifactId}.cvs.sourceforge.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
+    <developerConnection>scm:cvs:ext:${maven.username}@${pom.artifactId}.cvs.sourceforge.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</developerConnection>
+    <url>http://${pom.artifactId}.cvs.sourceforge.net/${pom.artifactId}</url>
+  </scm>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <!--configuration>
+          <xdocDirectory> ${project.build.directory}/generated-site-files </xdocDirectory>
+        </configuration-->
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins> </plugins>
+  </reporting>
+  <dependencies> </dependencies>
+  <distributionManagement>
+    <site>
+      <id>md4j-website</id>
+      <!--url>scp://shell.sourceforge.net/home/groups/m/md/md4j/htdocs</url-->
+      <!-- staging -->
+      <url>scp://geekologue.com/home2/m/mbatsis/geekologue_com/${project.artifactId}</url>
+    </site>
+  </distributionManagement>
+</project>

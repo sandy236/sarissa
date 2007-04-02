@@ -1,0 +1,403 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Copyright 2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<faqs id="HOWTOs" title="HOWTOs">
+  <part id="General">
+    <faq id="ecmaunit">
+      <question>How to test Sarissa in your browser with ECMAUnit</question>
+      <answer>
+        <p> Sarissa tests are written using <a href="http://kupu.oscom.org/download/">ECMAUnit</a>,
+          a unit testing framework for ECMAScript (a.k.a. JavaScript). You can test Sarissa against
+          your browser <a href="test/testsarissa.html">here</a>. Please note that some tests may
+          fail if you run those directly from your filesystem; use a web server instead. </p>
+      </answer>
+    </faq>
+    <faq id="getxmldom">
+      <question>How to obtain a DOM Document object</question>
+      <answer>
+        <p> Obtaining a DOM Document object is as easy as calling a factory method: </p>
+        <source>
+    // Get a browser-specific DOM Document object
+    var oDomDoc = Sarissa.getDomDocument();
+        </source>
+        <p> Additionally, you can also pass two string parameters to that factory method. These
+          parameters are a namespace and a local name respectively. Their combination builds the
+          Document Element thus: </p>
+        <source>
+    var oDomDoc = Sarissa.getDomDocument("http://foo.org/ns/uri","foo");
+        </source>
+        <p> will build a representation of the following into memory: </p>
+        <source>
+    &lt;foo xmlns="http://foo.org/ns/uri"&gt;&lt;/foo&gt;
+        </source>
+        <p> In Mozilla, calling the <code>Sarissa.getDomDocument</code> method as above is
+          equivalent to: </p>
+        <source>
+          var oDomDoc = document.implementation.createDocument("http://foo.org/ns/uri","foo", null);
+        </source>
+        <p> In the case you are using Internet Explorer, the <code>Sarissa.getDomDocument</code>
+          method returns a DOM Document object, using the most recent MSXML ProgID available in your
+          system for that Class. So supposing MSXML4.0 is available, the equivalent statement for IE
+          is: </p>
+        <source>
+    var oDomDoc = new ActiveXObject("Msxml2.DOMDocument.4.0");
+        </source>
+        <p>
+          <span class="bold">If</span> the arguments to the factory method include a namespace URI
+          and node name, the proper DocumentElement is built and inserted in the Document object in
+          IE as well. </p>
+      </answer>
+    </faq>
+    <faq id="getxmlhttp">
+      <question>How to obtain an XMLHTTP Request object</question>
+      <answer>
+        <p>
+          Creating an XMLHTTP/XMLHttpRequest is as easy as 
+        </p>
+        <source>
+    var xmlhttp = new XMLHttpRequest();
+        </source>
+        <p>
+          In IE 7 this works ASIS. For users under IE prior to version 7, 
+          an XMLHTTP object is returned using the most
+          recent MSXML ProgID found in the client system. So, supposing that
+          the user has MSXML4.0 installed, the above is equal to:
+        </p>
+        <source>
+    var xmlhttp = new ActiveXObject("Msxml2.XMLHTTP.4.0");
+        </source>
+        <p>
+          Further coding on XMLHTTP objects is the same for both browsers,
+          so:
+        </p>
+        <source>
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET", "http://foo.org/someDocument.xml", false);
+    // if needed set header information 
+    // using the setRequestHeader method
+    xmlhttp.send('');
+    alert(new XMLSerializer().serializeToString(xmlhttp.responseXML));
+        </source>
+        <p>
+          will load the document from the server and then throw an alertbox
+          with the contents of the file to your screen. XMLHTTP objects
+          support both synchronous and asynchronous loading of remote XML
+          documents (note the third parameter of the
+          <code>xmlhttp.open</code> method above). In asynchronous loading,
+          you will probably want to call a function to handle the object readystatechange 
+          events, see if loading is completed and then do whatever. To do that, add your 
+          onreadystatechange handler function before calling the <code>send</code> method. Something
+          like:
+        </p>
+        <source>
+    xmlhttp.onreadystatechange = function() {
+      if(xmlhttp.readyState == 4)
+      alert("Finished loading!");
+    };
+        </source>
+      </answer>
+    </faq>
+    <faq id="loadstring">
+      <question>How to load an XML Document Object from an XML String</question>
+      <answer>
+        <p>
+          You can also make a DOM Document "load" using an String
+          variable with XML content. It's pretty simple using the
+          <code>DOMParser</code> object:
+        </p>
+        <source>
+    var oDomDoc = Sarissa.getDomDocument();
+    var xmlString = "&lt;root&gt;my xml!&lt;/root&gt;";
+    oDomDoc = (new DOMParser()).parseFromString(xmlString, "text/xml");
+    alert(new XMLSerializer().serializeToString(oDomDoc));
+        </source>
+      </answer>
+    </faq>
+    <faq id="serializedom">
+      <question>How to serialize an XML DOM node to a string</question>
+      <answer>
+        <p>
+          To serialize an XML DOM Node simply feed it to an <code>XMLSerializer</code> object:
+        </p>
+        <source>
+    var xmlString = new XMLSerializer().serializeToString(someXmlDomNode);
+        </source>
+      </answer>
+    </faq>
+    <faq id="parseerror">
+      <question>How to check for parsing errors</question>
+      <answer>
+        <p>
+          You can chack for and get a human-readable description of the error using 
+          the Sarissa getParseErrorText method, passing the document as the argument: 
+        </p>
+        <source>
+    if(Sarissa.getParseErrorText(oDomDoc) == Sarissa.PARSED_OK){
+      // The document was parsed/loaded just fine, go on
+      doSomething(oDomDoc);
+    } 
+    else{
+      // The document was not loaded correctly! Inform the user:
+      alert(Sarissa.getParseErrorText(oDomDoc));
+    };
+        </source>
+        <p>
+          Sarissa.getParseErrorText will return one of:
+        </p>
+        <ul>
+          <li><code>Sarissa.PARSED_OK</code> if the document was parsed with no errors</li>
+          <li><code>Sarissa.PARSED_EMPTY</code> if the document is empty (this may occur instead of an error using XmlHttpRequest)</li>
+          <li><code>Sarissa.PARSED_UNKNOWN_ERROR</code> if the document was not loaded for an unknown reason</li>
+          <li>A human readable description of the parsing error</li>
+        </ul> 
+        <p>
+          <span class="bold">Tip</span>: Wrap the result of Sarissa.getParseErrorText
+          in a <code>&quot;pre&quot;</code> element if you want to render it.
+        </p>
+        <p>
+          If you have used the deprecated .load methods, you can also use
+          the <code>parseError</code> property. The property always gives an
+          integer, anything other than zero signals an error.
+        </p>
+        <source>
+    // ...
+    oDomDoc.async = false;
+    oDomDoc.load("someDocument.xml");
+    if(oDomDoc.parseError.errorCode != 0)
+      alert("not well formed or other error!");
+    else
+      alert("loaded ok");
+        </source>
+      </answer>
+    </faq>
+    <faq id="transform">
+      <question>How to transform a DOM Document Object with XSLT</question>
+      <answer>
+        <p>
+          Both Mozilla and IE provide JavaScript interfaces to control XSLT
+          transformations thanks to Transformiix and MSXML3 (or above)
+          respectively. MSXML3+ is available with IE6 or as a seperate
+          instalation.
+        </p>
+        <p>
+          Sarissa emulates Mozilla's XSLTProcessor for Internet Explorer.  Note that using HTML 
+          as the transformation output  usually results in trouble in IE.
+          The XSLTProcessor object allows reusability of stylsheets; with it you can use the same stylesheet 
+          on more than one source file. You use the XSLTProcessor to control transformations and 
+          set / get stylesheet parameters as in the following example:
+        </p>
+        <source>
+    // create an instance of XSLTProcessor
+    var processor = new XSLTProcessor();
+    
+    // create a DOM Document containing an XSLT stylesheet
+    var xslDoc = Sarissa.getDomDocument();
+    var xslStr = "&lt;?xml version='1.0' encoding='UTF-8'?&gt;"+
+    "&lt;xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform' &gt;"+
+    "&lt;xsl:output method='html' version='1.0' encoding='UTF-8' indent='yes'/&gt;"+
+    "&lt;xsl:param name='title'&gt;&lt;xsl:value-of select=\"'default title'\"/&gt;&lt;/xsl:param&gt;"+
+    "&lt;xsl:template match='/'&gt;&lt;p class='test' title='{$title}'&gt;test&lt;/p&gt;"+
+    "&lt;/xsl:template&gt;&lt;xsl:template match='@*'&gt;"+
+    "&lt;/xsl:template&gt;&lt;/xsl:stylesheet&gt;";
+    xslDoc = (new DOMParser()).parseFromString(xslStr, "text/xml");
+    
+    // make the stylesheet reusable by importing it in the 
+    // XSLTProcessor
+    processor.importStylesheet(xslDoc);
+    
+    
+    // now XSLTProcessor is the 'proxy' for our stylesheet,
+    // the function below demonstrates usage
+    function test(paramValue) {
+      // set a stylesheet parameter
+      processor.setParameter(null, "title", paramValue);
+      // create source document
+      var xmlDoc = Sarissa.getDomDocument("http://foo.org/ns/uri","foo", null);
+      // transform the document 
+      var newDocument = processor.transformToDocument(xmlDoc);
+      // show transformation results
+      alert(new XMLSerializer().serializeToString(newDocument));
+    }
+    
+    
+    // test the above function
+    test("test 1");
+        </source>
+      </answer>
+    </faq>
+    <faq id="updateContentFromURI">
+      <question>How to update areas in your webpage from remote (optionally transformed) XML documents or XML DOM Nodes (oneliner!)</question>
+      <answer>
+        <p>
+          Loading a DOM document from a URL, transforming it and using it to update the content of an HTML element 
+          is a very common task if you are into "AJAX" apps. With Sarissa you can do it in a single line of code:
+        </p>
+        <source>
+    Sarissa.updateContentFromURI(sFromUrl, oTargetElement, xsltproc, callback, skipCache);
+        </source>
+        <p>
+          The parameters used here are:
+        </p>
+        <ol>
+          <li><code>sFromUrl</code>: the URL to make the request to, e.g. "http://localhost/mydoc.xml"</li> 
+          <li><code>oTargetElement</code>: the element to update, e.g. <code>document.getElementById('content')</code></li> 
+          <li><code>xsltproc</code> (optional): the transformer to use on the XML Document before updating the target element with it </li>
+          <li><code>callback</code> (optional): a Function object to execute once the update is finished successfuly, called as callback(oNode, oTargetElement)</li> 
+          <li><code>skipCache</code> (optional): whether to skip any cache</li> 
+        </ol>
+        <p>Quite similarly, if you want to use an XML DOM object instead of a remote XML document simply take a look at <code>Sarissa.updateContentFromNode</code></p>
+      </answer>
+    </faq>
+    <faq id="xpath">
+      <question>How to use XPath from JavaScript to select Nodes from an XML Document</question>
+      <answer>
+        <p>
+          Mozilla fully implements <a href="http://www.w3.org/TR/DOM-Level-3-XPath">DOM Level 3 XPath</a> so it was pretty trivial to implement IE's basic 
+          <code>selectNodes</code> and <code>selectSingleNode</code> methods, with full namespaces support. This is available in sarissa_ieemu_xpath.js.
+          Actually IE also needs the proprietary <code>setProperty</code> method for it's XPath implementation to work. 
+          <code>setProperty</code> is used for a number of things in IE. First you'll have to use it to make XPath available
+          for a certain document:
+        </p>
+        <source>
+    oDomDoc.setProperty("SelectionLanguage", "XPath");
+        </source>
+        <p>In IE, using <code>selectNodes</code> or <code>selectSingleNode</code> without the above first will give an error. 
+          Also, the same method with different parameters is used to allow IE to resolve namespace prefixes, for example:</p>
+        <source>
+    oDomDoc.setProperty("SelectionNamespaces", 
+    "xmlns:xhtml='http://www.w3.org/1999/xhtml'");
+        </source>
+        <p>If you want to allow IE to resolve multiple namespace prefixes, use a space delimited list like:</p>
+        <source>
+    oDomDoc.setProperty("SelectionNamespaces", 
+    "xmlns:xhtml='http://www.w3.org/1999/xhtml' 
+    xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
+        </source>
+        <p>Mozilla does not need any of the above. DOM L3 XPath is always available and namespaces are resolved err... automatically. 
+          Below is an example of using <code>selectNodes</code> and <code>selectSingleNode</code> when Sarissa is available to provide 
+          cross browser XPath functionality. For more documentation on these proprietary methods check with the documentation at the MSDN website (<a href="http://msdn.microsoft.com" title="link to Microsoft developer website">http://msdn.microsoft.com</a>).
+          I'm not providing a URL for that as they constantly change their URLs.</p>
+        <source>
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"&gt;
+    &lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"&gt;
+      &lt;head&gt;
+        &lt;title&gt;Untitled&lt;/title&gt;
+        &lt;script type="text/javascript" src="sarissa.js"&gt;
+        &lt;/script&gt;
+        &lt;script type="text/javascript" src="sarissa_ieemu_xpath.js"&gt;
+        &lt;/script&gt;
+        &lt;script type="text/javascript"&gt;
+        &lt;!--
+          function testXpath() {
+            var xmlDoc = Sarissa.getDomDocument();
+            var objNodeList;
+            var xmlStr = "&lt;?xml version='1.0' encoding='UTF-8'?&gt;"+
+            "&lt;xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'&gt;"+
+            "&lt;xsl:output method='xml' version='1.0' encoding='UTF-8' indent='yes'/&gt;"+
+            "&lt;xsl:template match='*'&gt;&lt;/xsl:template&gt;&lt;xsl:template match='@*'&gt;"+
+            "&lt;/xsl:template&gt;&lt;/xsl:stylesheet&gt;";
+            xmlDoc = (new DomParser()).parseFromString(xmlStr, "text/xml");
+            
+            <span style="bold">// the following two lines are needed for IE</span>
+            xmlDoc.setProperty("SelectionNamespaces", "xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
+            xmlDoc.setProperty("SelectionLanguage", "XPath");
+            
+            testSelectNodesOn(xmlDoc, "//xsl:template");
+            testSelectNodesOn(xmlDoc.documentElement, "//xsl:template");
+            testSelectNodesOn((xmlDoc.documentElement.getElementsByTagName("*"))[0], "//xsl:template");
+          }
+          function testSelectNodesOn(domNode, sXpath) {
+            alert("testing selectNodes("+sXpath+") on a "+domNode);
+            var objNodeList = domNode.selectNodes(sXpath);
+            for(i=0;i&lt;objNodeList.length;i++)
+              alert(new XMLSerializer().serializeToString(objNodeList[i]));
+            alert("testing selectSingleNode("+sXpath+") on a "+domNode);
+            var oElem = domNode.selectSingleNode(sXpath);
+            alert(oElem+"\n"+new XMLSerializer().serializeToString(oElem));
+          };
+        //--&gt;
+        &lt;/script&gt;
+      &lt;/head&gt;
+    
+      &lt;body&gt;
+        &lt;button onclick="testXpath()"&gt;test xpath&lt;/button&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+        </source>
+        
+      </answer>
+    </faq>
+    <faq id="nondom2xml">
+      <question>How to serialize non-DOM objects to XML</question>
+      <answer>
+        <p>
+          You can easily convert any non DOM object to XML using the <code>Sarissa.xmlize</code> 
+          method. Sarissa will preserve the structure and naming of the object graph, translating it to an XML tree. 
+          Collection items are translated to <code>array-item</code> elements. For an example, the following lines:
+        </p>
+        <source>
+    // create an object hierarchy       	
+    book.chapters = new Array();
+    book.chapters[0] = "Kingdom of Tags";
+    book.chapters[1] = "Fall";
+    book.chapters[2] = "Final battle";
+    book.chapters[3] = "Characters that need to be escaped: &lt;&lt; &lt;&lt; \"' \"\"\"&amp;&amp;'' &lt; &gt; &amp; ' \" ";
+    book.chapters[4] = "Epilogue";
+    book.editor = "Manos Batsis";
+    var publisher = new Object();
+    publisher.name = "Some Publisher";
+    book.publisher = publisher;
+    
+    // serialize to an XML string
+    var s = Sarissa.xmlize(book, "book");
+    alert("Generated XML:\n"+s)
+        </source>
+        <p>will generate the markup below:</p>
+        <source>
+    &lt;book&gt;
+      &lt;chapters&gt;
+        &lt;array-item key="0"&gt;Kingdom of fools&lt;/array-item&gt;
+        &lt;array-item key="1"&gt;Fall&lt;/array-item&gt;
+        &lt;array-item key="2"&gt;Final battle&lt;/array-item&gt;
+        &lt;array-item key="3"&gt;
+          Characters that need to be escaped: &amp;lt;&amp;lt; &amp;lt;&amp;lt; 
+          &amp;quot;&amp;apos; 
+          &amp;quot;&amp;quot;&amp;quot;&amp;amp;&amp;amp;&amp;apos;&amp;apos; 
+          &amp;lt; &amp;gt; &amp;amp; &amp;apos; &amp;quot; 
+        &lt;/array-item&gt;
+        &lt;array-item key="4"&gt;Epilogue&lt;/array-item&gt;
+      &lt;/chapters&gt;
+      &lt;editor&gt;Manos Batsis&lt;/editor&gt;
+      &lt;publisher&gt;
+        &lt;name&gt;Some Publisher&lt;/name&gt;
+      &lt;/publisher&gt;
+    &lt;/book&gt;
+        </source>
+        
+      </answer>
+    </faq>
+    <!--faq id="question">
+      <question>Question?</question>
+      <answer>
+        <p> Answer </p>
+      </answer>
+    </faq-->
+  </part>
+</faqs>

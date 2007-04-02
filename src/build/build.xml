@@ -2,7 +2,7 @@
 <!DOCTYPE project [
   <!ENTITY jslint SYSTEM "build_tools/fulljslint.js">
 ]>
-<project name="sarissa" default="dist" basedir=".">
+<project name="sarissa" default="dist" basedir="../../">
 	<description> 
  ################################################################
  Ant build file for Sarissa project (because building a 
@@ -30,15 +30,11 @@
 ################################################################
 	</description>
 	<property file="manos.properties"/>
-	<property name="dist.dir" location="dist"/>
+	<property name="dist.dir" location="target/dist"/>
 	<property name="doc.dir" location="doc"/>
 	<property name="src.dir" location="${basedir}"/>
 	<property name="jsdoc.dist.dir" location="build_tools/jsdoc"/>
 	<property name="jsdoc.out.dir" location="jsdoc_out"/>
-	<target name="clean" description="Deletes all generated files and directories">
-		<delete dir="${dist.dir}"/>
-		<delete dir="${jsdoc.out.dir}"/>
-	</target>
 	<target name="init" depends="clean">
 		<tstamp/>
 		<mkdir dir="${dist.dir}/temp"/>
