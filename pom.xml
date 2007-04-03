@@ -30,8 +30,8 @@
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
     or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
     what is lately known as "AJAX" development. Supported browsers are Mozilla - Firefox and family,
-    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari and Opera. Konq,
-    Safari and Opera offer no XSLT/XPath scripting support AFAIK. </description>
+    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari and Opera 9. Konq
+    and Safari offer no XSLT/XPath scripting support AFAIK. </description>
   <url>http://dev.abiss.gr/sarissa/</url>
   <inceptionYear>2003</inceptionYear>
   <organization>
@@ -71,6 +71,13 @@
   </scm>
 
   <build>
+    <!-- 2.0-beta-5 site plugin -->
+    <resources>
+      <resource>
+        <directory>src/main/js</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -88,9 +95,7 @@
   <distributionManagement>
     <site>
       <id>md4j-website</id>
-      <!--url>scp://shell.sourceforge.net/home/groups/m/md/md4j/htdocs</url-->
-      <!-- staging -->
-      <url>scp://geekologue.com/home2/m/mbatsis/geekologue_com/${project.artifactId}</url>
+      <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/${project.artifactId}</url>
     </site>
   </distributionManagement>
 </project>

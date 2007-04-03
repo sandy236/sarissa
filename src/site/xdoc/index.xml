@@ -30,10 +30,10 @@
 
         </section>
         <section name="License">
-            <p> Sarissa is distributed under the GNU GPL version 2 (see <a href="gpl.txt"
-                >gpl.txt</a>) or higher, GNU LGPL version 2.1 (see <a href="lgpl.txt">lgpl.txt</a>)
-                or higher and Apache Software License 2.0 or higher (see <a href="asl.txt"
-                >asl.txt</a>). You can use Sarissa according to any of those licenses. </p>
+            <p> Sarissa is distributed under the <a href="licenses/gpl.txt">GNU GPL</a> version 2 or
+                higher, <a href="licenses/lgpl.txt">GNU LGPL</a> version 2.1 or higher and <a
+                    href="licenses/asl.txt">Apache Software License</a> 2.0 or higher. You can use
+                Sarissa according to any of those licenses. </p>
         </section>
         <section name="Credits">
             <p>
@@ -41,13 +41,14 @@
                 anyone I fail to mention (because i do); please send over an email and I will fix it
                 :-) </p>
             <p> Sarissa is documented with <a href="http://jsdoc.sourceforge.net"
-                    title="Link to JSDoc project at SourceForge">JSDoc</a>, tested with <a
+                    title="Link to JSDoc project at SourceForge">JSDoc</a> and <a
+                    href="test/testsarissa.html">tested</a> with <a
                     href="http://kupu.oscom.org/download/">ECMAUnit</a>. The documentation and
                 distribution are build with <a href="http://ant.apache.org/">Maven</a> and <a
                     href="http://ant.apache.org/">Ant</a> respectively. In the Ant build file
                 Sarissa scripts are also checked using some custom code and <a
                     href="http://www.JSLint.com">JSLint</a> (comes with a really cool license). If
-                you want to use JSLint in your ant builds you might want to check out build.xml from
+                you want to use JSLint in your Ant builds you might want to check out build.xml from
                 CVS and head for the <code>jslint</code> target. </p>
             <p> Sarissa was inspired by articles and code available on the web, most notably the <a
                     href="http://webfx.eae.net/dhtml/ieemu/">IE Emu Series</a> [webfx.eae.net] at

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE project [
-  <!ENTITY jslint SYSTEM "build_tools/fulljslint.js">
-]>
+<!--DOCTYPE project [
+  <!ENTITY jslint SYSTEM "./fulljslint.js">
+]-->
 <project name="sarissa" default="dist" basedir="../../">
 	<description> 
  ################################################################
@@ -33,22 +33,19 @@
 	<property name="dist.dir" location="target/dist"/>
 	<property name="doc.dir" location="doc"/>
 	<property name="src.dir" location="${basedir}"/>
-	<property name="jsdoc.dist.dir" location="build_tools/jsdoc"/>
-	<property name="jsdoc.out.dir" location="jsdoc_out"/>
-	<target name="init" depends="clean">
-		<tstamp/>
-		<mkdir dir="${dist.dir}/temp"/>
-		<mkdir dir="${dist.dir}/temp/doc"/>
-		<copy todir="${dist.dir}/temp">
-			<fileset dir="${basedir}" includes="build_tools/ecmaunit/*.*"     excludes="**/cvs/**"/>
-			<fileset dir="${basedir}" includes="sarissa*.js"                  excludes="**/cvs/**"/>
-			<fileset dir="${basedir}" includes="CHANGELOG.txt"                excludes="**/cvs/**"/>
-			<fileset dir="${basedir}" includes="doc/**/*.*"                   excludes="**/cvs/**,jsdoc-project-summary"/>
-			<fileset dir="${basedir}" includes="sample-apps/minesweeper/**/*" excludes="**/cvs/**"/>
+	<property name="jsdoc.dist.dir" location="src/build/jsdoc"/>
+	<property name="jsdoc.out.dir" location="target/site/jsdoc"/>
+	<target name="init">
+		<copy todir="${jsdoc.out.dir}" overwrite="true">
+			<fileset dir="src/site/css" includes="sarissa.css" />
 		</copy>
-		<replace dir="${dist.dir}/temp" token="@sarissa.version@" value="${sarissa.version}"/>
+
+		<mkdir dir="target/site/js"/>
+		<copy todir="target/site/js" overwrite="true">
+			<fileset dir="target/classes" />
+		</copy>
 		<!-- convert tabs to spaces, and make files more friendly to windows user's editors (EOL, EOF) -->
-		<fixcrlf srcdir="${dist.dir}/temp" tab="remove" tablength="4" javafiles="no" eol="lf" eof="remove" 
+		<fixcrlf srcdir="target/site" tab="remove" tablength="4" javafiles="no" eol="lf" eof="remove" 
 			excludes="build_tools/**/*" 
 			includes="**/*.js, **/*.html, **/*.xml, **/*.txt"/>
 	</target>
@@ -100,7 +97,7 @@
         <scriptdef name="jslint" language="javascript">
             <element name="fileset" type="fileset"/>
 // include jslint, The JavaScript Verifier   
-&jslint;
+<!--&jslint;-->
          
 // Our code now
 <![CDATA[
