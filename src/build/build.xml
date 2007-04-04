@@ -30,47 +30,38 @@
 ################################################################
 	</description>
     
-    <property name="jsdoc.dist.dir" location="src/build/jsdoc"/>
     
-    <target name="generate-resources">
+    <target name="process-resources">
         <!--
             Generate JSDoc documentation and add it to the site 
         -->
         <mkdir dir="${project.reporting.outputDirectory}/jsdoc"/>
         <exec executable="perl" failonerror="true">
-            <arg line="${jsdoc.dist.dir}/jsdoc.pl  --public
+            <arg line="src/build/jsdoc/jsdoc.pl  --public
                 --directory ${project.reporting.outputDirectory}/jsdoc
                 --project-name ${ant.project.name} 
-                src/main/js/sarissa.js src/main/js/sarissa_dhtml.js src/main/js/sarissa_ieemu_load.js src/main/js/sarissa_ieemu_xslt.js src/main/js/sarissa_ieemu_xpath.js" />
+                ${project.reporting.outputDirectory}/sarissa" />
         </exec>
-        <replace dir="${project.reporting.outputDirectory}/jsdoc" includes="**/*.html" token="white" value="#eeeeee"/>
-        <replace dir="${project.reporting.outputDirectory}/jsdoc" includes="**/*.html" token="#EEEEFF" value="#b8cade"/>
-    </target>
-    
-    <target name="process-resources">
-        <!--
-            Copy generated site in  ${project.build.directory}/classes/documentation
-            so that they can be included in the generated package. Note that the site 
-            has already been generated in the generate-resources phase.
-        -->
-        <mkdir dir="${project.build.directory}/classes/documentation"/>
-        <copy todir="${project.build.directory}/classes/documentation">
-            <fileset dir="${project.reporting.outputDirectory}"/>
-        </copy>
         <!-- Overwrite jsdoc css -->
         <copy todir="${project.reporting.outputDirectory}/jsdoc">
-            <fileset dir="${project.reporting.outputDirectory}/css">
+            <fileset dir="src/site/resources/css">
                 <include name="${ant.project.name}.css" />
             </fileset>
         </copy>
         <move file="${project.reporting.outputDirectory}/jsdoc/${ant.project.name}.css" tofile="${project.reporting.outputDirectory}/jsdoc/stylesheet.css"/>
+        <replace dir="${project.reporting.outputDirectory}/jsdoc" includes="**/*.html" token="white" value="#eeeeee"/>
+        <replace dir="${project.reporting.outputDirectory}/jsdoc" includes="**/*.html" token="#EEEEFF" value="#b8cade"/>
+        
+        <!-- convert tabs to spaces, and make files more friendly to windows user's editors (EOL, EOF) -->
+        <fixcrlf srcdir="${project.reporting.outputDirectory}" tab="remove" tablength="4" javafiles="no" eol="lf" eof="remove"
+            includes="**/*.js, **/*.html, **/*.xml, **/*.txt"/>
     </target>
+    
 	 
-    <target name="test" description="">
+    <target name="test">
         <!-- 
             Run JSLint against the Sarissa scripts
         -->
-        
         <scriptdef name="jslint" language="javascript" classpathref="maven.plugin.classpath">
             <element name="fileset" type="fileset"/>
 // include jslint, The JavaScript Verifier using an entity 

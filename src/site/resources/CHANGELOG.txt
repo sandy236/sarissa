@@ -16,7 +16,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 
-0.9.7.8 
+0.9.7.7
     * TODO: fix deprecated IE XSLt emu checks
     * Added Sarissa.VERSION thanks to  Mike Brown 
     * Fixed spelling errors and had drinks thanks to Greg Higgins
@@ -25,8 +25,6 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * Fixed clearParameters bug in MSXML 3.0 thanks to Hartmut Wynen
     * Enchanced setParameter to allow clearing parameters when null is passed as a param value 
       thanks to Hartmut Wynen
-     
-0.9.7.7
     * Fixed Sarissa.updateContentFromURI bug (1614011) thanks to Arjen Duursma 
 
 0.9.7.6 

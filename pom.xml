@@ -25,7 +25,8 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.7.6-SNAPSHOT</version>
+  <version>0.9.7.7-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
     or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
@@ -65,9 +66,9 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:cvs:pserver:anonymous@${pom.artifactId}.cvs.sourceforge.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
-    <developerConnection>scm:cvs:ext:${maven.username}@${pom.artifactId}.cvs.sourceforge.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</developerConnection>
-    <url>http://${pom.artifactId}.cvs.sourceforge.net/${pom.artifactId}</url>
+    <connection>scm:cvs:pserver:anonymous@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
+    <developerConnection>scm:cvs:ext:${maven.username}@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</developerConnection>
+    <url>http://${pom.artifactId}.cvs.sf.net/${pom.artifactId}</url>
   </scm>
   <build>
     <!--  site plugin -->
@@ -99,20 +100,6 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>antrun-generate-resources</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <tasks>
-                <ant target="generate-resources" antfile="src/build/build.xml" inheritrefs="true" inheritAll="true">
-                  <property name="project.reporting.outputDirectory" value="${project.reporting.outputDirectory}"/>
-                </ant>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-          <!--execution>
             <id>antrun-process-resources</id>
             <phase>process-resources</phase>
             <configuration>
@@ -127,7 +114,7 @@
               <goal>run</goal>
             </goals>
           </execution>
-          <execution>
+          <!--execution>
             <id>antrun-test</id>
             <phase>test</phase>
             <configuration>
@@ -142,19 +129,45 @@
           </execution-->
         </executions>
         <dependencies>
+        <dependency>
+          <groupId>ant</groupId>
+          <artifactId>ant-antlr</artifactId>
+          <version>1.6.5</version>
+        </dependency>
           <dependency>
             <groupId>bsf</groupId>
             <artifactId>bsf</artifactId>
             <version>2.3.0</version>
           </dependency>
+          <dependency>
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+            <version>1.6R5</version>
+          </dependency>
         </dependencies>
       </plugin>
-    </plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins> 
   </build>
   <reporting>
     <plugins> </plugins>
   </reporting>
-  <dependencies> </dependencies>
   <distributionManagement>
     <site>
       <id>md4j-website</id>
