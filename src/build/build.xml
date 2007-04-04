@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--DOCTYPE project [
+<!DOCTYPE project [
   <!ENTITY jslint SYSTEM "./fulljslint.js">
-]-->
+]>
 <project name="sarissa" default="dist" basedir="../../">
 	<description> 
  ################################################################
@@ -29,75 +29,52 @@
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ################################################################
 	</description>
-	<property file="manos.properties"/>
-	<property name="dist.dir" location="target/dist"/>
-	<property name="doc.dir" location="doc"/>
-	<property name="src.dir" location="${basedir}"/>
-	<property name="jsdoc.dist.dir" location="src/build/jsdoc"/>
-	<property name="jsdoc.out.dir" location="target/site/jsdoc"/>
-	<target name="init">
-		<copy todir="${jsdoc.out.dir}" overwrite="true">
-			<fileset dir="src/site/css" includes="sarissa.css" />
-		</copy>
-
-		<mkdir dir="target/site/js"/>
-		<copy todir="target/site/js" overwrite="true">
-			<fileset dir="target/classes" />
-		</copy>
-		<!-- convert tabs to spaces, and make files more friendly to windows user's editors (EOL, EOF) -->
-		<fixcrlf srcdir="target/site" tab="remove" tablength="4" javafiles="no" eol="lf" eof="remove" 
-			excludes="build_tools/**/*" 
-			includes="**/*.js, **/*.html, **/*.xml, **/*.txt"/>
-	</target>
-	<target name="jsdoc" depends="init" description="Generates the JSdoc documentation in
-		jsdoc.out.dir">
-		<mkdir dir="${jsdoc.out.dir}"/>
-		<exec executable="perl" failonerror="true">
-			<arg line="${jsdoc.dist.dir}/jsdoc.pl  --public
-                			--directory ${jsdoc.out.dir} 
-	   			--project-name ${ant.project.name} 
-	   			--project-summary doc/jsdoc-project-summary.xml ${dist.dir}/temp/sarissa.js ${dist.dir}/temp/sarissa_dhtml.js ${dist.dir}/temp/sarissa_ieemu_load.js ${dist.dir}/temp/sarissa_ieemu_xslt.js ${dist.dir}/temp/sarissa_ieemu_xpath.js" />
-		</exec>
-		<replace dir="${jsdoc.out.dir}" includes="**/*.html" token="white" value="#eeeeee"/>
-		<replace dir="${jsdoc.out.dir}" includes="**/*.html" token="#EEEEFF" value="#b8cade"/>
-		<copy todir="${jsdoc.out.dir}" overwrite="true">
-			<fileset dir="${doc.dir}" includes="**/*.css" />
-		</copy>
-	</target>
-	<target name="website.upload" depends="dist" description="Update SourceForge website using the JSDoc generated API documentation">
-		<scp trust="yes" 
-			todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.webserver}:${sourceforge.htdocs.dir}">
-			<fileset dir="${dist.dir}/temp" includes="**/*.*"/>
-		</scp>
-	</target>
-	<target name="dist" depends="jsdoc" description="Assembles a destribution archive in dist.dir">
-		<copy todir="${dist.dir}/temp/doc">
-			<fileset dir="${jsdoc.out.dir}" includes="**/*.*" excludes="**/cvs/**"/>
-		</copy>
-		<zip zipfile="${dist.dir}/${ant.project.name}${sarissa.version}.zip">
-			<zipfileset dir="${dist.dir}/temp" prefix="${ant.project.name}" includes="**/*.*"/>
-		</zip>
-	</target>
-	<target name="dist.upload" description="Upload a distribution zip to SourceForge">
-		<available file="${dist.dir}/${ant.project.name}${sarissa.version}.zip"
-			property="release.available"/>
-		<fail unless="release.available" message="No distribution file with name:
-			'${ant.project.name}${sarissa.version}.zip' available, build with 'ant dist' to upload"/>
-		<fail unless="sourceforge.password" message="Please specify sourceforge.password (typicaly
-			your email address) with '-Dsourceforge.password=&lt;value&gt;' "/>
-		<echo>Uploading '${ant.project.name}${sarissa.version}.zip' to '${sourceforge.server}'</echo>
-		<ftp server="${sourceforge.server}" remotedir="${sourceforge.dir}"
-			userid="${sourceforge.userid}" password="${sourceforge.password}" verbose="yes"
-			binary="yes" passive="yes">
-			<fileset dir="${dist.dir}" includes="${ant.project.name}${sarissa.version}.zip"/>
-		</ftp>
-	</target>
- 
-    <target name="jslint" description="Run JSLint against the Sarissa scripts">
-        <scriptdef name="jslint" language="javascript">
+    
+    <property name="jsdoc.dist.dir" location="src/build/jsdoc"/>
+    
+    <target name="generate-resources">
+        <!--
+            Generate JSDoc documentation and add it to the site 
+        -->
+        <mkdir dir="${project.reporting.outputDirectory}/jsdoc"/>
+        <exec executable="perl" failonerror="true">
+            <arg line="${jsdoc.dist.dir}/jsdoc.pl  --public
+                --directory ${project.reporting.outputDirectory}/jsdoc
+                --project-name ${ant.project.name} 
+                src/main/js/sarissa.js src/main/js/sarissa_dhtml.js src/main/js/sarissa_ieemu_load.js src/main/js/sarissa_ieemu_xslt.js src/main/js/sarissa_ieemu_xpath.js" />
+        </exec>
+        <replace dir="${project.reporting.outputDirectory}/jsdoc" includes="**/*.html" token="white" value="#eeeeee"/>
+        <replace dir="${project.reporting.outputDirectory}/jsdoc" includes="**/*.html" token="#EEEEFF" value="#b8cade"/>
+    </target>
+    
+    <target name="process-resources">
+        <!--
+            Copy generated site in  ${project.build.directory}/classes/documentation
+            so that they can be included in the generated package. Note that the site 
+            has already been generated in the generate-resources phase.
+        -->
+        <mkdir dir="${project.build.directory}/classes/documentation"/>
+        <copy todir="${project.build.directory}/classes/documentation">
+            <fileset dir="${project.reporting.outputDirectory}"/>
+        </copy>
+        <!-- Overwrite jsdoc css -->
+        <copy todir="${project.reporting.outputDirectory}/jsdoc">
+            <fileset dir="${project.reporting.outputDirectory}/css">
+                <include name="${ant.project.name}.css" />
+            </fileset>
+        </copy>
+        <move file="${project.reporting.outputDirectory}/jsdoc/${ant.project.name}.css" tofile="${project.reporting.outputDirectory}/jsdoc/stylesheet.css"/>
+    </target>
+	 
+    <target name="test" description="">
+        <!-- 
+            Run JSLint against the Sarissa scripts
+        -->
+        
+        <scriptdef name="jslint" language="javascript" classpathref="maven.plugin.classpath">
             <element name="fileset" type="fileset"/>
-// include jslint, The JavaScript Verifier   
-<!--&jslint;-->
+// include jslint, The JavaScript Verifier using an entity 
+&jslint;
          
 // Our code now
 <![CDATA[
@@ -147,7 +124,7 @@ for (i = 0; i < filesets.size(); ++i) {
         </scriptdef>
      
         <jslint>
-            <fileset dir="${src.dir}">
+            <fileset dir="src/main/js">
                 <include name="*js"/>
              </fileset>
          </jslint>   
