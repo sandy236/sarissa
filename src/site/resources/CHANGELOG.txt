@@ -17,7 +17,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 
 
 0.9.7.7
-    * TODO: fix deprecated IE XSLt emu checks
+    * Fixed deprecated IE XSLT emu checks and Sarissa.getParseErrorText bug thanks to wfay
     * Added Sarissa.VERSION thanks to  Mike Brown 
     * Fixed spelling errors and had drinks thanks to Greg Higgins
     * Had drinks and a good time thanks to Cedric - cedsav
