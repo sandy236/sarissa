@@ -25,6 +25,7 @@
         <ol>
           <li>Verify your XML is loaded. If it is not, you may want to check it's well formness as well as the MIME type sent by the server (should be text/xml).</li>
           <li>If this is about your XSLT not working, try setting the <code>xsl:output</code> method to 'xml'.</li>
+          <li>If this is about a function/method not included  in the main library, you need to include the appropriate file like sarissa_dhtml.js.</li>
         </ol>
       </answer>
     </faq>

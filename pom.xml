@@ -25,7 +25,7 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.7.7</version>
+  <version>0.9.7.8</version>
   <packaging>pom</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
@@ -47,6 +47,10 @@
       <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=${pom.artifactId}-users</archive>
     </mailingList>
   </mailingLists>
+  <issueManagement>
+    <system>Sourceforge Tracker</system>
+    <url>http://sourceforge.net/tracker/?group_id=75155</url>
+  </issueManagement>
   <developers>
     <developer>
       <id>manos</id>

@@ -261,6 +261,7 @@
           <li><code>skipCache</code> (optional): whether to skip any cache</li> 
         </ol>
         <p>Quite similarly, if you want to use an XML DOM object instead of a remote XML document simply take a look at <code>Sarissa.updateContentFromNode</code></p>
+        <p><strong>Note</strong>: To use <code>updateContentFromURI</code> or <code>updateContentFromNode</code> you need to include sarissa_dhtml.js  in your HTML page.</p>
       </answer>
     </faq>
     <faq id="xpath">

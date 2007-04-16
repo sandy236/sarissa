@@ -16,6 +16,9 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 
+0.9.7.8
+    * Fixed XSLTProcessor.getParameter bug thanks to Jason (MoonScript sf user)
+
 0.9.7.7
     * Fixed deprecated IE XSLT emu checks and Sarissa.getParseErrorText bug thanks to wfay
     * Added Sarissa.VERSION thanks to  Mike Brown 
