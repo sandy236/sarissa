@@ -31,6 +31,9 @@
         <logo img="http://sflogo.sourceforge.net/sflogo.php?group_id=75155&amp;type=1"
             name="Powered by Sourceforge services for Open Source projects"
             href="http://sourceforge.net/projects/sarissa"/>
+        <logo img="http://www.cenqua.com/images/fisheyed2.gif" 
+            name="Source Perspective by FishEye" 
+            href="http://www.cenqua.com/fisheye" />
         <logo img="./images/maven-button-1.png" name="Powered by Apache Maven"
             href="http://maven.apache.org/"/>
     </poweredBy>
@@ -43,6 +46,7 @@
         <links>
             <item name="Abiss.gr" href="http://www.abiss.gr/"/>
             <item name="SF Project" href="http://sourceforge.net/projects/sarissa/"/>
+            <item name="Fisheye" href="http://fisheye1.cenqua.com/browse/sarissa"/>
         </links>
         <menu name="Get Sarissa">
             <item name="Download" class="external"

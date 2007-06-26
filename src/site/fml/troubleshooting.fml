@@ -1,32 +1,31 @@
 <?xml version="1.0"?>
-
-<!--
-  ~ Copyright 2006 The Apache Software Foundation.
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-
 <faqs id="troubleshooting" title="Troubleshooting">
   <part id="troubleshooting">
-    <faq id="doesnotwork">
-      <question>It does not work</question>
+    <faq id="xmlload">
+      <question>My XML or XSLT file cannot be loaded to a DOM</question>
       <answer>
-        <p> Right. Here is the checklist: </p>
+	   <ol>
+          <li>Verify that your file is saved with the correct encoding, as denoted by the XML prolog. If the markup is generated server side, you need to set the HTTP response encoding using your API os choice (JSP, PHP etc.), usually something like <code>response.setEncoding(encoding)</code> </li>
+          <li>Verify that your file is served using a proper MIME type (i.e. text/xml). Again, if the markup is generated server side you need to do that through your API (something like  <code>response.setContentType("text/xml") </code>.</li>
+		</ol>
+      </answer>
+    </faq>
+
+    <faq id="xslt">
+      <question>My XSLT transform does not work</question>
+      <answer>
         <ol>
-          <li>Verify your XML is loaded. If it is not, you may want to check it's well formness as well as the MIME type sent by the server (should be text/xml).</li>
-          <li>If this is about your XSLT not working, try setting the <code>xsl:output</code> method to 'xml'.</li>
-          <li>If this is about a function/method not included  in the main library, you need to include the appropriate file like sarissa_dhtml.js.</li>
-        </ol>
+          <li>Verify your XML is loaded (see <a href="#xmlload">above</a>).</li>
+          <li>Verify your transformation result is well formed. For example, there can be only one root element.</li>
+          <li>Try setting the <code>xsl:output</code> method to 'xml'.</li>
+		</ol>
+      </answer>
+    </faq>
+
+    <faq id="nonmainfiles">
+      <question>XPath or other functions are not available</question>
+      <answer>
+        <p>You need to include the appropriate sarissa javascript file in your webpage, for example sarissa_dhtml.js.</p>
       </answer>
     </faq>
   </part>
