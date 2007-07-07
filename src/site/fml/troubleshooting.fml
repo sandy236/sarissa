@@ -25,7 +25,7 @@
     <faq id="nonmainfiles">
       <question>XPath or other functions are not available</question>
       <answer>
-        <p>You need to include the appropriate sarissa javascript file in your webpage, for example sarissa_dhtml.js.</p>
+        <p>You need to include the appropriate sarissa javascript file in your webpage, for example sarissa_ieemu_xpath.js.</p>
       </answer>
     </faq>
   </part>
