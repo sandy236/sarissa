@@ -17,8 +17,9 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 
 0.9.8.0
     * Changed importStylesheet for IE thanks to dougdomeny. 
-    * Support for Javeline XPath/XSLT implementations thanks to Jean Sebastien Baklouti and  
-      Ruben Daniels, see <Javeline URL> 
+    * Fixed XSLT parameter bugs thanks to Vitaliy Ischenko
+    * Added support for Javeline's XPath/XSLT compatibility library thanks 
+      to Jean Sebastien Baklouti and Ruben Daniels. 
 
 0.9.7.8
     * Fixed XSLTProcessor.getParameter bug thanks to Jason (MoonScript sf user)

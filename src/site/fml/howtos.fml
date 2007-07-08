@@ -24,7 +24,8 @@
         <p> Sarissa tests are written using <a href="http://kupu.oscom.org/download/">ECMAUnit</a>,
           a unit testing framework for ECMAScript (a.k.a. JavaScript). You can test Sarissa against
           your browser <a href="test/testsarissa.html">here</a>. Please note that some tests may
-          fail if you run those directly from your filesystem; use a web server instead. </p>
+          fail if you run those directly from your filesystem due to security restrictions in your browser; 
+          use a web server instead. </p>
       </answer>
     </faq>
     <faq id="getxmldom">
@@ -238,6 +239,25 @@
     // test the above function
     test("test 1");
         </source>
+      </answer>
+    </faq>
+    <faq id="javeline">
+      <question>How to use XSLT/XPath in browsers that provide no XPath/XSLT support?</question>
+      <answer>
+        <p> The Javeline folk have created an 
+          <a href="http://developer.javeline.com/downloads.php">XPath/XSLT compatibility library</a>
+          in pure javascript. To use the library with Sarissa, import the scripts to your webpage in the folowing order:
+        </p>
+        <ol>
+          <li>sarissa.js</li>
+          <li>javeline_xpath.js</li>
+          <li>javeline_xslt.js</li>
+          <li>Other Sarissa files you might need like sarissa_dhtml.js</li>
+        </ol>
+        <p>
+          The Javeline XPath/XSLT compatibility library will provide implementations of 
+          XSLTProcessor and IE's XPath related extentions (i.e. selectNodes etc.).
+        </p>
       </answer>
     </faq>
     <faq id="updateContentFromURI">
