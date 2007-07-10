@@ -244,9 +244,11 @@
     <faq id="javeline">
       <question>How to use XSLT/XPath in browsers that provide no XPath/XSLT support?</question>
       <answer>
-        <p> The Javeline folk have created an 
-          <a href="http://developer.javeline.com/downloads.php">XPath/XSLT compatibility library</a>
-          in pure javascript. To use the library with Sarissa, import the scripts to your webpage in the folowing order:
+        <p> The Javeline folk have created an XPath/XSLT compatibility library in pure javascript. 
+          The library is available for  
+          <a href="http://developer.javeline.com/downloads.php">download</a> on their 
+          <a href="http://developer.javeline.com">dev site</a>.
+          To use the library with Sarissa, import the scripts to your webpage in the folowing order:
         </p>
         <ol>
           <li>sarissa.js</li>
