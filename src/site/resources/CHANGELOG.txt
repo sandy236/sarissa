@@ -17,7 +17,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 
 0.9.8.0
     * Changed importStylesheet for IE thanks to dougdomeny. 
-    * Fixed XSLT parameter bugs thanks to Vitaliy Ischenko
+    * Fixed XSLT parameter clearing bugs thanks to Vitaliy Ischenko
     * Added support for Javeline's XPath/XSLT compatibility library thanks 
       to Jean Sebastien Baklouti and Ruben Daniels. 
 
