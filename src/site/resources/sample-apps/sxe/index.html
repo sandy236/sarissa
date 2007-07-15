@@ -7,7 +7,7 @@
          bb-xedit cross-browser version 0.1a
       </title>
       <!-- link rel="stylesheet" type="text/css" href="../css/common.css" / -->
-      <link rel="stylesheet" type="text/css" href="../css/xedHTMversion.css" />
+      <link rel="stylesheet" type="text/css" href="css/xedHTMversion.css" />
       <style type="text/css">
        <!-- 
 body{
@@ -20,17 +20,17 @@ margin:0px;
 }         
        -->
       </style>
-      <script type="text/javascript" src="../../../sarissa.js"> </script>
-      <script type="text/javascript" src="../../../sarissa_dhtml.js"> </script>
-      <script type="text/javascript" src="../js/sxe.js"> </script>
+      <script type="text/javascript" src="../../sarissa/sarissa.js"> </script>
+      <script type="text/javascript" src="../../sarissa/sarissa_dhtml.js"> </script>
+      <script type="text/javascript" src="js/sxe.js"> </script>
    </head>
    <body>
    <div>
       <div id="messages">
       </div>
-      <button onclick="loadXmlFromUri('challenge.xml')">load xml</button>
-      <button onclick="showSourceView()">View Source</button>
-      <button onclick="document.getElementById('sourceView').value = document.getElementById('gridView').innerHTML">Force Source</button>
+      <button style="width:120px;" onclick="loadXmlFromUri('xslt/grid2xml.xml')">load xml</button>
+      <button style="width:120px;" onclick="showSourceView()">View Source</button>
+      <button style="width:120px;" onclick="document.getElementById('sourceView').value = document.getElementById('gridView').innerHTML">Force Source</button>
       <div id="gridView"> </div>
       <textarea id="sourceView"> </textarea>
 	</div>

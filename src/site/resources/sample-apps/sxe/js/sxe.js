@@ -20,8 +20,8 @@ var grid2xml = new XSLTProcessor();
 function init() {
     log = new MessageDisplay("messages");
     log.display("Loading stylesheets...");
-    prepareProcessor("../xsl/xml2grid.xml", xml2grid);
-    //prepareProcessor("../xsl/grid2xml.xml", grid2xml);
+    prepareProcessor("xslt/xml2grid.xml", xml2grid);
+    prepareProcessor("xslt/grid2xml.xml", grid2xml);
 };
 window.onload = init;
 
@@ -51,7 +51,8 @@ function loadXmlFromUri(url) {
 function showSourceView() {
 	var source = document.getElementById("gridView").innerHTML;
 	var doc = (new DOMParser()).parseFromString(source, "text/xml");
-	Sarissa.updateContentFromNode(doc, document.getElementById("sourceView"), grid2xml);
+	//Sarissa.updateContentFromNode(doc, document.getElementById("sourceView"), grid2xml);
+	document.getElementById("sourceView").value = new XMLSerializer().serializeToString(grid2xml.transformToDocument(doc));
 };
 
 
