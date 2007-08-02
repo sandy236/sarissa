@@ -12,7 +12,9 @@
        <!-- 
 body{
 margin:0px;         
-}
+          }
+#sourceView{width:100%;height:500px;}
+#gridView{width:100%;height:500px;overflow:auto;}
 #messages{
          width:100%;
          height:100px;
@@ -28,7 +30,7 @@ margin:0px;
    <div>
       <div id="messages">
       </div>
-      <button style="width:120px;" onclick="loadXmlFromUri('xslt/grid2xml.xml')">load xml</button>
+      <button style="width:120px;" onclick="loadXmlFromUri('test.xml')">load xml</button>
       <button style="width:120px;" onclick="showSourceView()">View Source</button>
       <button style="width:120px;" onclick="document.getElementById('sourceView').value = document.getElementById('gridView').innerHTML">Force Source</button>
       <div id="gridView"> </div>

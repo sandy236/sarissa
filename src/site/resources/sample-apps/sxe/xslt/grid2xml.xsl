@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:xed="http://www.humanmarkup.org/ns/manos/appSpace/xmledit1">
+<xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:output method="text" indent="yes"/>
 	<xsl:strip-space elements="*" />
-	<xsl:template match="/">
+	<xsl:template match="/|*">
 		<xsl:apply-templates/>
 	</xsl:template>
 	
@@ -13,7 +13,7 @@
     </xsl:template>
 	
 	<!-- scrap elements -->
-	<xsl:template match="TABLE[@class='elemTBL']">
+	<xsl:template match="TABLE[@class='element']">
 		<xsl:variable name="indent">
     		<xsl:call-template name="indentTmpl"/>
     	</xsl:variable>
@@ -23,12 +23,12 @@
 		<xsl:variable name="elemName" select="TBODY/TR/TD[2]/TEXTAREA/text()"/>
 		<xsl:text></xsl:text>
 		<xsl:text>&lt;</xsl:text><xsl:value-of select="$elemName"/>		
-			<xsl:for-each select="TBODY/TR/TD[2]/DIV/TABLE[@class='nsTbl']">
+			<xsl:for-each select="TBODY/TR/TD[2]/DIV/TABLE[@class='namespace']">
 				<!-- copy xmlns declarations and attributes -->
 				<xsl:text> </xsl:text><xsl:value-of select="TBODY/TR/TD[2]/TEXTAREA/text()"/>
 					<xsl:text>="</xsl:text><xsl:value-of select="TBODY/TR/TD[3]/TEXTAREA/text()"/><xsl:text>"</xsl:text>
 			</xsl:for-each>
-			<xsl:for-each select="TBODY/TR/TD[3]/DIV/TABLE[@class='attrTBL']"><!--  -->
+		<xsl:for-each select="TBODY/TR/TD[3]/DIV/TABLE[@class='attribute']"><!--  -->
 				<!-- copy xmlns declarations and attributes -->
 				<xsl:text> </xsl:text><xsl:value-of select="TBODY/TR/TD[2]/TEXTAREA/text()"/>
 					<xsl:text>="</xsl:text><xsl:value-of select="TBODY/TR/TD[3]/TEXTAREA/text()"/><xsl:text>"</xsl:text>
@@ -39,7 +39,7 @@
 			<xsl:text>&lt;/</xsl:text><xsl:value-of select="$elemName"/><xsl:text>&gt;</xsl:text>
 	</xsl:template>
 	<!-- scrap comments -->
-	<xsl:template match="TABLE[@class='commentTBL']">
+	<xsl:template match="TABLE[@class='comment']">
 		<xsl:variable name="indent">
     		<xsl:call-template name="indentTmpl"/>
     	</xsl:variable>
@@ -51,7 +51,7 @@
 		<xsl:text>--&gt;</xsl:text>
 	</xsl:template>
 	<!-- scrap PIs -->
-	<xsl:template match="TABLE[@class='piTBL']">
+	<xsl:template match="TABLE[@class='pi']">
 		<xsl:variable name="indent">
     		<xsl:call-template name="indentTmpl"/>
     	</xsl:variable>
@@ -65,7 +65,7 @@
 		<xsl:text>?&gt;</xsl:text>
 	</xsl:template>
 	<!-- scrap txt nodes-->
-	<xsl:template match="TABLE[@class='textTBL']">
+	<xsl:template match="TABLE[@class='text']">
 		<xsl:variable name="indent">
     		<xsl:call-template name="indentTmpl"/>
     	</xsl:variable>

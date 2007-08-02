@@ -15,6 +15,15 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+0.9.8.1
+    * Added compressed versions of all script files; they are created automatically
+      thanks to the MobilVox Maven JavaScript Plugin, see
+      http://www.mobilvox.com/projects/maven-js-plugin/
+    * Added syntax highlighting to the HOWTOs thanks to the integration of SyntaxHighlighter
+      by Alex Gorbatchev to our custom Maven skin, see 
+      http://code.google.com/p/syntaxhighlighter/
+
+
 0.9.8.0
     * Changed importStylesheet for IE thanks to dougdomeny. 
     * Fixed XSLT parameter clearing bugs thanks to Vitaliy Ischenko

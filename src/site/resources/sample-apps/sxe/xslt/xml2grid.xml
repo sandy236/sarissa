@@ -70,7 +70,7 @@
 	Template for namespace declarations
 	-->
 	<xsl:template match="*|@*" mode="ns-resolve">
-		<table cellspacing="0" cellpadding="0" class="namespace">
+		<table cellspacing="0" cellpadding="0" class="namespace" style="border:1px solid blue;">
 			<tr>
 				<xsl:call-template name="noButtonTD"/>
 				<td class="namespace-prefix">
@@ -83,9 +83,9 @@
 					</textarea>
 				</td>
 				<td class="namespace-uri">
-					<textarea class="attrValue" wrap="soft">
-						s<xsl:value-of select="namespace-uri()"/>
-					</textarea>
+					<!--textarea class="attrValue" wrap="soft"-->
+						<xsl:value-of select="namespace-uri()"/>
+						<!--/textarea-->
 				</td>
 			</tr>
 		</table>

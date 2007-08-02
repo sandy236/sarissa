@@ -40,7 +40,11 @@
             <arg line="src/build/jsdoc/jsdoc.pl  --public
                 --directory ${project.reporting.outputDirectory}/jsdoc
                 --project-name ${ant.project.name} 
-                ${project.reporting.outputDirectory}/sarissa" />
+                ${project.reporting.outputDirectory}/sarissa/sarissa.js
+                ${project.reporting.outputDirectory}/sarissa/sarissa_dhtml.js
+                ${project.reporting.outputDirectory}/sarissa/sarissa_ieemu_xpath.js
+                ${project.reporting.outputDirectory}/sarissa/sarissa_ieemu_xslt.js
+                ${project.reporting.outputDirectory}/sarissa/sarissa_ieemu_load.js" />
         </exec>
         <!-- Overwrite jsdoc css -->
         <copy todir="${project.reporting.outputDirectory}/jsdoc">

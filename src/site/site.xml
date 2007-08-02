@@ -24,7 +24,7 @@
     </bannerLeft>
     <bannerRight>
         <name>Sarissa</name>
-        <href>http://dev.abiss.gr/sarissa/</href>
+        <href>http://dev.abiss.gr/sarissa/index.html</href>
     </bannerRight>
     <publishDate format="dd/MM/yyyy"/>
     <poweredBy>
@@ -48,7 +48,8 @@
             <item name="SF Project" href="http://sourceforge.net/projects/sarissa/"/>
             <item name="Fisheye" href="http://fisheye1.cenqua.com/browse/sarissa"/>
         </links>
-        <menu name="Get Sarissa">
+        <menu name="Shortcuts">
+            <item name="Overview" href="http://dev.abiss.gr/sarissa/index.html"/>
             <item name="Download" class="external"
                 href="http://sourceforge.net/project/showfiles.php?group_id=75155"/>
             <item name="Source Code" href="/source-repository.html"/>
