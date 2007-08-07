@@ -32,13 +32,12 @@
                 Sarissa according to any of those licenses. </p>
         </section>
         <section name="Credits">
-            <p> See <a href="./CHANGELOG.txt">CHANGELOG.txt</a>. My deepest apologies to anyone I fail
-                to mention (because i do); please send over an email and I will fix it :-) </p>
+            <p> See <a href="./CHANGELOG.txt">CHANGELOG.txt</a>. Please let us know if your name is missing!</p>
             <p> Sarissa is documented with <a href="http://jsdoc.sourceforge.net"
                     title="Link to JSDoc project at SourceForge">JSDoc</a> and <a
                     href="./test/testsarissa.html">tested</a> with <a
-                    href="http://kupu.oscom.org/download/">ECMAUnit</a>. The documentation and
-                distribution are build with <a href="http://ant.apache.org/">Maven</a> and <a
+                    href="http://kupu.oscom.org/download/">ECMAUnit</a>. This site, as well as the   
+                distribution package, is build with <a href="http://ant.apache.org/">Maven</a> and <a
                     href="http://ant.apache.org/">Ant</a>. The compressed versions 
                     of the Sarissa scripts are created using the 
                 <a href="http://www.mobilvox.com/projects/maven-js-plugin/">MobilVox Maven JavaScript Plugin</a>. 
@@ -52,10 +51,10 @@
                     href="http://webfx.eae.net/dhtml/ieemu/">IE Emu Series</a> [webfx.eae.net] at
                 webfx and <a href="http://www.webreference.com/programming/javascript/domwrapper/"
                     >Cross-Browser DOM Wrapper article</a> [webreference.com]. </p>
-            <p>Here are some projects using Sarissa, please let me know if you want yours included
-                here. This is in the credits because, simply, if Sarissa was not usefull i would
-                stop working on it. Currently Sarissa has been downloaded more than 50k times so i
-                guess i will be maintaining it for a while :-)</p>
+            <p>Here are some projects using Sarissa, please let us know if you would like to add yours 
+                here. This is in the credits simply because if Sarissa was not usefull we would not be 
+                working on it. Currently Sarissa has been downloaded more than 52k times so we
+                will be maintaining it for some time :-)</p>
             <ul>
                 <li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a></li>
                 <li><a href="http://communitymapbuilder.org/">MapBuilder</a> is a modern
@@ -67,7 +66,7 @@
                     "how come i never thought of that").</li>
                 <li><a href="http://communik8r.org/">Communik8r</a> is a new email application for
                     phpGroupWare. communik8r uses AJAX, IMAP sockets and client side XSLT</li>
-                <li>The <a href="../sample-apps/minesweeper/index.html">Minesweeper game</a>
+                <li>The <a href="./sample-apps/minesweeper/index.html">Minesweeper game</a>
                     featured as a sample application was written by Sean Whalen, who is also the
                     maintainer.</li>
                 <li>Jay Kimble's <a
@@ -78,7 +77,7 @@
                         library</a>.</li>
                 <li><a href="http://www.mojoportal.com/">MojoPortal</a>, an Object Oriented web site
                     framework written in C# that runs under ASP.NET on Windows or under Mono on
-                    Linux or Mac OS X.</li>
+                    GNU/Linux and Mac OS X.</li>
                 <li><a href="http://www.taleful.com/">Taleful.com</a> is an interactive storytelling
                     website. This website was created to give people a place where they can express
                     themselves and share their stories. All are welcome to come, read and post
