@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
-  /*
-  * Copyright 2004-2005 Emmanouil Batsis
-  * 
-  * Licensed under the GNU General Public License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  * 
-  *      http://www.gnu.org/licenses/gpl.txt
-  * 
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  * 
-  */
+      * Copyright 2004-2007 Emmanouil Batsis
+      *
+      * ====================================================================
+      * Licence
+      * ====================================================================
+      * Sarissa is free software distributed under the GNU GPL version 2 (see <a href="gpl.txt">gpl.txt</a>) or higher, 
+      * GNU LGPL version 2.1 (see <a href="lgpl.txt">lgpl.txt</a>) or higher and Apache Software License 2.0 or higher 
+      * (see <a href="asl.txt">asl.txt</a>). This means you can choose one of the three and use that if you like. If 
+      * you make modifications under the ASL, i would appreciate it if you submitted those.
+      * In case your copy of Sarissa does not include the license texts, you may find
+      * them online in various formats at <a href="http://www.gnu.org">http://www.gnu.org</a> and 
+      * <a href="http://www.apache.org">http://www.apache.org</a>.
+      *
+      * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
+      * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+      * WARRANTIES OF MERCHANTABILITY,FITNESS FOR A PARTICULAR PURPOSE 
+      * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+      * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+      * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+      * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

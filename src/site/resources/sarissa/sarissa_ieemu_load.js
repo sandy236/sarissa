@@ -13,6 +13,7 @@
  *
  * @version @sarissa.version@
  * @author: Manos Batsis, mailto: mbatsis at users full stop sourceforge full stop net
+ *
  * ====================================================================
  * Licence
  * ====================================================================
