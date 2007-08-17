@@ -95,8 +95,8 @@
     var xmlhttp = new ActiveXObject("Msxml2.XMLHTTP.4.0");
         </pre>
         <p>
-          Further coding on XMLHTTP objects is the same for both browsers,
-          so:
+          But with Sarissa you do not need that, the code can be the same 
+          for all browsers so:
         </p>
         <pre name="code" class="js" >
     var xmlhttp = new XMLHttpRequest();
@@ -107,7 +107,7 @@
     alert(new XMLSerializer().serializeToString(xmlhttp.responseXML));
         </pre>
         <p>
-          will load the document from the server and then throw an alertbox
+          ... will load the document from the server and then throw an alertbox
           with the contents of the file to your screen. XMLHTTP objects
           support both synchronous and asynchronous loading of remote XML
           documents (note the third parameter of the
