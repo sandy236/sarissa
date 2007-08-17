@@ -200,10 +200,13 @@ if(_SARISSA_IS_IE){
         // convert stylesheet to free threaded
         var converted = new ActiveXObject(_SARISSA_THREADEDDOM_PROGID);
         // make included/imported stylesheets work if exist and xsl was originally loaded from url
-        if (_SARISSA_THREADEDDOM_PROGID == "MSXML2.FreeThreadedDOMDocument.6.0") { 
-            converted.setProperty("AllowDocumentFunction", true); 
+        try{
             converted.resolveExternals = true; 
-        };
+            converted.setProperty("AllowDocumentFunction", true); 
+        }
+        catch(e){
+            // Ignore. "AllowDocumentFunction" is only supported in MSXML 3.0 SP4 and later.
+        }; 
         if(xslDoc.url && xslDoc.selectSingleNode("//xsl:*[local-name() = 'import' or local-name() = 'include']") != null){
             converted.async = false;
             converted.load(xslDoc.url);

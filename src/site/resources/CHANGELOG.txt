@@ -17,6 +17,8 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 
 0.9.8.1
     * Fixed pickRecentProgID variable scope and JSLint compliance thanks to Duncan Booth
+    * Fixed included/imported stylesheet along with the document() function for 
+      MSXML 3.0 thanks to a bug report by zizo1 (sf user)
     * Added compressed versions of all script files; they are created automatically
       thanks to the MobilVox Maven JavaScript Plugin, see
       http://www.mobilvox.com/projects/maven-js-plugin/
