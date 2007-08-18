@@ -39,6 +39,7 @@ Sarissa.PARSED_OK = "Document contains no parsing errors";
 Sarissa.PARSED_EMPTY = "Document is empty";
 Sarissa.PARSED_UNKNOWN_ERROR = "Not well-formed or other error";
 Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
+Sarissa.REMOTE_CALL_FLAG = "gr.abiss.sarissa.REMOTE_CALL_FLAG";
 var _sarissa_iNsCounter = 0;
 var _SARISSA_IEPREFIX4XSLPARAM = "";
 var _SARISSA_HAS_DOM_IMPLEMENTATION = document.implementation && true;
