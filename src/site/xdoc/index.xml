@@ -80,15 +80,17 @@
                 will be maintaining it for some time :-)</p>
             <ul>
                 <li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a></li>
-                <li><a href="http://communitymapbuilder.org/">MapBuilder</a> is a modern
+                <li><a href="http://communitymapbuilder.org/">MapBuilder</a>, a modern
                     standards-based web mapping client.</li>
-                <li><a href="http://plone.org/">Plone</a> is a user-friendly and powerful open
+                <li><a href="http://plone.org/">Plone</a>, a user-friendly and powerful open
                     source Content Management System.</li>
                 <li><a href="http://anyterm.org/">Anyterm</a>, a web based terminal interface for
                     your servers (it sounds crazy at first but you quickly find yourself wondering
-                    "how come i never thought of that").</li>
+                    "how come i never thought of that?").</li>
                 <li><a href="http://communik8r.org/">Communik8r</a> is a new email application for
                     phpGroupWare. communik8r uses AJAX, IMAP sockets and client side XSLT</li>
+                <li><a href="http://wxplorer.sourceforge.net/">WXplorer</a>, 
+                    a very slick, AJAX based file explorer for PHP applications.</li>
                 <li>The <a href="./sample-apps/minesweeper/index.html">Minesweeper game</a>
                     featured as a sample application was written by Sean Whalen, who is also the
                     maintainer.</li>
