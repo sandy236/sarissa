@@ -36,8 +36,7 @@
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
     or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
     what is lately known as "AJAX" development. Supported browsers are Mozilla - Firefox and family,
-    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari and Opera 9. Konq
-    and Safari offer no XSLT/XPath scripting support AFAIK. </description>
+    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari and Opera 9. </description>
   <url>http://dev.abiss.gr/sarissa/</url>
   <inceptionYear>2003</inceptionYear>
   <organization>
@@ -105,7 +104,7 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
+      <!--plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -123,19 +122,7 @@
               <goal>run</goal>
             </goals>
           </execution>
-          <!--execution>
-            <id>antrun-test</id>
-            <phase>test</phase>
-            <configuration>
-              <tasks>
-                <ant target="test" antfile="src/build/build.xml" inheritrefs="true" inheritAll="true">
-                </ant>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution-->
+          
         </executions>
         <dependencies>
         <dependency>
@@ -154,7 +141,7 @@
             <version>1.6R5</version>
           </dependency>
         </dependencies>
-      </plugin>
+      </plugin-->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -172,7 +159,7 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
+      <!--plugin>
         <groupId>com.mobilvox.ossi.mojo</groupId>
         <artifactId>maven-js-plugin</artifactId>
         <version>1.1.1</version>
@@ -180,8 +167,6 @@
           <replaceSiteJavaScript>false</replaceSiteJavaScript>
           <siteClassifier>-compressed</siteClassifier>
         </configuration>
-        <!-- This ties the compress goal to the package
-          phase in the project build cycle.  -->
         <executions>
           <execution>
             <phase>package</phase>
@@ -190,11 +175,29 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
+      
     </plugins> 
   </build>
   <reporting>
-    <plugins> </plugins>
+    <plugins>
+      <plugin>
+        <groupId>gr.abiss.mvn.plugins</groupId>
+        <artifactId>maven-jstools-plugin</artifactId>
+        <version>0.1</version>
+        <configuration>
+          <jsDir>${project.build.directory}/site/sarissa</jsDir>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>jslint</report>
+              <report>jsdoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
   </reporting>
   <distributionManagement>
     <site>

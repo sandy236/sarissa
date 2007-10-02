@@ -21,12 +21,20 @@
 		</ol>
       </answer>
     </faq>
-
+    
     <faq id="nonmainfiles">
       <question>XPath or other functions are not available</question>
       <answer>
         <p>You need to include the appropriate sarissa javascript file in your webpage, for example sarissa_ieemu_xpath.js.</p>
       </answer>
     </faq>
+    
+    <faq id="iehttps">
+      <question>Problems with IE and secure connections/HTTPS</question>
+      <answer>
+        <p>When your page is using HTTPS, your XML-loading code (XMLHttpRequest or Document.load) should do the same.</p>
+      </answer>
+    </faq>
+    
   </part>
 </faqs>

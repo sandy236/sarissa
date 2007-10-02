@@ -42,6 +42,8 @@
             href="http://fisheye1.cenqua.com/browse/sarissa" />
         <logo img="./images/maven-button-1.png" name="Powered by Apache Maven"
             href="http://maven.apache.org/"/>
+        <logo img="./images/Openajax_Alliance_Member_Logo_light_bg.png" name="OpenAjax Alliance Member"
+            href="http://www.openajax.org/"/>
     </poweredBy>
     <skin>
         <groupId>md4j</groupId>
@@ -54,8 +56,8 @@
             <item name="SF Project" href="http://sourceforge.net/projects/sarissa/"/>
             <item name="Fisheye" href="http://fisheye1.cenqua.com/browse/sarissa"/>
         </links>
-        <menu name="Shortcuts">
-            <item name="Overview" href="http://dev.abiss.gr/sarissa/index.html"/>
+        <menu name="Overview">
+            <item name="Introduction" href="index.html"/>
             <item name="Download" class="external"
                 href="http://sourceforge.net/project/showfiles.php?group_id=75155"/>
             <item name="Source Code" href="/source-repository.html"/>
@@ -82,6 +84,6 @@
             <item name="AJAX" class="external"
                 href="http://www.yourhtmlsource.com/javascript/ajax.html"/>
         </menu>
-        <!--menu ref="reports" /-->
+        <menu ref="reports" />
     </body>
 </project>
