@@ -6,8 +6,9 @@ name and/or change for me to add below. Thanks!
                         
 Sarissa is documented with JSDoc [http://jsdoc.sourceforge.net/], tested 
 with ECMAUnit [http://kupu.oscom.org/download/]  and built using 
-Apache Ant [http://ant.apache.org/], where code is checked using 
-some custom code and JSLint [www.JSLint.com] (Cool license, check it out).
+Apache Maven [http://maven.apache.org/]. Code is checked using 
+some custom code and JSLint [www.JSLint.com] (Really cool license, 
+too bad it relies in common sense).
 
 Sarissa was inspired by articles and code available on the web, most notably 
 the IE Emu Series [http://webfx.eae.net/dhtml/ieemu/] and Cross-Browser DOM 
@@ -15,6 +16,10 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+0.9.8.2
+    * Fixed typo/bug in Sarissa.updateContentFromForm (that's what you get for 
+      not keeping your unit tests up to date)
+    
 0.9.8.1
     * Fixed pickRecentProgID variable scope and JSLint compliance thanks to Duncan Booth
     * Fixed included/imported stylesheet along with the document() function for 
