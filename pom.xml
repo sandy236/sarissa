@@ -31,7 +31,7 @@
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
   <version>0.9.8.1</version>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
     or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
@@ -100,22 +100,22 @@
             <goals>
               <goal>site</goal>
             </goals>
-            <phase>generate-resources</phase>
+            <!--phase>generate-resources</phase-->
           </execution>
         </executions>
       </plugin>
-      <!--plugin>
+      <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
             <id>antrun-process-resources</id>
-            <phase>process-resources</phase>
+            <phase>pre-site</phase>
             <configuration>
               <tasks>
-                <ant target="process-resources" antfile="src/build/build.xml" inheritrefs="true" inheritAll="true">
-                  <property name="project.reporting.outputDirectory" value="${project.reporting.outputDirectory}"/>
-                  <property name="project.build.directory" value="${project.build.directory}" />
-                </ant>
+                <mkdir dir="${project.build.directory}/site/" />
+                <copy todir="${project.build.directory}/site/">
+                  <fileset dir="src/main/js"/>
+                </copy>
               </tasks>
             </configuration>
             <goals>
@@ -124,7 +124,7 @@
           </execution>
           
         </executions>
-        <dependencies>
+        <!--dependencies>
         <dependency>
           <groupId>ant</groupId>
           <artifactId>ant-antlr</artifactId>
@@ -140,9 +140,9 @@
             <artifactId>js</artifactId>
             <version>1.6R5</version>
           </dependency>
-        </dependencies>
-      </plugin-->
-      <plugin>
+        </dependencies-->
+      </plugin>
+      <!--plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
@@ -158,7 +158,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
       <!--plugin>
         <groupId>com.mobilvox.ossi.mojo</groupId>
         <artifactId>maven-js-plugin</artifactId>
