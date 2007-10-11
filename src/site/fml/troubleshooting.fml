@@ -35,6 +35,10 @@
         <p>When your page is using HTTPS, your XML-loading code (XMLHttpRequest or Document.load) should do the same.</p>
       </answer>
     </faq>
+    <faq>
+      <question>Sarissa (XPath) does not work with Mootools?</question>
+      <answer>To fix this simply make sure the Sarissa scripts are loaded before Mootools. </answer>
+    </faq>
     
   </part>
 </faqs>
