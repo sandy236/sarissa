@@ -40,7 +40,7 @@ if(Sarissa._SARISSA_HAS_DOM_FEATURE && document.implementation.hasFeature("XPath
     * @constructor
     * @argument i the (initial) list size
     */
-    function SarissaNodeList(i){
+    SarissaNodeList = function (i){
         this.length = i;
     };
     /** <p>Set an Array as the prototype object</p> */

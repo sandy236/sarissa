@@ -30,7 +30,7 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.8.1</version>
+  <version>0.9.8.2</version>
   <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
@@ -72,6 +72,10 @@
       <name>The GNU General Public License, Version 2</name>
       <url>http://www.gnu.org/licenses/gpl.txt</url>
     </license>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>license.txt</url>
+    </license>
   </licenses>
   <scm>
     <connection>scm:cvs:pserver:anonymous@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
@@ -91,18 +95,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <version>2.0-beta-5</version>
-        <configuration>
-          <!--outputDirectory>${project.build.directory}/classes</outputDirectory-->
-          <!--xdocDirectory> ${project.build.directory}/generated-site-files </xdocDirectory-->
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>site</goal>
-            </goals>
-            <!--phase>generate-resources</phase-->
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -114,7 +106,7 @@
               <tasks>
                 <mkdir dir="${project.build.directory}/site/" />
                 <copy todir="${project.build.directory}/site/">
-                  <fileset dir="src/main/js"/>
+                  <fileset dir="${project.build.directory}/classes"/>
                 </copy>
               </tasks>
             </configuration>
@@ -124,49 +116,19 @@
           </execution>
           
         </executions>
-        <!--dependencies>
-        <dependency>
-          <groupId>ant</groupId>
-          <artifactId>ant-antlr</artifactId>
-          <version>1.6.5</version>
-        </dependency>
-          <dependency>
-            <groupId>bsf</groupId>
-            <artifactId>bsf</artifactId>
-            <version>2.3.0</version>
-          </dependency>
-          <dependency>
-            <groupId>rhino</groupId>
-            <artifactId>js</artifactId>
-            <version>1.6R5</version>
-          </dependency>
-        </dependencies-->
-      </plugin>
-      <!--plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assembly/assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attached</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin-->
+        </plugin>
+        
       <!--plugin>
         <groupId>com.mobilvox.ossi.mojo</groupId>
         <artifactId>maven-js-plugin</artifactId>
-        <version>1.1.1</version>
+        <version>1.2</version>
         <configuration>
           <replaceSiteJavaScript>false</replaceSiteJavaScript>
           <siteClassifier>-compressed</siteClassifier>
-        </configuration>
+          <licenseFiles>
+            <licenseFile>js/compressed-js-header.txt</licenseFile>
+          </licenseFiles>
+        </configuration>      
         <executions>
           <execution>
             <phase>package</phase>
@@ -176,7 +138,6 @@
           </execution>
         </executions>
       </plugin-->
-      
     </plugins> 
   </build>
   <reporting>
@@ -184,9 +145,10 @@
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
-        <version>0.1</version>
+        <version>0.3</version>
         <configuration>
-          <jsDir>${project.build.directory}/site/sarissa</jsDir>
+          <jsDir>${project.build.directory}/classes</jsDir>
+          <reportJslintErrorsOnly>true</reportJslintErrorsOnly>
         </configuration>
         <reportSets>
           <reportSet>
