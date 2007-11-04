@@ -55,28 +55,28 @@
                 Sarissa according to any of those licenses. </p>
         </section>
         <section name="Credits">
-            <p> See <a href="./CHANGELOG.txt">CHANGELOG.txt</a>. Please let us know if your name is missing!</p>
-            <p> Sarissa is documented with <a href="http://jsdoc.sourceforge.net"
-                    title="Link to JSDoc project at SourceForge">JSDoc</a> and <a
-                    href="./test/testsarissa.html">tested</a> with <a
-                    href="http://kupu.oscom.org/download/">ECMAUnit</a>. This site, as well as the   
-                distribution package, is build with <a href="http://ant.apache.org/">Maven</a> and <a
-                    href="http://ant.apache.org/">Ant</a>. The compressed versions 
-                    of the Sarissa scripts are created using the 
-                <a href="http://www.mobilvox.com/projects/maven-js-plugin/">MobilVox Maven JavaScript Plugin</a>. 
-                In the Ant build file Sarissa scripts are also checked using some custom code and <a
-                    href="http://www.JSLint.com">JSLint</a> (comes with a really cool license). If
-                you want to use JSLint in your Ant builds you might want to check out build.xml from
-                CVS and head for the <code>jslint</code> target. The syntax highlighting in 
-                the documentation uses the 
-                <a href="http://code.google.com/p/syntaxhighlighter/">Syntaxhighlighter</a></p>
-            <p> Sarissa was inspired by articles and code available on the web, most notably the <a
-                    href="http://webfx.eae.net/dhtml/ieemu/">IE Emu Series</a> [webfx.eae.net] at
-                webfx and <a href="http://www.webreference.com/programming/javascript/domwrapper/"
-                    >Cross-Browser DOM Wrapper article</a> [webreference.com]. </p>
+            <p>See <a href="./CHANGELOG.txt">CHANGELOG.txt</a>. Please let us know if your name is missing!</p>
+            <p>Projects used when developing Sarissa:</p>
+          <ul>
+            <li>Apache <a href="http://maven.apache.org/">Maven</a> and <a href="http://maven.apache.org/">Ant</a> 
+            are used to build the Sarissa distributions, documentation and website. Sarissa can nowdays 
+              be used as a Maven dependency in your Maven-based webapps, <a href="/installation.html">check it out</a>.</li>
+            <li>The <a href="http://dev.abiss.gr/mvn-jstools/">Maven JSTools Plugin</a> is used to produce 
+            documentation based on <a href="http://www.jslint.com/" title="Link to JSLint">JSLint</a>
+              and <a href="http://jsdoctoolkit.org/" title="Link to JSDoc Toolkit">JSDoc Toolkit</a>.
+              The JSTools Plugin is also used in Maven based java webapps in runtime, to resolve Sarissa
+              or other JS files and resources.</li>
+            <li><a href="http://kupu.oscom.org/download/">ECMAUnit</a> is used for Unit Testing. Check out the 
+              Sarissa Unit Tests page <a href="/test/testsarissa.html">here</a>.
+            </li>
+            <li>The <a href="http://www.mobilvox.com/projects/maven-js-plugin/">MobilVox Maven JavaScript Plugin</a>
+            is used to create the compressed versions of the Sarissa JS files.</li>
+            <li>The <a href="http://code.google.com/p/syntaxhighlighter/">Syntaxhighlighter</a> is used for 
+            (obviously) syntax highlighting through out the documentation.</li>
+          </ul>
             <p>Here are some projects using Sarissa, please let us know if you would like to add yours 
                 here. This is in the credits simply because if Sarissa was not usefull we would not be 
-                working on it. Currently Sarissa has been downloaded more than 54k times so we
+                working on it. Currently Sarissa has been downloaded more than 56k times so we
                 will be maintaining it for some time :-)</p>
             <ul>
                 <li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a></li>
@@ -120,7 +120,7 @@
                     bookmarks, notes, quotations, lyrics, recipes etc. online and  access them from anywhere. 
                     You can also create a public page and share with the world.
                     </li>
-                <li>Looks like Sarissa is also used by Blizzard for their <a href="http://www.worldofwarcraft.com/realmstatus/">Realm Server Status</a> page</li>
+                <li>Looks like Sarissa is also used by Blizzard for their WOW <a href="http://www.worldofwarcraft.com/realmstatus/">Realm Server Status</a> page</li>
             </ul>
         </section>
     </body>

@@ -57,24 +57,26 @@
             <item name="Fisheye" href="http://fisheye1.cenqua.com/browse/sarissa"/>
         </links>
         <menu name="Overview">
-            <item name="Introduction" href="index.html"/>
+            <item name="Introduction" href="/index.html"/>
             <item name="Download" class="external"
                 href="http://sourceforge.net/project/showfiles.php?group_id=75155"/>
             <item name="Source Code" href="/source-repository.html"/>
             <item name="Credits/Changelog" href="CHANGELOG.txt"/>
         </menu>
         <menu name="Documentation">
+            <item name="Installation" href="/installation.html"/>
             <item name="HOWTOs" href="/howtos.html"/>
             <item name="API (JSDoc)" href="/jsdoc/index.html"/>
             <item name="Troubleshooting" href="/troubleshooting.html"/>
             <item name="Unit Tests (ECMAUnit)" href="/test/testsarissa.html"/>
         </menu>
-        <menu name="Community">
+        <menu ref="reports" />
+        <!--menu name="Community">
             <item name="Mailing Lists" href="/mail-lists.html"/>
             <item name="Forum" class="external"
                 href="http://sourceforge.net/forum/forum.php?forum_id=256492"/>
         </menu>
-        <menu name="Articles - Tutorials">
+        <menu name="Articles">
             <item name="Sarissa to the Rescue" class="external"
                 href="http://www.xml.com/pub/a/2005/02/23/sarissa.html"/>
             <item name="Processing XML with JavaScript" class="external"
@@ -83,7 +85,6 @@
                 href="http://www.ferdychristant.com/blog/articles/DOMM-6KSFG7"/>
             <item name="AJAX" class="external"
                 href="http://www.yourhtmlsource.com/javascript/ajax.html"/>
-        </menu>
-        <menu ref="reports" />
+        </menu-->
     </body>
 </project>

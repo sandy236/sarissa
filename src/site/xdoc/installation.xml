@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+    * Copyright 2004-2007 Emmanouil Batsis
+    *
+    * ====================================================================
+    * Licence
+    * ====================================================================
+    * Sarissa is free software distributed under the GNU GPL version 2 (see <a href="gpl.txt">gpl.txt</a>) or higher, 
+    * GNU LGPL version 2.1 (see <a href="lgpl.txt">lgpl.txt</a>) or higher and Apache Software License 2.0 or higher 
+    * (see <a href="asl.txt">asl.txt</a>). This means you can choose one of the three and use that if you like. If 
+    * you make modifications under the ASL, i would appreciate it if you submitted those.
+    * In case your copy of Sarissa does not include the license texts, you may find
+    * them online in various formats at <a href="http://www.gnu.org">http://www.gnu.org</a> and 
+    * <a href="http://www.apache.org">http://www.apache.org</a>.
+    *
+    * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
+    * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+    * WARRANTIES OF MERCHANTABILITY,FITNESS FOR A PARTICULAR PURPOSE 
+    * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+    * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+    * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+    * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<document>
+    <properties>
+        <author email="manos_lists at geekologue com">Manos Batsis</author>
+        <title>Sarissa: Installation and Usage</title>
+    </properties>
+    <body>
+        <section name="Overview">
+            <p> Sarissa is distributed in two versions. The first is the generic distribution
+                archive that includes the JS files, documentation etc. and can be used by anyone.
+                The second is a Maven artifact that can be used as a dependency for Maven projects.
+                Below you can find more details on how to use both in your project and web pages.</p>
+        </section>
+        <section name="Installation for generic projects">
+            <p> First of all, download the generic distribution from the SF project download page <a
+                href="http://sourceforge.net/project/showfiles.php?group_id=75155">here</a>.
+                After expanding the archive somwhere in your project, then follow the usage instructions 
+                at the bottom of this page. </p>
+        </section>
+        <section name="Installation for Maven projects">
+            <p>
+                To use Sarissa as a dependency in your Maven project, add it in your pom.xml file. 
+                You will also need to import Maven JSTools for your webapp to build HTTP
+                responses using the Sarissa files:
+            </p>
+            <pre name="code" class="xml">
+&lt;dependencies&gt;
+    &lt;!-- add Sarissa  --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;gr.abiss.js&lt;/groupId&gt;
+        &lt;artifactId&gt;sarissa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;!-- add jstools --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;gr.abiss.mvn.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-jstools-plugin&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+            </pre>
+            <p>
+                After that, 
+                <a href="apidocs/gr/abiss/mvn/plugins/jstools/web/JavascriptDependencyFilter.html">configure the JavascriptDependencyFilter</a> 
+                in your webapp config (i.e. web.xml) to intercept requests for JS files or other static 
+                resources packaged in your JS-based dependencies.</p>
+        </section>
+        <section name="Importing the Sarissa scripts in your web pages">
+            <p>To use Sarissa in your web pages, simply import the required files 
+                using the <code>script</code> tag, for example: </p>
+            <pre name="code" class="html">
+&lt;script type="text/javascript" 
+    src="basePath/gr/abiss/js/sarissa/sarissa.js"&gt; &lt;/script&gt;
+            </pre>
+            <p>The available files in the distribution are two (sarissa_dhtml.js has been merged in the main sarissa.js file), 
+            plus their compressed versions makiong a total of four files: </p>
+            <ul>
+                <li><strong>basePath</strong>/gr/abiss/js/sarissa/sarissa.js</li>
+                <li><strong>basePath</strong>/gr/abiss/js/sarissa/sarissa_ieemu_xpath.js</li>
+                <li><strong>basePath</strong>/gr/abiss/js/sarissa/sarissa-compressed.js</li>
+                <li><strong>basePath</strong>/gr/abiss/js/sarissa/sarissa_ieemu_xpath-compressed.js</li>
+            </ul>
+            <p>If you are using the generic distribution, <strong>basePath</strong> is 
+            simply the absolute or relative path to the expanded sarissa distribution directory.</p>
+            <p>For Maven users however, <strong>>basePath</strong> should be the same as the value used for  
+                <a href="http://www.dev.abiss.gr/mvn-jstools/apidocs/gr/abiss/mvn/plugins/jstools/web/JavascriptDependencyFilter.html">JavascriptDependencyFilter</a>'s 
+                <code>basePath</code> initialization parameter. If you are not familiar with using JS dependencies through Maven,
+                check out the complete <a href="http://www.dev.abiss.gr/mvn-jstools/js-packaging.html">tutorial</a>.
+                 </p>
+        </section>
+    </body>
+</document>
