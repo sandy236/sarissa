@@ -78,7 +78,7 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:cvs:pserver:anonymous@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
+    <connection>scm:cvs:pserver:anonymous:@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
     <developerConnection>scm:cvs:ext:${maven.username}@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</developerConnection>
     <url>http://${pom.artifactId}.cvs.sf.net/${pom.artifactId}</url>
   </scm>
@@ -101,10 +101,11 @@
         <version>2.0-beta-5</version>
       </plugin>
       <plugin>
+        <!--  -->
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>antrun-process-resources</id>
+            <id>antrun-copy-js-to-site</id>
             <phase>pre-site</phase>
             <configuration>
               <tasks>
@@ -113,6 +114,20 @@
                 <copy todir="${project.build.directory}/site/">
                   <fileset dir="${project.build.directory}/classes"/>
                 </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>antrun-create-full-dist</id>
+            <phase>post-site</phase>
+            <configuration>
+              <tasks>
+                <echo message="Running antrun-create-full-dist" />
+                <zip destfile="${project.build.directory}/${project.artifactId}-full-${project.version}.zip"
+                  basedir="${project.build.directory}/site" />
               </tasks>
             </configuration>
             <goals>
@@ -129,7 +144,7 @@
           <replaceSiteJavaScript>false</replaceSiteJavaScript>
           <siteClassifier>-compressed</siteClassifier>
           <jsDirectory>target/classes</jsDirectory>
-          <outputDirectory>${project.build.directory}/classes</outputDirectory>
+          <outputDirectory>${basedir}/target/classes</outputDirectory>
           <replaceJavaScript>false</replaceJavaScript>
           <licenseFiles>
             <licenseFile>compressed-js-header.txt</licenseFile>
