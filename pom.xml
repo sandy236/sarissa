@@ -30,7 +30,7 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.8.2</version>
+  <version>0.9.9</version>
   <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
@@ -82,7 +82,14 @@
     <developerConnection>scm:cvs:ext:${maven.username}@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</developerConnection>
     <url>http://${pom.artifactId}.cvs.sf.net/${pom.artifactId}</url>
   </scm>
-  <build>
+  <build>    
+  <extensions>
+    <extension>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-ssh-external</artifactId>
+      <version>1.0-alpha-5</version>
+    </extension>
+  </extensions>
     <!--  site plugin -->
     <resources>
       <resource>
@@ -122,12 +129,15 @@
           </execution>
           <execution>
             <id>antrun-create-full-dist</id>
-            <phase>post-site</phase>
+            <phase>site</phase>
             <configuration>
               <tasks>
                 <echo message="Running antrun-create-full-dist" />
-                <zip destfile="${project.build.directory}/${project.artifactId}-full-${project.version}.zip"
-                  basedir="${project.build.directory}/site" />
+                <zip destfile="${project.build.directory}/${project.artifactId}-full-${project.version}.zip">
+                  <zipfileset dir="${project.build.directory}/site" prefix="${project.artifactId}-full-${project.version}"
+                    excludes="apidocs/**/*"
+                  />
+                </zip>
               </tasks>
             </configuration>
             <goals>
@@ -184,9 +194,17 @@
   </reporting>
   <distributionManagement>
     <site>
-      <id>md4j-website</id>
+      <id>dev.abiss.gr</id>
       <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/${project.artifactId}</url>
     </site>
+    <repository>
+      <id>dev.abiss.gr</id>
+      <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/m2repo/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>dev.abiss.gr</id>
+      <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/m2repo/snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
   <repositories>
     <repository>

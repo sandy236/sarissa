@@ -70,7 +70,7 @@
 	Template for namespace declarations
 	-->
 	<xsl:template match="*|@*" mode="ns-resolve">
-		<table cellspacing="0" cellpadding="0" class="namespace" style="border:1px solid blue;">
+		<table cellspacing="0" cellpadding="0" class="namespace">
 			<tr>
 				<xsl:call-template name="noButtonTD"/>
 				<td class="namespace-prefix">
