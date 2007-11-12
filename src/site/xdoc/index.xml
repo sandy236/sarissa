@@ -64,7 +64,7 @@
             <li>The <a href="http://dev.abiss.gr/mvn-jstools/">Maven JSTools Plugin</a> is used to produce 
             documentation based on <a href="http://www.jslint.com/" title="Link to JSLint">JSLint</a>
               and <a href="http://jsdoctoolkit.org/" title="Link to JSDoc Toolkit">JSDoc Toolkit</a>.
-              The JSTools Plugin is also used in Maven based java webapps in runtime, to resolve Sarissa
+              The JSTools Plugin is also used in Maven based java webapps at runtime, to resolve Sarissa
               or other JS files and resources.</li>
             <li><a href="http://kupu.oscom.org/download/">ECMAUnit</a> is used for Unit Testing. Check out the 
               Sarissa Unit Tests page <a href="/test/testsarissa.html">here</a>.

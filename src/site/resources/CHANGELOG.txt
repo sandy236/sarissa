@@ -11,11 +11,19 @@
 Please help me not forget anyone, send patches with your (or other) 
 name and/or change for me to add below. Thanks!
                         
-Sarissa is documented with JSDoc [http://jsdoc.sourceforge.net/], tested 
-with ECMAUnit [http://kupu.oscom.org/download/]  and built using 
-Apache Maven [http://maven.apache.org/]. Code is checked using 
-some custom code and JSLint [www.JSLint.com] (Really cool license, 
-too bad it relies in common sense).
+Projects used when developing Sarissa:
+    * Apache Maven and Ant are used to build the Sarissa distributions, 
+      documentation and website. Sarissa can nowdays be used as a Maven dependency 
+      in your Maven-based webapps, check out the documentation.
+    * The Maven JSTools Plugin is used to produce documentation based on JSLint and 
+      JSDoc Toolkit. The JSTools Plugin is also used in Maven based java webapps at  
+      runtime, to resolve Sarissa or other JS files and resources.
+    * ECMAUnit is used for Unit Testing. Check out the Sarissa Unit Tests page here.
+    * The MobilVox Maven JavaScript Plugin is used to create the compressed versions 
+      of the Sarissa JS files.
+    * The Syntaxhighlighter is used for (obviously) syntax highlighting through out 
+      the documentation.
+
 
 Sarissa was inspired by articles and code available on the web, most notably 
 the IE Emu Series [http://webfx.eae.net/dhtml/ieemu/] and Cross-Browser DOM 
