@@ -16,8 +16,8 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
-0.9.8.2
-    * Fixed typo/bug in Sarissa.updateContentFromForm (that's what you get for 
+0.9.9
+    * Fixed errors in Sarissa.updateContentFromForm (that's what you get for 
       not keeping your unit tests up to date)
     
 0.9.8.1

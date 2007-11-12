@@ -855,7 +855,7 @@ Sarissa.formToQueryString = function(oForm){
  * <code>functionName(oNode, oTargetElement);</code></p>
  * <p>Here is an example of using this in a form element:</p>
  * <pre name="code" class="xml">&lt;form action="/my/form/handler" method="post" 
- *     onbeforesubmit="Sarissa.updateContentFromForm(this, document.getElementById('targetId'))"&gt;<pre>
+ *     onbeforesubmit="return Sarissa.updateContentFromForm(this, document.getElementById('targetId'));"&gt;<pre>
  * <p>If JavaScript is supported, the form will not be submitted. Instead, Sarissa will
  * scan the form and make an appropriate AJAX request, also adding a parameter 
  * to signal to the server that this is an AJAX call. The parameter is 
@@ -880,10 +880,10 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
             xmlhttp.open("GET", oForm.getAttribute("action")+"?"+params, true);
         }
         else{
-            http_request.open('POST', oForm.getAttribute("action"), true);
-            http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            http_request.setRequestHeader("Content-length", params.length);
-            http_request.setRequestHeader("Connection", "close");
+            xmlhttp.open('POST', oForm.getAttribute("action"), true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.setRequestHeader("Content-length", params.length);
+            xmlhttp.setRequestHeader("Connection", "close");
         }
         sarissa_dhtml_loadHandler = function() {
             if (xmlhttp.readyState == 4) {
