@@ -175,7 +175,7 @@
     </plugins> 
   </build>
   <reporting>
-    <!--plugins>
+    <plugins>
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
@@ -193,7 +193,7 @@
           </reportSet>
         </reportSets>
       </plugin>
-    </plugins-->
+    </plugins>
   </reporting>
   <distributionManagement>
     <site>
