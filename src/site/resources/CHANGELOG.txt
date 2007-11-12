@@ -1,5 +1,12 @@
 ################################################################################################
-                             Changelog and Credits                                            
+		          __    _
+		   ____ _/ /_  (_)_________ ____ ______
+		  / __ `/ __ \/ / ___/ ___// __ `/ ___/
+		 / /_/ / /_/ / (__  |__  )/ /_/ / /
+		 \__,_/_.___/_/____/____(_)__, /_/
+		                         /____/
+
+                Changelog and Credits                                            
                                                                                                          
 Please help me not forget anyone, send patches with your (or other) 
 name and/or change for me to add below. Thanks!
@@ -19,6 +26,9 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 0.9.9
     * Fixed errors in Sarissa.updateContentFromForm (that's what you get for 
       not keeping your unit tests up to date)
+    * Two distributions now exist: a JAR artifact for for Maven users 
+      (sarissa-VERSION.jar) and one for generic projects that also includes the 
+      documentation (sarissa-full-VERSION.zip)
     
 0.9.8.1
     * Fixed pickRecentProgID variable scope and JSLint compliance thanks to Duncan Booth
