@@ -232,9 +232,9 @@ if(Sarissa._SARISSA_IS_IE){
         if(output) {
             this.outputMethod = output.getAttribute("method");
         } 
-        //else {
-        //    delete this.outputMethod;
-        //} 
+        else {
+            delete this.outputMethod;
+        } 
         this.template.stylesheet = converted;
         this.processor = this.template.createProcessor();
         // for getParameter and clearParameters
