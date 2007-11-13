@@ -37,6 +37,8 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * Two distributions now exist: a JAR artifact for for Maven users 
       (sarissa-VERSION.jar) and one for generic projects that also includes the 
       documentation (sarissa-full-VERSION.zip)
+    * Changed XSLT output behavior in XSLTProcessor to follow the spec (or rather, 
+      let the browser do do ;-) thanks to Doug D (dougdomeny)
     
 0.9.8.1
     * Fixed pickRecentProgID variable scope and JSLint compliance thanks to Duncan Booth

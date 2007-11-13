@@ -222,12 +222,19 @@ if(Sarissa._SARISSA_IS_IE){
         if(xslDoc.url && xslDoc.selectSingleNode("//xsl:*[local-name() = 'import' or local-name() = 'include']") !== null){
             converted.async = false;
             converted.load(xslDoc.url);
-        } else {
+        } 
+        else {
             converted.loadXML(xslDoc.xml);
         }
         converted.setProperty("SelectionNamespaces", "xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
         var output = converted.selectSingleNode("//xsl:output");
-        this.outputMethod = output ? output.getAttribute("method") : "html";
+        //this.outputMethod = output ? output.getAttribute("method") : "html";
+        if(output) {
+            this.outputMethod = output.getAttribute("method");
+        } 
+        //else {
+        //    delete this.outputMethod;
+        //} 
         this.template.stylesheet = converted;
         this.processor = this.template.createProcessor();
         // for getParameter and clearParameters
