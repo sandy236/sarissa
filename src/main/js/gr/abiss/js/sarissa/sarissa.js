@@ -489,7 +489,7 @@ if((typeof(document.importNode) == "undefined") && Sarissa._SARISSA_IS_IE){
         document.importNode = function(oNode, bChildren){
             var tmp;
             if (oNode.nodeName=='#text') {
-                return document.createTextElement(oNode.data);
+                return document.createTextNode(oNode.data);
             }
             else {
                 if(oNode.nodeName == "tbody" || oNode.nodeName == "tr"){

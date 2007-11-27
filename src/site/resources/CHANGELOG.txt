@@ -39,6 +39,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
       documentation (sarissa-full-VERSION.zip)
     * Changed XSLT output behavior in XSLTProcessor to follow the spec (or rather, 
       let the browser do do ;-) thanks to Doug D (dougdomeny)
+    * Fixed document.importNode for IE thanks to Duncan Booth
     
 0.9.8.1
     * Fixed pickRecentProgID variable scope and JSLint compliance thanks to Duncan Booth

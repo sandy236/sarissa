@@ -201,8 +201,8 @@
       <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/${project.artifactId}</url>
     </site>
     <repository>
-      <id>dev.abiss.gr</id>
-      <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/m2repo/releases</url>
+      <id>shell.sourceforge.net</id>
+      <url>scp://shell.sourceforge.net:/home/groups/s/sa/sarissa/htdocs/repository/releases</url>
     </repository>
     <snapshotRepository>
       <id>dev.abiss.gr</id>
