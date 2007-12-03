@@ -38,7 +38,7 @@
                 XSLT/XPath scripting support AFAIK. </p>
             <p> For a HOWTO document that provides examples of common tasks see the <a
                     href="./howtos.html">HOWTOs</a>. The API documentation is generated using <a
-                    href="http://jsdoc.sourceforge.net" title="Link to JSDoc project at SourceForge"
+                        href="http://jsdoctoolkit.org/" title="Link to JSDoc Toolkit project"
                     >JSDoc</a> and can be found <a href="./jsdoc/index.html">here</a>. </p>
             <p> The latest version of Sarissa can always be found on <a
                     href="https://sourceforge.net/projects/sarissa/"
