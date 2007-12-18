@@ -257,6 +257,24 @@
         </p>
       </answer>
     </faq>
+    
+    <faq id="updateContentFromForm">
+      <question>How to submit an HTML form using AJAX?</question>
+      <answer><p>Use the Sarissa.updateContentFromForm method:</p>
+        <pre name="code" class="xml">
+    &lt;form action="/my/form/handler" method="post" 
+      onbeforesubmit="return Sarissa.updateContentFromForm(this, document.getElementById('targetId'));"&gt;
+        </pre>
+        <p>If JavaScript is supported, the form will not be submitted. Instead, Sarissa will
+          scan the form and make an appropriate AJAX request, also adding a parameter 
+          to signal to the server that this is an AJAX call. The parameter is 
+          constructed as "Sarissa.REMOTE_CALL_FLAG=true" so you can change the parameter <i>name</i> 
+          simply by assigning another value to Sarissa.REMOTE_CALL_FLAG. If JavaScript is not supported
+          the form will be submitted normally. Optionally, the response may be transformed 
+          before injected to the page, see also the 
+          <a href="http://dev.abiss.gr/sarissa/jsdoc/_02.html#Sarissa.updateContentFromForm">API docs</a>.</p>
+      </answer>
+    </faq>
     <faq id="updateContentFromURI">
       <question>How to update areas in your webpage from remote (optionally transformed) XML documents or XML DOM Nodes using only one line of code!</question>
       <answer>
