@@ -262,6 +262,7 @@
       <question>How to submit an HTML form using AJAX?</question>
       <answer><p>Use the Sarissa.updateContentFromForm method:</p>
         <pre name="code" class="xml">
+    &lt;div id="targetId"&gt; this content will be updated&lt;/div&gt;
     &lt;form action="/my/form/handler" method="post" 
       onbeforesubmit="return Sarissa.updateContentFromForm(this, document.getElementById('targetId'));"&gt;
         </pre>

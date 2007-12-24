@@ -1,4 +1,4 @@
-/**
+/*
  * ====================================================================
  * About Sarissa: http://dev.abiss.gr/sarissa
  * ====================================================================
@@ -861,7 +861,9 @@ Sarissa.formToQueryString = function(oForm){
  * You can also pass a callback function to be executed when the update is finished. The function will be called as 
  * <code>functionName(oNode, oTargetElement);</code></p>
  * <p>Here is an example of using this in a form element:</p>
- * <pre name="code" class="xml">&lt;form action="/my/form/handler" method="post" 
+ * <pre name="code" class="xml">
+ * &lt;div id="targetId"&gt; this content will be updated&lt;/div&gt;
+ * &lt;form action="/my/form/handler" method="post" 
  *     onbeforesubmit="return Sarissa.updateContentFromForm(this, document.getElementById('targetId'));"&gt;<pre>
  * <p>If JavaScript is supported, the form will not be submitted. Instead, Sarissa will
  * scan the form and make an appropriate AJAX request, also adding a parameter 

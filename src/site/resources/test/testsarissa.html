@@ -34,13 +34,13 @@
 	};
 	
     function runTestCase(testCase) {
-	    	// append TOC entry
-	    	var name = testCase.name;
-	    	var toc = document.getElementById("toc");
-	    	toc.appendChild(document.createElement("br"));
-	    	toc.appendChild(getLink("#"+name, name+" Results", false));
+    	// append TOC entry
+    	var name = testCase.name;
+    	var toc = document.getElementById("toc");
+    	toc.appendChild(document.createElement("br"));
+    	toc.appendChild(getLink("#"+name, name+" Results", false));
 	    
-	    	// append testcase section
+	    // append testcase section
 	    var placeHolder = document.createElement("div");
 	    placeHolder.className = "placeholder";
 		placeHolder.appendChild(getLink("#"+name, null, true));
@@ -54,7 +54,7 @@
     };
     
     function runTestCases(){
-    	    runTestCase(new SarissaTestCase());
+    	runTestCase(new SarissaTestCase());
         runTestCase(new XMLHttpRequestTestCase());
         runTestCase(new XMLSerializerTestCase());
         runTestCase(new DOMParserTestCase());
@@ -69,15 +69,12 @@
 </head>
 	<body>
 		<h1>Sarissa Unit Tests</h1>
-        <button onclick="runTestCases()">Run Testcases</button>
-        <br />
-        <a id="reportLink" href="javascript:alert('Run the tests first!')">Send Report via Email</a>
-        <br />
+	    <p><button onclick="runTestCases()">Run Testcases</button> <a id="reportLink" href="javascript:alert('Run the tests first!')">Send Report via Email</a></p>
+        
         <fieldset>
             <legend>Parse error text:</legend>
             <textarea id="parseError" cols="80" rows="10"></textarea>
         </fieldset>
-        <br />
         <fieldset>
             <legend>XMLized ECMAScript object:</legend>
             <textarea id="xmlization" cols="80" rows="10"></textarea>
