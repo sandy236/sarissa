@@ -35,7 +35,7 @@ function SarissaTableSorter(arr, skipRowOne){
 	this.arrowDirection = null;
 }
 
-
+// TODO: add callback function
 
 SarissaTableSorter.prototype.sortOn = function(iColIndex, clickedElem, iFunc){
 	// get parent table
