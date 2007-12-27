@@ -133,6 +133,7 @@
             <configuration>
               <tasks>
                 <echo message="Running antrun-create-full-dist" />
+                <replace dir="${project.build.directory}/site/sample-apps/" token="../../../../main/js/" value="../../"/>
                 <zip destfile="${project.build.directory}/${project.artifactId}-full-${project.version}.zip">
                   <zipfileset dir="${project.build.directory}/site" prefix="${project.artifactId}-full-${project.version}"
                     excludes="apidocs/**/*"
