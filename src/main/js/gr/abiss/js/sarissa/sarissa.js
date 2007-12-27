@@ -577,11 +577,12 @@ if(!window.XMLSerializer && Sarissa.getDomDocument && Sarissa.getDomDocument("",
 }
 
 /**
- * Strips tags from the given markup string
+ * Strips tags from the given markup string. If the given string is 
+ * <code>undefined</code>, <code>null</code> or empty, it is returned as is. 
  * @memberOf Sarissa
  */
 Sarissa.stripTags = function (s) {
-    return s.replace(/<[^>]+>/g,"");
+    return s?s.replace(/<[^>]+>/g,""):s;
 };
 /**
  * <p>Deletes all child nodes of the given node</p>
