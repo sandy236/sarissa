@@ -28,7 +28,7 @@
  */
 
 /**
- * 
+ * Sort the table data based on the column corresponding to the given TH element (clickedElem).
  * @param {Node} clickedElem the table heading (<code>th</code>) initiating the sort.
  * @param {Function} iFunc the custom sort function if needed. Default (null) is case-sensitive sort.
  * You can also use <code>Sarissa.SORT_IGNORE_CASE</code>, <code>Sarissa.SORT_DATE_US</code>, 
@@ -106,31 +106,37 @@ Sarissa.sortHtmlTableData = function(clickedElem, iFunc, bSkipCache, oCallbac){
 		oCallbac(oTbl, iColIndex);	
 	}
 };
+
 /**
  * Used for generating table IDs, which are required for the cache and sort state persistance
  * @private
  */
 Sarissa.tableIdGenCount = 0;
+
 /**
  * Used for persisting sort state per table column
  * @private
  */
 Sarissa.tableColumnSortStates = [];
+
 /**
  * Used for caching table data.
  */
 Sarissa.tableDataCache = [];
+
 /**
  * Keep track of the cache size. The length property is not for associative arrays 
  * and I really dont want to add 50 lines and implement a PseudoHashMap right now :-)
  * @private
  */
 Sarissa.tableDataCacheSize = 0;
+
 /**
  * The table cache size. You can change it, default is 5 (tables). When a  
  * table is cached exceeding the cache size, the oldest entry is disgarded from the cache.
  */
 Sarissa.tableDataCacheMaxSize = 5;
+
 /**
  * Updates the cache, discards oldest entry if cache size is exceeded.
  * This also 
@@ -144,7 +150,6 @@ Sarissa.tableDataCachePut = function(sTableId, oArr){
 	Sarissa.tableDataCache[sTableId] = oArr;
 	Sarissa.tableDataCacheSize++;
 };
-
 
 /**
  * Function for case-insensitive sorting or simple comparison. Can be used as 
