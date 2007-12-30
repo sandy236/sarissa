@@ -185,14 +185,20 @@
       <question>How to transform a DOM Document Object with XSLT</question>
       <answer>
         <p>
-          Both Mozilla and IE provide JavaScript interfaces to control XSLT
-          transformations thanks to Transformiix and MSXML3 (or above)
-          respectively. MSXML3+ is available with IE6 or as a seperate
-          instalation.
+          In general, Sarissa uses the browser's <strong>native</strong> XSLTProcessor 
+          to control XSLT transformations. This includes Mozilla/FF, 
+          Opera, Webkit and IE. Sarissa transparently provides an implementation of 
+          XSLTProcessor for the latter. <strong>Notes:</strong>:
         </p>
+        <ul>
+          <li>Some browsers have element name insensitivity issues. This does not matter a lot
+          in HTML, but may require caution in some cases. Check out Sarissa's unit tests with 
+          different browsers to see what I mean.</li>
+          <li>Using HTML as the transformation output usually results in trouble for IE.</li>
+          <li>Older versions of Safari/Webkit have no support for XSLT via JS. A solution is to 
+          use Sarissa with <a href="#javeline">Javeline</a>.</li>
+        </ul>
         <p>
-          Sarissa emulates Mozilla's XSLTProcessor for Internet Explorer.  Note that using HTML 
-          as the transformation output  usually results in trouble in IE.
           The XSLTProcessor object allows reusability of stylsheets; with it you can use the same stylesheet 
           on more than one source file. You use the XSLTProcessor to control transformations and 
           set / get stylesheet parameters as in the following example:
