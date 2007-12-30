@@ -28,69 +28,122 @@
  */
 
 /**
- * @param tableId the id of  the <code>table</code> or <code>tbody</code> to sort
- * @param 
  * 
+ * @param {Node} clickedElem the table heading (<code>th</code>) initiating the sort.
+ * @param {Function} iFunc the custom sort function if needed. Default (null) is case-sensitive sort.
+ * You can also use <code>Sarissa.SORT_IGNORE_CASE</code>, <code>Sarissa.SORT_DATE_US</code>, 
+ * and <code>Sarissa.SORT_DATE_EU</code>
+ * @param {boolean} bSkipCache whether to skip the data cache and read table data all over again. Setting this
+ * to <code>true</code> means the cache for the table, if it exists, will not be updated either. Defaul is <code>false</code>
+ * @param {Function} oCallbac a callback function to be executed when the table is 
+ * sorted and updated. The callback function may be used for effects for example. The parameters 
+ * passed to the callback are the table as a DOM node and the sort column index (zero based <code>int</code>)
  * @requires Sarissa sarissa.js
  */
-Sarissa.sortHtmlTableData = function(tableId, iColIndex, clickedElem, iFunc, oCallbac){
-	// get the cell's parent tbody or table
-	var clickedElemName = clickedElem.nodeName.toLowerCase(); 
-	if(clickedElemName != "th" && clickedElemName != "td"){
-		throw new Exception("The given element was not a table heading (th) or cell (td)");
-	}
+Sarissa.sortHtmlTableData = function(clickedElem, iFunc, bSkipCache, oCallbac){
+	// get the table
 	var oTbl = clickedElem.parentNode.parentNode;
 	while(oTbl.nodeName.toLowerCase() != "table"){
 	    oTbl = oTbl.parentNode;
 	}
-	// read table, skip any rows containing headings
-	var matrix = this.readRowsToArray(oTbl, null, null, "th");
-	// build a column-specific array to sort, adding 
-	// original index info as a suffix to the original data
-	var sortedColumn = new Array(matrix.length);
+	// we need a table ID for the cache
+	if(!oTbl.id){
+		oTbl.id = "SarissaTable"+ (Sarissa.tableIdGenCount++);
+	}
+	// the column to sort on
+	var iColIndex = clickedElem.cellIndex;
+	var matrix;
+	// use the cache if available and permitted
+	if(!bSkipCache && Sarissa.tableDataCache[oTbl.id]){
+		matrix = Sarissa.tableDataCache[oTbl.id];
+	}
+	else{
+		// read table, skip any rows containing headings, cache if permitted
+		matrix = this.getArrayFromTableData(oTbl, null, null, "th");
+		if(!bSkipCache){
+			Sarissa.tableDataCache[oTbl.id] = matrix;
+		}
+	}
+	// init state persistence as needed
+	if(!Sarissa.tableColumnSortStates[oTbl.id]){
+		Sarissa.tableColumnSortStates[oTbl.id] = [];
+	}
+	// build a array to sort from the specific column data, adding 
+	// original index info as a suffix
+	var sortedColumn = [];
 	for(var i=0; i < matrix.length;i++){
 		sortedColumn[i] = Sarissa.stripTags(matrix[i][iColIndex]) + "_mbns_" + i;
 	}
-	// sort 
+	// sort the array
 	if(iFunc){
 		sortedColumn.sort(iFunc);
 	}
 	else{
 		sortedColumn.sort();
 	}
-	// creae the sorted matrix based on sortedColumn
+	// persist column state
+	var sortOrder = Sarissa.tableColumnSortStates[oTbl.id][iColIndex];
+	if(sortOrder != "asc"){
+		Sarissa.tableColumnSortStates[oTbl.id][iColIndex] = "asc";
+	}
+	else{
+		sortedColumn.reverse();
+		Sarissa.tableColumnSortStates[oTbl.id][iColIndex] = "desc";
+	}
+	// create the sorted matrix based on sortedColumn
 	var sortedMatrix = [];
 	for(var j=0; j < matrix.length; j++){
 		var indexItem = sortedColumn[j];
 		var iRow = indexItem.substring(indexItem.indexOf("_mbns_")+6, indexItem.length);
-		sortedMatrix[j] = new Array(matrix[j].length);
-		for(var k=0; k < matrix[j].length; k++)
+		sortedMatrix[j] = [];
+		for(var k=0; k < matrix[j].length; k++){
 			sortedMatrix[j][k] = matrix[iRow][k];
+		}
 	}
-	
-	// update all headings
-	
-	// check/change asc/desc as a custom attribute
-	var sortOrder = clickedElem.getAttribute("sarissa-sort-order");
-	//var sortColumn = clickedElem.getAttribute("sarissa-sort-column");
-	//alert("sarissa-sort-order: "+clickedElem.getAttribute("sarissa-sort-order"));
-	if(sortOrder == "asc"){
-		sortedColumn.reverse();
-		clickedElem.setAttribute("sarissa-sort-order", "desc");
-	}
-	else{
-		clickedElem.setAttribute("sarissa-sort-order", "asc");
-	}
-	// update table data skipping rows with headings
+	// update table data, skipping rows with headings
 	this.updateTableData(oTbl, sortedMatrix, null, null, "th");
-	oCallbac();
+	if(oCallbac){
+		oCallbac(oTbl, iColIndex);	
+	}
 };
-
-Sarissa.tableSortCache = [];
-Sarissa.tableSortCacheSize = 5;
-Sarissa.tableSortCachePut = function(oArr){
-	// TODO
-}
+/**
+ * Used for generating table IDs, which are required for the cache and sort state persistance
+ * @private
+ */
+Sarissa.tableIdGenCount = 0;
+/**
+ * Used for persisting sort state per table column
+ * @private
+ */
+Sarissa.tableColumnSortStates = [];
+/**
+ * Used for caching table data.
+ */
+Sarissa.tableDataCache = [];
+/**
+ * Keep track of the cache size. The length property is not for associative arrays 
+ * and I really dont want to add 50 lines and implement a PseudoHashMap right now :-)
+ * @private
+ */
+Sarissa.tableDataCacheSize = 0;
+/**
+ * The table cache size. You can change it, default is 5 (tables). When a  
+ * table is cached exceeding the cache size, the oldest entry is disgarded from the cache.
+ */
+Sarissa.tableDataCacheMaxSize = 5;
+/**
+ * Updates the cache, discards oldest entry if cache size is exceeded.
+ * This also 
+ * @private
+ */
+Sarissa.tableDataCachePut = function(sTableId, oArr){
+	if(Sarissa.tableDataCacheSize.length >= Sarissa.tableDataCacheMaxSize){
+		Sarissa.tableDataCache.shift();
+		Sarissa.tableDataCacheSize--;
+	}
+	Sarissa.tableDataCache[sTableId] = oArr;
+	Sarissa.tableDataCacheSize++;
+};
 
 
 /**
@@ -157,7 +210,7 @@ Sarissa.SORT_DATE_EU = function(a, b){
  * @param bStripTags whether to strip markup from cell contents. Default is <code>false</code>
  * @return a two-dimensional array with the data found in the given element's rows
  */
-Sarissa.readRowsToArray = function(oElem, sRowName, sCellName, sHeadingName, bStripTags){
+Sarissa.getArrayFromTableData = function(oElem, sRowName, sCellName, sHeadingName, bStripTags){
 	if(!sRowName){
 		sRowName = "tr"
 	}
@@ -203,9 +256,6 @@ Sarissa.updateTableData = function(oElem, newData, sRowName, sCellName, sHeading
 	}
 	if(!sCellName){
 		sCellName = "td"
-	}
-	if(!sHeadingName){
-		sHeadingName = "th"
 	}
 	var rows = oElem.getElementsByTagName(sRowName);
 	for(var i=0, j=0; i < newData.length && j < rows.length; j++){
