@@ -29,6 +29,7 @@
 
 /**
  * Sort the table data based on the column corresponding to the given TH element (clickedElem).
+ * @memberOf Sarissa
  * @param {Node} clickedElem the table heading (<code>th</code>) initiating the sort.
  * @param {Function} iFunc the custom sort function if needed. Default (null) is case-sensitive sort.
  * You can also use <code>Sarissa.SORT_IGNORE_CASE</code>, <code>Sarissa.SORT_DATE_US</code>, 
@@ -108,38 +109,43 @@ Sarissa.sortHtmlTableData = function(clickedElem, iFunc, bSkipCache, oCallbac){
 };
 
 /**
- * Used for generating table IDs, which are required for the cache and sort state persistance
+ * Used for generating table IDs, which are required for the cache and sort state persistance 
+ * @memberOf Sarissa
  * @private
  */
 Sarissa.tableIdGenCount = 0;
 
 /**
  * Used for persisting sort state per table column
+ * @memberOf Sarissa
  * @private
  */
 Sarissa.tableColumnSortStates = [];
 
 /**
  * Used for caching table data.
+ * @memberOf Sarissa
  */
 Sarissa.tableDataCache = [];
 
 /**
  * Keep track of the cache size. The length property is not for associative arrays 
  * and I really dont want to add 50 lines and implement a PseudoHashMap right now :-)
+ * @memberOf Sarissa
  * @private
  */
 Sarissa.tableDataCacheSize = 0;
 
 /**
- * The table cache size. You can change it, default is 5 (tables). When a  
+ * The table data cache size, used for sorting HTML tables. You can change it, default is 5 (tables). When a  
  * table is cached exceeding the cache size, the oldest entry is disgarded from the cache.
+ * @memberOf Sarissa
  */
 Sarissa.tableDataCacheMaxSize = 5;
 
 /**
  * Updates the cache, discards oldest entry if cache size is exceeded.
- * This also 
+ * @memberOf Sarissa
  * @private
  */
 Sarissa.tableDataCachePut = function(sTableId, oArr){
@@ -154,6 +160,7 @@ Sarissa.tableDataCachePut = function(sTableId, oArr){
 /**
  * Function for case-insensitive sorting or simple comparison. Can be used as 
  * a parameter to <code>Array.sort()</code>.
+ * @memberOf Sarissa
  * @param a a string
  * @param b a string
  * @return -1, 0 or 1 depending on whether <code>a</code> is "less than", equal or "greater than" <code>b</code>
@@ -169,6 +176,7 @@ Sarissa.SORT_IGNORE_CASE = function(a, b){
 /**
  * Function for comparing US dates. Can be used as 
  * a parameter to <code>Array.sort()</code>.
+ * @memberOf Sarissa
  * @param a a string
  * @param b a string
  * @return -1, 0 or 1 depending on whether <code>a</code> is "less than", equal or "greater than" <code>b</code>
@@ -185,6 +193,7 @@ Sarissa.SORT_DATE_US = function(a, b){
 /**
  * Function for comparing EU dates. Can be used as 
  * a parameter to <code>Array.sort()</code>.
+ * @memberOf Sarissa
  * @param a a string
  * @param b a string
  * @return -1, 0 or 1 depending on whether <code>a</code> is "less than", equal or "greater than" <code>b</code>
@@ -203,6 +212,7 @@ Sarissa.SORT_DATE_EU = function(a, b){
  * Get the data of the given element as a two-dimensional array. The 
  * given XML or HTML Element must match the structure of an HTML table, 
  * although element names may be different.
+ * @memberOf Sarissa
  * @param oElem an HTML or XML table. The method works out of the box 
  * for <code>table</code>, <code>tbody</code>, <code>thead</code> 
  * or <code>tfooter</code> elements. For custom XML tables, the 
@@ -245,6 +255,7 @@ Sarissa.getArrayFromTableData = function(oElem, sRowName, sCellName, sHeadingNam
 /**
  * Update the data of the given element using the giventwo-dimensional array as a source. The 
  * given XML or HTML Element must match the structure of an HTML table.
+ * @memberOf Sarissa
  * @param oElem an HTML or XML table. The method works out of the box 
  * for <code>table</code>, <code>tbody</code>, <code>thead</code> 
  * or <code>tfooter</code> elements. For custom XML tables, the 

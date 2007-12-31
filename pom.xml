@@ -184,6 +184,7 @@
           <jsDir>${project.build.directory}/classes</jsDir>
           <reportJslintErrorsOnly>true</reportJslintErrorsOnly>
           <excludes>**/*-compressed.js</excludes>
+          <template>sunny</template>
         </configuration>
         <reportSets>
           <reportSet>

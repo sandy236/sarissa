@@ -187,8 +187,7 @@ if(Sarissa._SARISSA_IS_IE){
         oDoc.setProperty("SelectionNamespaces", sNsSet);
     };
     /**
-     * An implementation of Mozilla's XSLTProcessor for IE. 
-     * Reuses the same XSLT stylesheet for multiple transforms
+     * A class that reuses the same XSLT stylesheet for multiple transforms.
      * @constructor
      */
     XSLTProcessor = function(){
