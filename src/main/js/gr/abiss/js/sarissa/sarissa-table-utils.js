@@ -156,6 +156,33 @@ Sarissa.tableDataCachePut = function(sTableId, oArr){
 	Sarissa.tableDataCache[sTableId] = oArr;
 	Sarissa.tableDataCacheSize++;
 };
+/**
+ * Updates the cache of a specific table by reposition a column in the cached data.
+ * This is usefull if you use DHTML to visually reposition columns and need to 
+ * synchronize the cache.
+ * @memberOf Sarissa
+ * @private
+ */
+Sarissa.tableDataCacheMoveColumn = function(sTableId, oldColumnIndex, newColumnIndex){	
+	var oldMatrix = Sarissa.tableDataCache[sTableId];
+	var newMatrix = [];
+	// iterate rows
+	var oldRow, movedColumn, newRow;
+	for(var i=0; i<oldMatrix.length; i++){
+		oldRow = oldMatrix[i];
+		movedColumn = oldRow.splice(oldColumnIndex, 1);
+		newRow = [];
+		// reposition column value
+		for(var j=0;j<oldArr.length;J++){
+			if(j == newColumnIndex){
+				newRow.put(movedColumn);
+			}
+			newRow.put(oldRow[j]);
+		}
+		newMatrix[i] = newRow;
+	}
+	Sarissa.tableDataCache[sTableId] = newMatrix;
+};
 
 /**
  * Function for case-insensitive sorting or simple comparison. Can be used as 
@@ -286,3 +313,5 @@ Sarissa.updateTableData = function(oElem, newData, sRowName, sCellName, sHeading
 		}
 	}
 };
+
+
