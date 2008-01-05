@@ -164,7 +164,7 @@ if(Sarissa._SARISSA_IS_IE){
     // see non-IE version   
     Sarissa.getParseErrorText = function (oDoc) {
         var parseErrorText = Sarissa.PARSED_OK;
-        if(oDoc && oDoc.parseError && oDoc.parseError.errorCode && oDoc.parseError.errorCode !== 0){
+        if(oDoc && oDoc.parseError && oDoc.parseError.errorCode && oDoc.parseError.errorCode != 0){
             parseErrorText = "XML Parsing Error: " + oDoc.parseError.reason + 
                 "\nLocation: " + oDoc.parseError.url + 
                 "\nLine Number " + oDoc.parseError.line + ", Column " + 
@@ -218,7 +218,7 @@ if(Sarissa._SARISSA_IS_IE){
         catch(e){
             // Ignore. "AllowDocumentFunction" is only supported in MSXML 3.0 SP4 and later.
         } 
-        if(xslDoc.url && xslDoc.selectSingleNode("//xsl:*[local-name() = 'import' or local-name() = 'include']") !== null){
+        if(xslDoc.url && xslDoc.selectSingleNode("//xsl:*[local-name() = 'import' or local-name() = 'include']") != null){
             converted.async = false;
             converted.load(xslDoc.url);
         } 
@@ -350,7 +350,7 @@ if(Sarissa._SARISSA_IS_IE){
     XSLTProcessor.prototype.clearParameters = function(){
         for(var nsURI in this.paramsSet){
             for(var name in this.paramsSet[nsURI]){
-                if(nsURI!==""){
+                if(nsURI!=""){
                     this.processor.addParameter(name, "", nsURI);
                 }else{
                     this.processor.addParameter(name, "");
@@ -388,7 +388,7 @@ if(Sarissa._SARISSA_IS_IE){
         Sarissa.__setReadyState__ = function(oDoc, iReadyState){
             oDoc.readyState = iReadyState;
             oDoc.readystate = iReadyState;
-            if (oDoc.onreadystatechange !== null && typeof oDoc.onreadystatechange == "function") {
+            if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function") {
                 oDoc.onreadystatechange();
             }
         };
@@ -534,7 +534,7 @@ if(!Sarissa.getParseErrorText){
         } else if(oDoc.getElementsByTagName("parsererror").length > 0){
             var parsererror = oDoc.getElementsByTagName("parsererror")[0];
             parseErrorText = Sarissa.getText(parsererror, true)+"\n";
-        } else if(oDoc.parseError && oDoc.parseError.errorCode !== 0){
+        } else if(oDoc.parseError && oDoc.parseError.errorCode != 0){
             parseErrorText = Sarissa.PARSED_UNKNOWN_ERROR;
         }
         return parseErrorText;
@@ -714,7 +714,7 @@ Sarissa.unescape = function(sXml){
 
 /** @private */
 Sarissa.updateCursor = function(oTargetElement, sValue) {
-    if(oTargetElement && oTargetElement.style && oTargetElement.style.cursor !== undefined ){
+    if(oTargetElement && oTargetElement.style && oTargetElement.style.cursor != undefined ){
         oTargetElement.style.cursor = sValue;
     }
 };
@@ -773,7 +773,7 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc, callba
         Sarissa.clearChildNodes(oTargetElement);
         // check for parsing errors
         var ownerDoc = oNode.nodeType == Node.DOCUMENT_NODE?oNode:oNode.ownerDocument;
-        if(ownerDoc.parseError && ownerDoc.parseError !== 0) {
+        if(ownerDoc.parseError && ownerDoc.parseError != 0) {
             var pre = document.createElement("pre");
             pre.appendChild(document.createTextNode(Sarissa.getParseErrorText(ownerDoc)));
             oTargetElement.appendChild(pre);

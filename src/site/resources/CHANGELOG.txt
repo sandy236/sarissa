@@ -31,6 +31,11 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+0.9.9.1
+    * Added table utilities, just sorting for table data for now.
+    * Switched back from identity to equality tests. Problem and solution spotted in 
+      Sarissa.updateContentFromNode(), thanks to Javinto (SF user)
+
 0.9.9
     * Fixed errors in Sarissa.updateContentFromForm (that's what you get for 
       not keeping your unit tests up to date)
