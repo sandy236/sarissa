@@ -885,7 +885,8 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
         // build parameters from form fields
         var params = Sarissa.formToQueryString(oForm) + "&" + Sarissa.REMOTE_CALL_FLAG + "=true";
         var xmlhttp = new XMLHttpRequest();
-        if(oForm.getAttribute("method") && oForm.getAttribute("method").toLowerCase() == "get") {
+        var bUseGet = oForm.getAttribute("method") && oForm.getAttribute("method").toLowerCase() == "get"; 
+        if(bUseGet) {
             xmlhttp.open("GET", oForm.getAttribute("action")+"?"+params, true);
         }
         else{
@@ -900,7 +901,7 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
             }
         };
         xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
-        xmlhttp.send("");
+        xmlhttp.send(bUseGet?"":params);
     }
     catch(e){
         Sarissa.updateCursor(oTargetElement, "auto");
