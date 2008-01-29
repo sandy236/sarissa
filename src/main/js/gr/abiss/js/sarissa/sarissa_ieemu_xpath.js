@@ -79,7 +79,7 @@ if(Sarissa._SARISSA_HAS_DOM_FEATURE && document.implementation.hasFeature("XPath
     * are looking for elements in the null namespace. If you need to look
     * for nodes in the default namespace, you need to map a prefix to it
     * first like:</p>
-    * <pre>Sarissa.setXpathNamespaces(oDoc, &quot;xmlns:myprefix=&amp;aposhttp://mynsURI&amp;apos&quot;);</pre>
+    * <pre>Sarissa.setXpathNamespaces(oDoc, "xmlns:myprefix'http://mynsURI'");</pre>
     * <p><b>Note 1 </b>: Use this method only if the source document features
     * a default namespace (without a prefix), otherwise just use IE's setProperty
     * (moz will rezolve non-default namespaces by itself). You will need to map that
