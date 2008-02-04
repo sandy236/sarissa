@@ -32,9 +32,12 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 0.9.9.1
-    * Added table utilities, just sorting for table data for now.
     * Fixed bug with Sarissa.updateContentFromNode(), thanks to Javinto 
       (SF user) andHartmut Wynen for finding the bug and solution respectively. 
+    * Refactored the callback stuff in Sarissa.updateContentFromXXX methods. They work alot
+      better and with appropriate signatures now. Sarissa.updateContentFromNode now uses no 
+      callbacks since it's not an async method.
+    * Added table utilities, just sorting for table data for now. Maybe you'll find it usefull.
 
 0.9.9
     * Fixed errors in Sarissa.updateContentFromForm (that's what you get for 
@@ -56,7 +59,6 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * Added syntax highlighting to the HOWTOs thanks to the integration of SyntaxHighlighter
       by Alex Gorbatchev to our custom Maven skin, see 
       http://code.google.com/p/syntaxhighlighter/
-
 
 0.9.8.0
     * Changed importStylesheet for IE thanks to dougdomeny. 
