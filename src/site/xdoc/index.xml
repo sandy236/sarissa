@@ -120,8 +120,6 @@
                     bookmarks, notes, quotations, lyrics, recipes etc. online and  access them from anywhere. 
                     You can also create a public page and share with the world.
                     </li>
-                <li>Looks like Sarissa is also used by Blizzard for their WOW 
-                    <a href="http://www.worldofwarcraft.com/realmstatus/">Realm Server Status</a> page</li>
                 <li>The <a href="http://kssproject.org/">KSS project</a> (formerly known as Kukit) is a javascript framework 
                     that aims to allow Ajax development without javascript. It uses stylesheets with CSS-compliant 
                     syntax to setup behaviours in the client and a set of well-defined commands that are marshalled 
