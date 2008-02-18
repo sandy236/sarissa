@@ -174,7 +174,7 @@
       </plugin>
     </plugins> 
   </build>
-  <reporting>
+  <!--reporting>
     <plugins>
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
@@ -196,7 +196,7 @@
         </reportSets>
       </plugin>
     </plugins>
-  </reporting>
+  </reporting-->
   <distributionManagement>
     <site>
       <id>dev.abiss.gr</id>

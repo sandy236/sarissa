@@ -32,6 +32,7 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 0.9.9.1
+    * Removed "!==" and "===" operators.
     * Fixed bug with Sarissa.updateContentFromNode(), thanks to Javinto 
       (SF user) andHartmut Wynen for finding the bug and solution respectively. 
     * Refactored the callback stuff in Sarissa.updateContentFromXXX methods. They work alot

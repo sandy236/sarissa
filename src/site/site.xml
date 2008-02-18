@@ -46,8 +46,8 @@
             href="http://www.openajax.org/"/>
     </poweredBy>
     <skin>
-        <groupId>md4j</groupId>
-        <artifactId>md4j-site-skin</artifactId>
+        <groupId>gr.abiss.dev</groupId>
+        <artifactId>dev-site-skin</artifactId>
         <version>0.2-SNAPSHOT</version>
     </skin>
     <body>
