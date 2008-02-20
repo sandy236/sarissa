@@ -46,7 +46,7 @@
             href="http://www.openajax.org/"/>
     </poweredBy>
     <skin>
-        <groupId>gr.abiss.dev</groupId>
+        <groupId>gr.abiss.mvn.site</groupId>
         <artifactId>dev-site-skin</artifactId>
         <version>0.2-SNAPSHOT</version>
     </skin>

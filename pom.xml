@@ -30,7 +30,7 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.9.1</version>
+  <version>0.9.9.2</version>
   <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
@@ -174,7 +174,7 @@
       </plugin>
     </plugins> 
   </build>
-  <!--reporting>
+  <reporting>
     <plugins>
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
@@ -196,7 +196,7 @@
         </reportSets>
       </plugin>
     </plugins>
-  </reporting-->
+  </reporting>
   <distributionManagement>
     <site>
       <id>dev.abiss.gr</id>

@@ -31,6 +31,12 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+0.9.9.2
+    * Fixed a variable scope in Sarissa.updateContentFromURI thanks to Lawrence Michel
+    * Fixed JSLint and JSDoc reports in build (errr, "somebody" forgot to re-enable them after 
+      commenting them out to get a faster build while doing 0.9.9.1 ;-)
+    * Applied the new dev.abiss.gr skin properly in the generated docos
+
 0.9.9.1
     * Removed "!==" and "===" operators.
     * Fixed bug with Sarissa.updateContentFromNode(), thanks to Javinto 

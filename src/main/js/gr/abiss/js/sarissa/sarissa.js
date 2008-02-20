@@ -738,7 +738,7 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, call
         Sarissa.updateCursor(oTargetElement, "wait");
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("GET", sFromUrl, true);
-        sarissa_dhtml_loadHandler = function() {
+        xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
             	try{
             		var oDomDoc = xmlhttp.responseXML;
@@ -760,7 +760,6 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, call
             	}
             }
         };
-        xmlhttp.onreadystatechange = sarissa_dhtml_loadHandler;
         if (skipCache) {
              var oldage = "Sat, 1 Jan 2000 00:00:00 GMT";
              xmlhttp.setRequestHeader("If-Modified-Since", oldage);
