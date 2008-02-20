@@ -52,13 +52,13 @@
     &lt;dependency&gt;
         &lt;groupId&gt;gr.abiss.js&lt;/groupId&gt;
         &lt;artifactId&gt;sarissa&lt;/artifactId&gt;
-        &lt;version&gt;0.9.9&lt;/version&gt;
+        &lt;version&gt;LATEST_VERSION_HERE&lt;/version&gt;
     &lt;/dependency&gt;
     &lt;!-- add jstools --&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;gr.abiss.mvn.plugins&lt;/groupId&gt;
         &lt;artifactId&gt;maven-jstools-plugin&lt;/artifactId&gt;
-        &lt;version&gt;0.3&lt;/version&gt;
+        &lt;version&gt;LATEST_VERSION_HERE&lt;/version&gt;
     &lt;/dependency&gt;
 &lt;/dependencies&gt;
             </pre>

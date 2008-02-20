@@ -941,7 +941,7 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
     catch(e){
         Sarissa.updateCursor(oTargetElement, "auto");
         if(callback){
-        	callback(oForm, oTargetElement, e)
+        	callback(oForm, oTargetElement, e);
         }
         else{
         	throw e;
