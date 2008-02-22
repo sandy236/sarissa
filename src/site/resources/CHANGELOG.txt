@@ -31,6 +31,13 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+0.9.9.3
+    * XMLHttpRequest is now always defined for IE, even version 7 to avoid version 
+      problems between ActiveX controls (IE7 hardcodes XMLHttpRequest to MSXML 3.0).
+      Many thanks to reporter Scott Chinn. Special thanks to dougdomeny and 
+      Ron MacCracken (rmaccracken) for working on solutions.
+    * Fixed the "send results" form unit tests page to work with IE 
+
 0.9.9.2
     * Fixed a variable scope in Sarissa.updateContentFromURI thanks to Lawrence Michel
     * Fixed JSLint and JSDoc reports in build (errr, "somebody" forgot to re-enable them after 

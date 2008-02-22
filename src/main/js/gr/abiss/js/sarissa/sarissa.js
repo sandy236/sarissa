@@ -117,18 +117,21 @@ if(Sarissa._SARISSA_IS_IE){
     _SARISSA_THREADEDDOM_PROGID = null;
     _SARISSA_XSLTEMPLATE_PROGID = null;
     _SARISSA_XMLHTTP_PROGID = null;
-    if(!window.XMLHttpRequest){
-        /**
-         * Emulate XMLHttpRequest
-         * @constructor
-         */
-        XMLHttpRequest = function() {
-            if(!_SARISSA_XMLHTTP_PROGID){
-                _SARISSA_XMLHTTP_PROGID = Sarissa.pickRecentProgID(["Msxml2.XMLHTTP.6.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"]);
-            }
-            return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
-        };
-    }
+    // commenting the condition out; we need to redefine XMLHttpRequest 
+    // anyway as IE7 hardcodes it to MSXML3.0 causing version problems 
+    // between different activex controls 
+    //if(!window.XMLHttpRequest){
+    /**
+     * Emulate XMLHttpRequest
+     * @constructor
+     */
+    XMLHttpRequest = function() {
+        if(!_SARISSA_XMLHTTP_PROGID){
+            _SARISSA_XMLHTTP_PROGID = Sarissa.pickRecentProgID(["Msxml2.XMLHTTP.6.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "Microsoft.XMLHTTP"]);
+        }
+        return new ActiveXObject(_SARISSA_XMLHTTP_PROGID);
+    };
+    //}
     // we dont need this anymore
     //============================================
     // Factory methods (IE)
