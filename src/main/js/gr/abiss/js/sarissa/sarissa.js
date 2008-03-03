@@ -813,11 +813,11 @@ Sarissa.updateContentFromNode = function(oNode, oTargetElement, xsltproc) {
             }
             else {
                 // ok that was not smart; it was paranoid. Keep up the good work by trying to use DOM instead of innerHTML
-                if(oNode.nodeType == Node.DOCUMENT_NODE || oNode.ownerDocument.documentElement == oNode) {
-                    oTargetElement.innerHTML = new XMLSerializer().serializeToString(oNode);
-                }
-                else{
+                try{
                     oTargetElement.appendChild(oTargetElement.ownerDocument.importNode(oNode, true));
+                }
+                catch(e){
+                    oTargetElement.innerHTML = new XMLSerializer().serializeToString(oNode);
                 }
             }
         }

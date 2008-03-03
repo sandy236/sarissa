@@ -124,6 +124,9 @@
                     that aims to allow Ajax development without javascript. It uses stylesheets with CSS-compliant 
                     syntax to setup behaviours in the client and a set of well-defined commands that are marshalled 
                     back from the server to manipulate the DOM.</li>
+                <li><a href="http://mapguide.osgeo.org/">MapGuide Open Source</a> is a web-based platform that enables  
+                	users to quickly develop and deploy web mapping applications and geospatial web services. 
+                </li>
             </ul>
         </section>
     </body>
