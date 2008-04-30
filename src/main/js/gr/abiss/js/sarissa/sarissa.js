@@ -40,7 +40,11 @@ Sarissa.PARSED_UNKNOWN_ERROR = "Not well-formed or other error";
 Sarissa.IS_ENABLED_TRANSFORM_NODE = false;
 Sarissa.REMOTE_CALL_FLAG = "gr.abiss.sarissa.REMOTE_CALL_FLAG";
 /** @private */
-Sarissa._sarissa_iNsCounter = 0;
+Sarissa._lastUniqueSuffix = 0;
+/** @private */
+Sarissa._getUniqueSuffix = function(){
+	return Sarissa._lastUniqueSuffix++;
+};
 /** @private */
 Sarissa._SARISSA_IEPREFIX4XSLPARAM = "";
 /** @private */
@@ -152,7 +156,7 @@ if(Sarissa._SARISSA_IS_IE){
                     prefix = sName.substring(0, sName.indexOf(":"));
                     sName = sName.substring(sName.indexOf(":")+1); 
                 }else{
-                    prefix = "a" + (Sarissa._sarissa_iNsCounter++);
+                    prefix = "a" + Sarissa._getUniqueSuffix();
                 }
             }
             // use namespaces if a namespace URI exists
@@ -529,7 +533,7 @@ if(!Sarissa.getParseErrorText){
      */
     Sarissa.getParseErrorText = function (oDoc){
         var parseErrorText = Sarissa.PARSED_OK;
-        if(!oDoc.documentElement){
+        if((!oDoc) || (!oDoc.documentElement)){
             parseErrorText = Sarissa.PARSED_EMPTY;
         } else if(oDoc.documentElement.tagName == "parsererror"){
             parseErrorText = oDoc.documentElement.firstChild.data;
@@ -747,7 +751,9 @@ Sarissa.updateContentFromURI = function(sFromUrl, oTargetElement, xsltproc, call
             		var oDomDoc = xmlhttp.responseXML;
 	            	if(oDomDoc && Sarissa.getParseErrorText(oDomDoc) == Sarissa.PARSED_OK){
 		                Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
-		                callback(sFromUrl, oTargetElement);
+        				if(callback){
+		                	callback(sFromUrl, oTargetElement);
+		                }
 	            	}
 	            	else{
 	            		throw Sarissa.getParseErrorText(oDomDoc);
@@ -923,7 +929,9 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
 	            	var oDomDoc = xmlhttp.responseXML;
 	            	if(oDomDoc && Sarissa.getParseErrorText(oDomDoc) == Sarissa.PARSED_OK){
 		                Sarissa.updateContentFromNode(xmlhttp.responseXML, oTargetElement, xsltproc);
-		                callback(oForm, oTargetElement);
+        				if(callback){
+		                	callback(oForm, oTargetElement);
+		                }
 	            	}
 	            	else{
 	            		throw Sarissa.getParseErrorText(oDomDoc);
@@ -951,6 +959,63 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
         }
     }
     return false;
+};
+Sarissa.FUNCTION_NAME_REGEXP = new RegExp("");//new RegExp("function\\s+(\\S+)\\s*\\((.|\\n)*?\\)\\s*{");
+/**
+ * Get the name of a function created like:
+ * <pre>function functionName(){}</pre>
+ * If a name is not found and the bForce parameter is true,
+ * attach the function to the window object with a new name and
+ * return that
+ * @param oFunc the function object
+ * @param bForce whether to force a name under the window context if none is found
+ */
+Sarissa.getFunctionName = function(oFunc, bForce){
+
+	alert("Sarissa.getFunctionName oFunc: "+oFunc);
+	var name;
+	if(!name){
+		if(bForce){
+			// attach to window object under a new name
+			name = "SarissaAnonymous" + Sarissa._getUniqueSuffix();
+			window[name] = oFunc;
+		}
+		else{
+			name = null;
+		}
+	}
+	
+	alert("Sarissa.getFunctionName returns: "+name);
+	window["test"] = oFunc;
+	return encodeURIComponent("window['test']");
+};
+
+/**
+ *
+ */
+Sarissa.setRemoteJsonCallback = function(url, callback, callbackParam) {
+	if(!callbackParam){
+		callbackParam = "callback";
+	}
+	var callbackFunctionName = Sarissa.getFunctionName(callback, true);
+	var id = "sarissa_json_script_id_" + Sarissa._getUniqueSuffix(); 
+	var oHead = document.getElementsByTagName("head")[0];
+	var scriptTag = document.createElement('script');
+	scriptTag.type = 'text/javascript';
+	scriptTag.id = id;
+	scriptTag.onload = function(){
+		// cleanUp
+		// document.removeChild(scriptTag);
+	};
+	if(url.indexOf("?") != -1){
+		url += ("&" + callbackParam + "=" + callbackFunctionName);
+	}
+	else{
+		url += ("?" + callbackParam + "=" + callbackFunctionName);
+	}
+	scriptTag.src = url;
+  	oHead.appendChild(scriptTag);
+  	return id;
 };
 
 //   EOF
