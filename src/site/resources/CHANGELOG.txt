@@ -31,6 +31,10 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
  
 ################################################################################################
 
+0.9.9.4
+    * Fixed callback execution in updateContentFromForm and updateContentFromUri
+      thanks to javinto (SF user) 
+
 0.9.9.3
     * XMLHttpRequest is now always defined for IE, even version 7 to avoid version 
       problems between ActiveX controls (IE7 hardcodes XMLHttpRequest to MSXML 3.0).
