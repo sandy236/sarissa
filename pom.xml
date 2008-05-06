@@ -191,7 +191,7 @@
           <reportSet>
             <reports>
               <report>jslint</report>
-              <report>jsdoc</report>
+              <!-- report>jsdoc</report -->
             </reports>
           </reportSet>
         </reportSets>

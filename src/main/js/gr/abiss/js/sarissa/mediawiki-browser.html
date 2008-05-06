@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<script type="text/javascript" src="sarissa.js"> </script>
+		<script type="text/javascript" src="sarissa-mediawiki.js"> </script>
+		<script type="text/javascript">
+var currentEntry;
+Sarissa.test = function(o){alert("window['test'] : "+o);};
+function debugFunc(oText){document.getElementById("debug").value = /*Sarissa.xmlize(*/ oText /*, "wikisearch")*/;};
+function search(url, format, languages, sFor){
+	try{
+		currentEntry = new SarissaMediaWikiContext(url, format, languages, sFor);
+		currentEntry.search(sFor, Sarissa.test, 10);
+	}
+	catch(e){
+		alert(e);
+	}
+	return false;
+};
+		</script>
+	</head>
+	<body>
+	<form onsubmit="return search(this.baseUrl.value, this.format.value, ['en'], this.searchText.value);">
+	<table>
+		<tr>
+			<td><label for="baseUrl">API URL:</label></td>
+			<td><input type="text" id="baseUrl" value="http://en.wikipedia.org/w/api.php" /></td>
+		</tr>
+		<tr>
+			<td><label for="format">Format:</label></td>
+			<td><input type=text id="format" value="json" /></td>
+		</tr>
+		<tr>
+			<td><label for="searchText">Search for:</label></td>
+			<td><input type="text" id="searchText" value="Greece" /></td>
+		</tr>
+	</table>
+	<button type="submit">Search</button>
+	<textarea id="debug" style="width:100%;height:250px;">
+	
+	</textarea>
+	</form>
+	
+	</body>
+</html>
