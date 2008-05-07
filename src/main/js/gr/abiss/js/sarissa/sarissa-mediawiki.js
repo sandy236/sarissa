@@ -1,45 +1,38 @@
-
 /*
-
-Ola ta dedomena mas ta parexei to wikipedia api. sta paradeigmata xrisimopoiw to en alla an baleis to prefix opoiasdipote glwssas psaxneis sto antistoixo (el, fr etc)
-
-1)query gia ena arthro
-en.wikipedia.org/w/api.php?action=query&redirects&format=xml&prop=revisions&rvprop=content&titles=Jack_London
-opou pairneis olo to txt
-
-2)
-gia na pareis ta backlinks enos arthrou (ti kanei link sto arthro):
-en.wikipedia.org/w/api.php?action=query&generator=backlinks&format=xml&gbllimit=500&gbltitle=Jack_London
-
-3)
-(anazitisi, xrisimo se periptwsi mispell)
-en.wikipedia.org/w/api.php?action=query&list=search&srsearch=Jack_London&srwhat=text&srnamespace=0&format=xml&srlimit=50
-search
-
-4)
-en.wikipedia.org/w/api.php?format=xml&action=query&prop=categories&titles=Jack_London
-categories an article belongs to
-
-5)
-en.wikipedia.org/w/api.php?format=xml&action=query&cmlimit=500&list=categorymembers&cmtitle=Category:Islands_of_Greece
-ta articles pou anikoun  se mia katigoria
-
-
-format=xml mporeis na baleis json h o,ti allo parexetai
-(http://en.wikipedia.org/w/api.php)
-
-ta 2-5 ginontai parsing kai pairneis ta info pou theleis (px ta bazeis se lists). To 1) exei oli tin pliroforia gia ena arthro kai einai se mediawiki markup...apo kei kai pera thelei convertion se html (i clear text, opws ginetai sto indywiki). mediawiki->html converter gia python den uparxei distixws, kapoios pou na leitourgei aksioprepws. se java den kserw an iparxei, pantws gia php pera apo to mediawiki to idio prepei na uparxoun converters
-
-
-*/
-
-
+ * ====================================================================
+ * About Sarissa: http://dev.abiss.gr/sarissa
+ * ====================================================================
+ * Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs.
+ * The library supports Gecko based browsers like Mozilla and Firefox,
+ * Internet Explorer (5.5+ with MSXML3.0+), Konqueror, Safari and Opera
+ * @author: Copyright 2004-2007 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
+ * ====================================================================
+ * Licence
+ * ====================================================================
+ * Sarissa is free software distributed under the GNU GPL version 2 (see <a href="gpl.txt">gpl.txt</a>) or higher, 
+ * GNU LGPL version 2.1 (see <a href="lgpl.txt">lgpl.txt</a>) or higher and Apache Software License 2.0 or higher 
+ * (see <a href="asl.txt">asl.txt</a>). This means you can choose one of the three and use that if you like. If 
+ * you make modifications under the ASL, i would appreciate it if you submitted those.
+ * In case your copy of Sarissa does not include the license texts, you may find
+ * them online in various formats at <a href="http://www.gnu.org">http://www.gnu.org</a> and 
+ * <a href="http://www.apache.org">http://www.apache.org</a>.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY 
+ * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+ * WARRANTIES OF MERCHANTABILITY,FITNESS FOR A PARTICULAR PURPOSE 
+ * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 /**
  * Class that can be used to perform queries against a MediaWiki instance 
  * @constructor
- * @param apiUrl the base API URL, e.g. <a href="http://en.wikipedia.org/w/api.php" title="Link to Wikipedia's MediaWiki API Instance">http://en.wikipedia.org/w/api.php</a>
- * @callback the callback function to use
+ * @requires Sarissa
+ * @param {String} apiUrl the base API URL, e.g. <a href="http://en.wikipedia.org/w/api.php" title="Link to Wikipedia's MediaWiki API Instance">http://en.wikipedia.org/w/api.php</a>
+ * @param {Function} callback the callback function to use
  */ 
 function SarissaMediaWikiContext(apiUrl, arrLanguages){
 	this.baseUrl = apiUrl;
@@ -51,8 +44,8 @@ function SarissaMediaWikiContext(apiUrl, arrLanguages){
 /**
  * Asynchronously obtain an article from the Wiki, then pass it to the given 
  * callback function as JSON data. This method does any required URL encoding for you.
- * @param sFor the article name
- * @callback the callback function to use
+ * @param {String} sFor the article name
+ * @param {int} iLimit the maximum number of results to retreive
  */ 
 SarissaMediaWikiContext.prototype.doArticleGet = function(sFor, callback){
 	Sarissa.setRemoteJsonCallback(
@@ -67,9 +60,9 @@ SarissaMediaWikiContext.prototype.doArticleGet = function(sFor, callback){
 /**
  * Asynchronously obtain an article's backlinks from the Wiki, then pass those to the given 
  * callback function as JSON data. This method does any required URL encoding for you.
- * @param sFor the article name
- * @param iLimit the maximum number of results to retreive
- * @callback the callback function to use
+ * @param {String} sFor the article name
+ * @param {int} iLimit the maximum number of results to retreive
+ * @param {Function} callback the callback function to use
  */ 
 SarissaMediaWikiContext.prototype.doBacklinksGet = function(sFor, iLimit, callback){
 	Sarissa.setRemoteJsonCallback(
@@ -84,12 +77,31 @@ SarissaMediaWikiContext.prototype.doBacklinksGet = function(sFor, iLimit, callba
 };
 
 /**
+ * Asynchronously perform a Wiki Search, passing the results to the given 
+ * callback function as JSON data. This method does any required URL encoding for you.
+ * @param {String} sFor the terms to look for
+ * @param {int} iLimit the maximum number of results to retreive
+ * @param {Function} callback the callback function to use
+ */ 
+SarissaMediaWikiContext.prototype.doSearch = function(sFor, iLimit, callback){
+	Sarissa.setRemoteJsonCallback(
+		this.baseUrl + 
+			"?action=query&list=search&srsearch=" + 
+			encodeURIComponent(sFor) + 
+			"&srwhat=text&srnamespace=0&format=" +
+			this.format + 
+			"&srlimit=" + 
+			iLimit, 
+		callback);
+};
+
+/**
  * Asynchronously obtain the articles belonging to a category from the Wiki, 
  * then pass those to the given callback function as JSON data. This method 
  * does any required URL encoding for you.
- * @param sFor the article name
- * @param iLimit the maximum number of results to retreive
- * @callback the callback function to use
+ * @param {String} sFor the article name
+ * @param {int} iLimit the maximum number of results to retreive
+ * @param {Function} callback the callback function to use
  */ 
 SarissaMediaWikiContext.prototype.doCategorySearch = function(sFor, iLimit, callback){
 	Sarissa.setRemoteJsonCallback(
@@ -102,4 +114,23 @@ SarissaMediaWikiContext.prototype.doCategorySearch = function(sFor, iLimit, call
 			encodeURIComponent(sFor), 
 		callback);
 };
+/**
+ * Asynchronously obtain the Wiki categories an article belongs to, 
+ * then pass those to the given callback function as JSON data. This method 
+ * does any required URL encoding for you.
+ * @param {String} sFor the article name
+ * @param {int} iLimit the maximum number of results to retreive
+ * @param {Function} callback the callback function to use
+ */ 
+SarissaMediaWikiContext.prototype.doArticleCategoriesGet = function(sFor, iLimit, callback){
+	Sarissa.setRemoteJsonCallback(
+		this.baseUrl + 
+			"?format=" + 
+			this.format + 
+			"&action=query&prop=categories&titles=" + 
+			encodeURIComponent(sFor), 
+		callback);
+};
+
+
 
