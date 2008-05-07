@@ -141,7 +141,7 @@ if(Sarissa._SARISSA_HAS_DOM_FEATURE && document.implementation.hasFeature("XPath
             };
         }
         else{
-            this.createNSResolver(this.documentElement);
+            nsresolver = this.createNSResolver(this.documentElement);
         }
         var result = null;
         if(!returnSingle){
