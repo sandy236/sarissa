@@ -32,8 +32,10 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 0.9.9.4
+    * Added first attempt on a MediaWiki API
     * Fixed callback execution in updateContentFromForm and updateContentFromUri
       thanks to javinto (SF user) 
+    * Fixed selectNodes bug thanks to Doug Clayton
 
 0.9.9.3
     * XMLHttpRequest is now always defined for IE, even version 7 to avoid version 
