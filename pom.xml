@@ -30,7 +30,7 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.9.4-SNAPSHOT</version>
+  <version>0.9.9.4</version>
   <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
@@ -180,18 +180,18 @@
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
-        <version>0.5</version>
+        <version>0.6-SNAPSHOT</version>
+        <inherited>false</inherited>
         <configuration>
           <jsDir>${project.build.directory}/classes</jsDir>
           <reportJslintErrorsOnly>true</reportJslintErrorsOnly>
           <excludes>**/*-compressed.js</excludes>
-          <template>sunny</template>
         </configuration>
         <reportSets>
           <reportSet>
             <reports>
               <report>jslint</report>
-              <!-- report>jsdoc</report -->
+              <report>jsdoc</report>
             </reports>
           </reportSet>
         </reportSets>

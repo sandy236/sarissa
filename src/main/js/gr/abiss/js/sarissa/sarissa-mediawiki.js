@@ -1,11 +1,15 @@
-/*
+/**
  * ====================================================================
  * About Sarissa: http://dev.abiss.gr/sarissa
  * ====================================================================
- * Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs.
- * The library supports Gecko based browsers like Mozilla and Firefox,
- * Internet Explorer (5.5+ with MSXML3.0+), Konqueror, Safari and Opera
- * @author: Copyright 2004-2007 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
+ * Sarissa cross browser XML library - IE XPath Emulation 
+ * @version ${project.version}
+ * @author: Copyright 2004-2008 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
+ *
+ * This script depends on sarissa.js and provides an API for remote MediaWiki
+ * JSON API calls.
+ * 
+ * @author: Copyright 2003-2008 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  * ====================================================================
  * Licence
  * ====================================================================

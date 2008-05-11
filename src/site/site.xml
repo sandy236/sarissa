@@ -66,6 +66,7 @@
         <menu name="Documentation">
             <item name="Installation" href="/installation.html"/>
             <item name="HOWTOs" href="/howtos.html"/>
+            <item name="TODOs" href="/todo.html"/>
             <item name="API (JSDoc)" href="/jsdoc/index.html"/>
             <item name="Troubleshooting" href="/troubleshooting.html"/>
             <item name="Unit Tests (ECMAUnit)" href="/test/testsarissa.html"/>

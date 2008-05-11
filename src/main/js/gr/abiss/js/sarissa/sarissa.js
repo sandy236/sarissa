@@ -5,7 +5,8 @@
  * Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs.
  * The library supports Gecko based browsers like Mozilla and Firefox,
  * Internet Explorer (5.5+ with MSXML3.0+), Konqueror, Safari and Opera
- * @author: Copyright 2004-2007 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
+ * @version ${project.version}
+ * @author: Copyright 2004-2008 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  * ====================================================================
  * Licence
  * ====================================================================
@@ -249,7 +250,7 @@ if(Sarissa._SARISSA_IS_IE){
 
     /**
      * Transform the given XML DOM and return the transformation result as a new DOM document
-     * @argument {DOMDocument} sourceDoc The XML DOMDocument to transform
+     * @param {DOMDocument} sourceDoc The XML DOMDocument to transform
      * @return {DOMDocument} The transformation result as a DOM Document
      */
     XSLTProcessor.prototype.transformToDocument = function(sourceDoc){
@@ -279,8 +280,8 @@ if(Sarissa._SARISSA_IS_IE){
     /**
      * Transform the given XML DOM and return the transformation result as a new DOM fragment.
      * <b>Note</b>: The xsl:output method must match the nature of the owner document (XML/HTML).
-     * @argument {DOMDocument} sourceDoc The XML DOMDocument to transform
-     * @argument {DOMDocument} ownerDoc The owner of the result fragment
+     * @param {DOMDocument} sourceDoc The XML DOMDocument to transform
+     * @param {DOMDocument} ownerDoc The owner of the result fragment
      * @return {DOMDocument} The transformation result as a DOM Document
      */
     XSLTProcessor.prototype.transformToFragment = function (sourceDoc, ownerDoc) {
@@ -315,9 +316,9 @@ if(Sarissa._SARISSA_IS_IE){
     
     /**
      * Set global XSLT parameter of the imported stylesheet
-     * @argument {String} nsURI The parameter namespace URI
-     * @argument {String} name The parameter base name
-     * @argument {String} value The new parameter value
+     * @param {String} nsURI The parameter namespace URI
+     * @param {String} name The parameter base name
+     * @param {String} value The new parameter value
      */
      XSLTProcessor.prototype.setParameter = function(nsURI, name, value){
          // make value a zero length string if null to allow clearing
@@ -338,8 +339,8 @@ if(Sarissa._SARISSA_IS_IE){
     /**
      * Gets a parameter if previously set by setParameter. Returns null
      * otherwise
-     * @argument {String} name The parameter base name
-     * @argument {String} value The new parameter value
+     * @param {String} name The parameter base name
+     * @param {String} value The new parameter value
      * @return {String} The parameter value if reviously set by setParameter, null otherwise
      */
     XSLTProcessor.prototype.getParameter = function(nsURI, name){
@@ -388,9 +389,9 @@ if(Sarissa._SARISSA_IS_IE){
          * Internal use.</p>
          * @memberOf Sarissa
          * @private
-         * @argument oDoc the DOM Document object to fire the
+         * @param oDoc the DOM Document object to fire the
          *          readystatechange event
-         * @argument iReadyState the number to change the readystate property to
+         * @param iReadyState the number to change the readystate property to
          */
         Sarissa.__setReadyState__ = function(oDoc, iReadyState){
             oDoc.readyState = iReadyState;
@@ -430,8 +431,8 @@ if(Sarissa._SARISSA_IS_IE){
             /**
             * <p>Factory method to obtain a new DOM Document object</p>
             * @memberOf Sarissa
-            * @argument {String} sUri the namespace of the root node (if any)
-            * @argument {String} sUri the local name of the root node (if any)
+            * @param {String} sUri the namespace of the root node (if any)
+            * @param {String} sUri the local name of the root node (if any)
             * @returns {DOMDOcument} a new DOM Document
             */
             Sarissa.getDomDocument = function(sUri, sName){
@@ -456,7 +457,7 @@ if(Sarissa._SARISSA_IS_IE){
 //==========================================
 if(!window.DOMParser){
     if(Sarissa._SARISSA_IS_SAFARI){
-        /*
+        /**
          * DOMParser is a utility class, used to construct DOMDocuments from XML strings
          * @constructor
          */
@@ -549,9 +550,9 @@ if(!Sarissa.getParseErrorText){
 }
 /**
  * Get a string with the concatenated values of all string nodes under the given node
- * @memberOf Sarissa
- * @argument {DOMNode} oNode the given DOM node
- * @argument {boolean} deep whether to recursively scan the children nodes of the given node for text as well. Default is <code>false</code> 
+ * @param {DOMNode} oNode the given DOM node
+ * @param {boolean} deep whether to recursively scan the children nodes of the given node for text as well. Default is <code>false</code>
+ * @memberOf Sarissa 
  */
 Sarissa.getText = function(oNode, deep){
     var s = "";
