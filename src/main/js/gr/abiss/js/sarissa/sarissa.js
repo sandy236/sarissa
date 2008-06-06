@@ -682,20 +682,24 @@ Sarissa.moveChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
  * @memberOf Sarissa
  * @param {Object} anyObject the object to serialize
  * @param {String} objectName a name for that object, to be used as the root element name
+ * @param {String} indentSpace Optional, the indentation space to use, default is an empty 
+ *        string. A single space character is added in any recursive call.
+ * @param {noolean} skipEscape Optional, whether to skip escaping characters that map to the 
+ *        five predefined XML entities. Default is <code>false</code>.
  * @return {String} the XML serialization of the given object as a string
  */
-Sarissa.xmlize = function(anyObject, objectName, indentSpace){
+Sarissa.xmlize = function(anyObject, objectName, indentSpace, skipEscape){
     indentSpace = indentSpace?indentSpace:'';
     var s = indentSpace  + '<' + objectName + '>';
     var isLeaf = false;
     if(!(anyObject instanceof Object) || anyObject instanceof Number || anyObject instanceof String || anyObject instanceof Boolean || anyObject instanceof Date){
-        s += Sarissa.escape(""+anyObject);
+        s += (skipEscape ? Sarissa.escape(anyObject) : anyObject);
         isLeaf = true;
     }else{
         s += "\n";
         var isArrayItem = anyObject instanceof Array;
         for(var name in anyObject){
-            s += Sarissa.xmlize(anyObject[name], (isArrayItem?"array-item key=\""+name+"\"":name), indentSpace + "   ");
+            s += Sarissa.xmlize(anyObject[name], (isArrayItem?"array-item key=\""+name+"\"":name), indentSpace + " ");
         }
         s += indentSpace;
     }
@@ -963,32 +967,28 @@ Sarissa.updateContentFromForm = function(oForm, oTargetElement, xsltproc, callba
     }
     return false;
 };
-Sarissa.FUNCTION_NAME_REGEXP = new RegExp("");//new RegExp("function\\s+(\\S+)\\s*\\((.|\\n)*?\\)\\s*{");
+
 /**
  * Get the name of a function created like:
  * <pre>function functionName(){}</pre>
- * If a name is not found and the bForce parameter is true,
- * attach the function to the window object with a new name and
- * return that
+ * If a name is not found, attach the function to 
+ * the window object with a new name and return that
  * @param {Function} oFunc the function object
- * @param {boolean} bForce whether to force a name under the window context if none is found
  */
-Sarissa.getFunctionName = function(oFunc, bForce){
-	//alert("Sarissa.getFunctionName oFunc: "+oFunc);
-	var name;
-	if(!name){
-		if(bForce){
-			// attach to window object under a new name
-			name = "SarissaAnonymous" + Sarissa._getUniqueSuffix();
-			window[name] = oFunc;
-		}
-		else{
-			name = null;
-		}
+Sarissa.getFunctionName = function(oFunc){
+	if(!oFunc || (typeof oFunc != 'function' )){
+		throw "The value of parameter 'oFunc' must be a function";
 	}
-	
-	//alert("Sarissa.getFunctionName returns: "+name);
-	if(name){
+	if(oFunc.name) { 
+		return oFunc.name; 
+	} 
+	// try to parse the function name from the defintion 
+	var sFunc = oFunc.toString(); 
+	alert("sFunc: "+sFunc);
+	var name = sFunc.substring(sFunc.indexOf('function') + 8 , sFunc.indexOf('(')); 
+	if(!name || name.length == 0 || name == " "){
+		// attach to window object under a new name
+		name = "SarissaAnonymous" + Sarissa._getUniqueSuffix();
 		window[name] = oFunc;
 	}
 	return name;
@@ -1001,7 +1001,8 @@ Sarissa.setRemoteJsonCallback = function(url, callback, callbackParam) {
 	if(!callbackParam){
 		callbackParam = "callback";
 	}
-	var callbackFunctionName = Sarissa.getFunctionName(callback, true);
+	var callbackFunctionName = Sarissa.getFunctionName(callback);
+	//alert("callbackFunctionName: '" + callbackFunctionName+"', length: "+callbackFunctionName.length);
 	var id = "sarissa_json_script_id_" + Sarissa._getUniqueSuffix(); 
 	var oHead = document.getElementsByTagName("head")[0];
 	var scriptTag = document.createElement('script');

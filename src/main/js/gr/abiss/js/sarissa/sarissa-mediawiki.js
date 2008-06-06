@@ -54,9 +54,10 @@ function SarissaMediaWikiContext(apiUrl, arrLanguages){
 SarissaMediaWikiContext.prototype.doArticleGet = function(sFor, callback){
 	Sarissa.setRemoteJsonCallback(
 		this.baseUrl + 
-			"?action=query&redirects&format=" + 
+			//"?action=query&redirects&format=" + 
+			"?action=parse&redirects&format=" +
 			this.format + 
-			"&prop=revisions&rvprop=content&titles=" + 
+			"&page" + 
 			encodeURIComponent(sFor), 
 		callback);
 };

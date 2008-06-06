@@ -180,7 +180,7 @@
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <version>0.7</version>
         <inherited>false</inherited>
         <configuration>
           <jsDir>${project.build.directory}/classes</jsDir>
