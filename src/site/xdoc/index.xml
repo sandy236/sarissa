@@ -127,6 +127,11 @@
                 <li><a href="http://mapguide.osgeo.org/">MapGuide Open Source</a> is a web-based platform that enables  
                 	users to quickly develop and deploy web mapping applications and geospatial web services. 
                 </li>
+                <li><a href="http://www.opportuno.de/">Opportuno</a> is jobs search engine for employment opportunities 
+                in Germany. Its "Instant View" search interface is completely based on the Sarissa library.
+                </li>
+                <li>Dr. Dobb's <a href="http://www.ddjsilverlight.com/flipbook/">FlipBook</a>, an e-zine built on Silverlight
+                </li>
             </ul>
         </section>
     </body>
