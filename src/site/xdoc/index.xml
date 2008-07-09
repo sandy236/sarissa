@@ -132,6 +132,9 @@
                 </li>
                 <li>Dr. Dobb's <a href="http://www.ddjsilverlight.com/flipbook/">FlipBook</a>, an e-zine built on Silverlight
                 </li>
+                <li><a href="http://code.google.com/p/jstree/">jstree</a>, a tree component based on jQuery uses Sarissa to transform XML datasources.</li>
+                <li><a href="http://antony.lesuisse.org/qweb/trac/wiki/AjaxTerm">Ajaxterm</a>, a web based terminal (CLI). It was totally inspired and 
+                works almost exactly like Anyterm.</li>
             </ul>
         </section>
     </body>
