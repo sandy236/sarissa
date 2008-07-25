@@ -315,7 +315,9 @@ if(Sarissa._SARISSA_IS_IE){
     };
     
     /**
-     * Set global XSLT parameter of the imported stylesheet
+     * Set global XSLT parameter of the imported stylesheet. This method should 
+     * only be used <strong>after</strong> the importStylesheet method for the 
+     * context XSLTProcessor instance.
      * @param {String} nsURI The parameter namespace URI
      * @param {String} name The parameter base name
      * @param {String} value The new parameter value
