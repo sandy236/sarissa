@@ -31,7 +31,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 /**
- * <p> Creates a WAX.</p>
+ * <p> Creates a WAX implementation instance.</p>
  * @constructor
  * @static
  * @param {String} s Optional: the string to write the XML into.
@@ -39,30 +39,35 @@
  function WAX(s){
  	this.xml = s ? s : "";
  	this.indent = " ";
+ 	this.depth = 0;
  	this.closeStack = [];
  	this.namespaces = [];
  	this.namespaces["xml"] = "http://www.w3.org/XML/1998/namespace";
  	this.namespaces["xmlns"] = "http://www.w3.org/2000/xmlns/";
+ 	this.startTagNamespaces = [];
  	this.context =  WAX.CONTEXT_EMPTY_DOCUMENT;
  }
  /** @private */
  WAX.CONTEXT_EMPTY_DOCUMENT = 0;
  /** @private */
- WAX.CONTEXT_PROLOGED_DOCUMENT = 1;
+ WAX.CONTEXT_NONEMPTY_DOCUMENT = 10;
  /** @private */
- WAX.CONTEXT_DOCTYPED_DOCUMENT = 2;
+ WAX.CONTEXT_PROLOGED_DOCUMENT = 20;
  /** @private */
- WAX.CONTEXT_START_TAG = 3;
+ WAX.CONTEXT_DOCTYPED_DOCUMENT = 30;
  /** @private */
- WAX.CONTEXT_MIXED_CONTENT = 4;
+ WAX.CONTEXT_ROOTED_DOCUMENT = 40;
+ /** @private */
+ WAX.CONTEXT_START_TAG = 50;
+ /** @private */
+ WAX.CONTEXT_MIXED_CONTENT = 60;
  
  // throw if invalid
  WAX.validateNameToken(prefix) {
  	if(prefix.toLowerCase().indexOf("xml") == 0){
  		throw "A name token cannot start with 'XML'";
  	}
- 	
- }
+};
  
  
 /**
@@ -84,15 +89,13 @@ WAX.prototype.attr = function(prefix, name, value, newLine){
 		this.blankLine();
 	}
 	else{
-		s += " ";
+		this.s += " ";
 	}
 	if(prefix){
-		if(!this.namespaces[prefix]){
-			throw "WAX: Cannot use undeclared namespace prefix: " + prefix;
-		}
-		s += prefix + ":";
+		this.s += prefix + ":";
+		this.startTagNamespaces.push(prefix);
 	}
-	s += "\"" + Sarissa.escape(value) + "\"";
+	this.s += "\"" + Sarissa.escape(value) + "\"";
 	return this;
 };
 
@@ -128,8 +131,35 @@ WAX.prototype.getIndent = function(){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.blankLine = function(){
-	s += "\n" + this.indent;
+	this.s += "\n";
+	for(var i=0;i <= this.depth;i++){
+		 this.s += this.indent;
+	}
 	return this;
+};
+
+/** @private */
+WAX.prototype.closeStartTagIfOpen = function(bSkipNewLine){
+	if(this.context ==  WAX.CONTEXT_START_TAG){
+		this.this.s += ">" 
+		this.context =  WAX.CONTEXT_MIXED_CONTENT;
+		// check if prefixes used are in scope
+		for(var i=0; i < this.startTagNamespaces.length; i++){
+			if(!this.namespaces[this.startTagNamespaces[i]]){
+				throw "WAX: Cannot use undeclared namespace prefix: " + this.startTagNamespaces[i];
+			}
+		}
+		this.startTagNamespaces = [];
+	}
+	if(!bSkipNewLine){
+		this.blankLine();
+	}
+};
+/** @private */
+WAX.prototype.dontThinkEmpty = function(){
+	if(this.context ==  WAX.CONTEXT_EMPTY_DOCUMENT){
+		this.context =  WAX.CONTEXT_NONEMPTY_DOCUMENT;
+	}
 };
 
 /**
@@ -138,11 +168,11 @@ WAX.prototype.blankLine = function(){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.cdata = function(text){
-	if(this.context !=  WAX.CONTEXT_MIXED_CONTENT){
+	if(this.context < WAX.CONTEXT_ROOTED_DOCUMENT){
 		throw "WAX: Cannot write CDATA section in this context";
 	}
-	this.blankLine();
-	s += "<![CDATA[" + text + "]]>";
+	this.closeStartTagIfOpen();
+	this.s += "<![CDATA[" + text + "]]>";
 	return this;
 };
 
@@ -152,28 +182,111 @@ WAX.prototype.cdata = function(text){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.comment = function(text){
-	if(this.context !=  WAX.CONTEXT_MIXED_CONTENT){
-		throw "WAX: Cannot write comment in this context";
-	}
+	this.closeStartTagIfOpen();
 	if(text.indexOf("--") != -1){
 		throw "WAX: Comments cannot contain '--'";
 	}
-	this.blankLine();
-	s += "<!--" + Sarissa.escape(text) + "-->";
+	this.s += "<!--" + Sarissa.escape(text) + "-->";
+	this.dontThinkEmpty();
 	return this;
 };
+
 /**
- * Writes text preceded by a newline.
- * @param {String} text the text string to write
- * @param {boolean} bEscape whether to escape the text. Default is true
+ * Writes text as content of the current element
+ * @param {String} text the text string to write. The text will be escaped.
  * @return {WAX} this WAX instance
  */
-WAX.prototype.nlText = function(text){
-	// TODO: change context
-	this.blankLine();
-	s += Sarissa.escape(text);
+WAX.prototype.text = function(text, bNewline, bEscape){
+	if(this.context < WAX.CONTEXT_ROOTED_DOCUMENT){
+		throw "WAX: Cannot write text in this context";
+	}
+	this.closeStartTagIfOpen(!bNewline);
+	this.s += bEscape ? Sarissa.escape(text) : text;
 	return this;
 };
+
+/**
+ * Writes text preceded by a newline.
+ * @param {String} text the text string to write. The text will be escaped.
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.nlText = function(text, bEscape){
+	return this.text(text, true, bEscape);
+};
+
+
+
+/**
+ * Writes a processing instruction.
+ * @param {String} target the PI target
+ * @param {String} data the PI data
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.processingInstruction = function(target, data){
+	this.closeStartTagIfOpen();
+	this.s += "<?" + Sarissa.escape(target) + " " + Sarissa.escape(data) + "?>";
+	this.dontThinkEmpty();
+	return this;
+};
+
+/**
+ * Writes a processing instruction.
+ * @param {String} target the PI target
+ * @param {String} data the PI data
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.pi = WAX.prototype.processingInstruction;
+
+/**
+ * Writes an XSLT processing instruction.
+ * @param {String} src the XSLT URI
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.xslt = function(src){
+	this.closeStartTagIfOpen();
+	this.s += "<?xml-stylesheet type=\"text/xsl\" href=\"" + Sarissa.escape(src) + "\"?>";
+	this.dontThinkEmpty();
+	return this;
+};
+
+/**
+ * Writes the start tag for a given element name, but doesn't terminate it.
+ * @param {String} prefix (optional) the namespace prefix
+ * @param {String} name the element name
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.start = function(prefix, name){
+	this.closeStartTagIfOpen();
+	this.s += "<";
+	if(prefix){
+		this.s += prefix + ":";
+		this.startTagNamespaces.push(prefix);
+	}
+	this.s += name;
+	this.closeStack.push(prefix ? prefix + ":" + name : name);
+	this.depth++;
+	this.dontThinkEmpty();
+	return this;
+};
+
+/**
+ * Terminates the current element.
+ * @param {boolean} bForceEndTag whether to force a seperate close tag
+ * if the element has no content
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.end = function(bForceEndTag){
+	if(this.context ==  WAX.CONTEXT_START_TAG && !bForceEndTag){
+		this.s += " />";
+	}
+	else{
+		this.s += "</" + this.closeStack.pop + ">";
+	}
+	this.depth--;
+	return this;
+};
+          
+
 
 /*
 
@@ -206,10 +319,7 @@ static PrologWAX 	newInstance(java.lang.String filePath)
           Creates a new WAX object that writes to a given file path and returns it as an interface type that restricts the first method call to be one that is valid for the initial ouptut.
 static PrologWAX 	newInstance(java.io.Writer writer)
           Creates a new WAX object that writes to a given Writer and returns it as an interface type that restricts the first method call to be one that is valid for the initial ouptut.
- ElementWAX 	nlText(java.lang.String text)
-          Writes text preceded by a newline.
- PrologOrElementWAX 	processingInstruction(java.lang.String target, java.lang.String data)
-          Writes a processing instruction.
+
  void 	setIndent(int numSpaces)
           Sets the number of spaces to use for indentation.
  void 	setIndent(java.lang.String indent)
