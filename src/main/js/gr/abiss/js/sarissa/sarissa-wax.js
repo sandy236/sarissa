@@ -62,13 +62,44 @@
  /** @private */
  WAX.CONTEXT_MIXED_CONTENT = 60;
  
- // throw if invalid
+ /** @private TODO */
  WAX.validateNameToken(prefix) {
  	if(prefix.toLowerCase().indexOf("xml") == 0){
  		throw "A name token cannot start with 'XML'";
  	}
 };
- 
+ /** @private */
+WAX.prototype.closeStartTagIfOpen = function(bSkipNewLine){
+	if(this.context ==  WAX.CONTEXT_START_TAG){
+		this.this.xml += ">" 
+		this.context =  WAX.CONTEXT_MIXED_CONTENT;
+		// check if prefixes used are in scope
+		for(var i=0; i < this.startTagNamespaces.length; i++){
+			if(!this.namespaces[this.startTagNamespaces[i]]){
+				throw "WAX: Cannot use undeclared namespace prefix: " + this.startTagNamespaces[i];
+			}
+		}
+		this.startTagNamespaces = [];
+	}
+	if(!bSkipNewLine){
+		this.blankLine();
+	}
+};
+/** @private */
+WAX.prototype.dontThinkEmpty = function(){
+	if(this.context ==  WAX.CONTEXT_EMPTY_DOCUMENT){
+		this.context =  WAX.CONTEXT_NONEMPTY_DOCUMENT;
+	}
+};
+
+/**
+ * @private
+ */
+WAX.prototype.ensureOpen = function(){
+	if(this.context ==  WAX.CONTEXT_CLOSED){
+		throw "WAX: This instance is already closed"
+	}
+};
  
 /**
  * Writes an attribute for the currently open element start tag.
@@ -79,6 +110,7 @@
  * @return {WAX} this WAX instance
  */
 WAX.prototype.attr = function(prefix, name, value, newLine){
+	this.ensureOpen();
 	if(this.context !=  WAX.CONTEXT_START_TAG){
 		throw "WAX: Cannot add an attribute or namespace at this context. " +
 			"Given prefix: " + prefix +
@@ -89,13 +121,13 @@ WAX.prototype.attr = function(prefix, name, value, newLine){
 		this.blankLine();
 	}
 	else{
-		this.s += " ";
+		this.xml += " ";
 	}
 	if(prefix){
-		this.s += prefix + ":";
+		this.xml += prefix + ":";
 		this.startTagNamespaces.push(prefix);
 	}
-	this.s += "\"" + Sarissa.escape(value) + "\"";
+	this.xml += "\"" + Sarissa.escape(value) + "\"";
 	return this;
 };
 
@@ -131,36 +163,14 @@ WAX.prototype.getIndent = function(){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.blankLine = function(){
-	this.s += "\n";
+	this.ensureOpen();
+	this.xml += "\n";
 	for(var i=0;i <= this.depth;i++){
-		 this.s += this.indent;
+		 this.xml += this.indent;
 	}
 	return this;
 };
 
-/** @private */
-WAX.prototype.closeStartTagIfOpen = function(bSkipNewLine){
-	if(this.context ==  WAX.CONTEXT_START_TAG){
-		this.this.s += ">" 
-		this.context =  WAX.CONTEXT_MIXED_CONTENT;
-		// check if prefixes used are in scope
-		for(var i=0; i < this.startTagNamespaces.length; i++){
-			if(!this.namespaces[this.startTagNamespaces[i]]){
-				throw "WAX: Cannot use undeclared namespace prefix: " + this.startTagNamespaces[i];
-			}
-		}
-		this.startTagNamespaces = [];
-	}
-	if(!bSkipNewLine){
-		this.blankLine();
-	}
-};
-/** @private */
-WAX.prototype.dontThinkEmpty = function(){
-	if(this.context ==  WAX.CONTEXT_EMPTY_DOCUMENT){
-		this.context =  WAX.CONTEXT_NONEMPTY_DOCUMENT;
-	}
-};
 
 /**
  * Writes a CDATA section in the content of the current element.
@@ -168,11 +178,12 @@ WAX.prototype.dontThinkEmpty = function(){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.cdata = function(text){
+	this.ensureOpen();
 	if(this.context < WAX.CONTEXT_ROOTED_DOCUMENT){
 		throw "WAX: Cannot write CDATA section in this context";
 	}
 	this.closeStartTagIfOpen();
-	this.s += "<![CDATA[" + text + "]]>";
+	this.xml += "<![CDATA[" + text + "]]>";
 	return this;
 };
 
@@ -182,11 +193,12 @@ WAX.prototype.cdata = function(text){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.comment = function(text){
+	this.ensureOpen();
 	this.closeStartTagIfOpen();
 	if(text.indexOf("--") != -1){
 		throw "WAX: Comments cannot contain '--'";
 	}
-	this.s += "<!--" + Sarissa.escape(text) + "-->";
+	this.xml += "<!--" + Sarissa.escape(text) + "-->";
 	this.dontThinkEmpty();
 	return this;
 };
@@ -197,11 +209,12 @@ WAX.prototype.comment = function(text){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.text = function(text, bNewline, bEscape){
+	this.ensureOpen();
 	if(this.context < WAX.CONTEXT_ROOTED_DOCUMENT){
 		throw "WAX: Cannot write text in this context";
 	}
 	this.closeStartTagIfOpen(!bNewline);
-	this.s += bEscape ? Sarissa.escape(text) : text;
+	this.xml += bEscape ? Sarissa.escape(text) : text;
 	return this;
 };
 
@@ -223,8 +236,9 @@ WAX.prototype.nlText = function(text, bEscape){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.processingInstruction = function(target, data){
+	this.ensureOpen();
 	this.closeStartTagIfOpen();
-	this.s += "<?" + Sarissa.escape(target) + " " + Sarissa.escape(data) + "?>";
+	this.xml += "<?" + Sarissa.escape(target) + " " + Sarissa.escape(data) + "?>";
 	this.dontThinkEmpty();
 	return this;
 };
@@ -243,8 +257,9 @@ WAX.prototype.pi = WAX.prototype.processingInstruction;
  * @return {WAX} this WAX instance
  */
 WAX.prototype.xslt = function(src){
+	this.ensureOpen();
 	this.closeStartTagIfOpen();
-	this.s += "<?xml-stylesheet type=\"text/xsl\" href=\"" + Sarissa.escape(src) + "\"?>";
+	this.xml += "<?xml-stylesheet type=\"text/xsl\" href=\"" + Sarissa.escape(src) + "\"?>";
 	this.dontThinkEmpty();
 	return this;
 };
@@ -256,13 +271,14 @@ WAX.prototype.xslt = function(src){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.start = function(prefix, name){
+	this.ensureOpen();
 	this.closeStartTagIfOpen();
-	this.s += "<";
+	this.xml += "<";
 	if(prefix){
-		this.s += prefix + ":";
+		this.xml += prefix + ":";
 		this.startTagNamespaces.push(prefix);
 	}
-	this.s += name;
+	this.xml += name;
 	this.closeStack.push(prefix ? prefix + ":" + name : name);
 	this.depth++;
 	this.dontThinkEmpty();
@@ -276,33 +292,47 @@ WAX.prototype.start = function(prefix, name){
  * @return {WAX} this WAX instance
  */
 WAX.prototype.end = function(bForceEndTag){
+	this.ensureOpen();
 	if(this.context ==  WAX.CONTEXT_START_TAG && !bForceEndTag){
-		this.s += " />";
+		this.xml += " />";
 	}
 	else{
-		this.s += "</" + this.closeStack.pop + ">";
+		this.xml += "</" + this.closeStack.pop + ">";
 	}
 	this.depth--;
 	return this;
 };
-          
+
+/**
+ * Terminates all unterminated elements and insures that nothing else can be written.
+ */
+WAX.prototype.close = function(){
+	this.ensureOpen();
+	while(this.closeStack.length > 0){
+		this.end();
+	}
+};
+
+/**
+ * A convenience method that is a shortcut for start(prefix, name).text(text).end()
+ * @param {String} prefix (optional) the namespace prefix
+ * @param {String} name the element name
+ * @param {String} text the text string to write. The text will be escaped.
+ * @return {WAX} this WAX instance
+ */
+WAX.prototype.child = function(prefix, name, text){
+	return this.start(prefix, name).text(text).end();
+};
 
 
 /*
 
- ElementWAX 	child(java.lang.String name, java.lang.String text)
-          A convenience method that is a shortcut for start(name).text(text).end().
- ElementWAX 	child(java.lang.String prefix, java.lang.String name, java.lang.String text)
-          A convenience method that is a shortcut for start(prefix, name).text(text).end().
- void 	close()
-          Terminates all unterminated elements, closes the Writer that is being used to output XML, and insures that nothing else can be written.
- P
  PrologWAX 	dtd(java.lang.String filePath)
           Writes a DOCTYPE that associates a DTD with the XML document.
- ElementWAX 	end()
-          Terminates the current element.
+          
  PrologWAX 	entityDef(java.lang.String name, java.lang.String value)
           Adds an entity definition to the internal subset of the DOCTYPE.
+          
  PrologWAX 	externalEntityDef(java.lang.String name, java.lang.String filePath)
           Adds an external entity definition to the internal subset of the DOCTYPE.
           
@@ -311,6 +341,7 @@ WAX.prototype.end = function(bForceEndTag){
  
  StartTagWAX 	namespace(java.lang.String prefix, java.lang.String uri, java.lang.String schemaPath)
           Writes a namespace declaration in the start tag of the current element.
+          
 static PrologWAX 	newInstance()
           Creates a new WAX object that writes to stdout and returns it as an interface type that restricts the first method call to be one that is valid for the initial ouptut.
 static PrologWAX 	newInstance(java.io.OutputStream os)
@@ -322,10 +353,13 @@ static PrologWAX 	newInstance(java.io.Writer writer)
 
  void 	setIndent(int numSpaces)
           Sets the number of spaces to use for indentation.
+          
  void 	setIndent(java.lang.String indent)
           Sets the indentation characters to use.
+          
  void 	setTrustMe(boolean trustMe)
           Gets whether "trust me" mode is enabled.
+          
  StartTagWAX 	start(java.lang.String name)
           Writes the start tag for a given element name, but doesn't terminate it.
  StartTagWAX 	start(java.lang.String prefix, java.lang.String name)
