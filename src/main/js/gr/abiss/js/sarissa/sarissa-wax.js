@@ -102,17 +102,17 @@ WAX.prototype.ensureOpen = function(){
 };
  
 /**
- * Writes an attribute for the currently open element start tag.
+ * Write an attribute for the currently open element start tag. The value will be escaped.
  * @param {String} prefix the namespace prefix for the attribute
  * @param {String} name the attribute name 
- * @param {Object} value the attribute value. The string value of the object will be escaped.
+ * @param {Object} value the attribute value. The characters &, <, > and " will be escaped to their entity equivalents.
  * @param {boolean} bNewLine true to write on a new line for readability; false otherwise. Default is false.
  * @return {WAX} this WAX instance
  */
 WAX.prototype.attr = function(prefix, name, value, newLine){
 	this.ensureOpen();
 	if(this.context !=  WAX.CONTEXT_START_TAG){
-		throw "WAX: Cannot add an attribute or namespace at this context. " +
+		throw "WAX: Cannot add an attribute or namespace in this context. " +
 			"Given prefix: " + prefix +
 			", name: " + name +
 			", value: " + value;
@@ -127,10 +127,9 @@ WAX.prototype.attr = function(prefix, name, value, newLine){
 		this.xml += prefix + ":";
 		this.startTagNamespaces.push(prefix);
 	}
-	this.xml += "\"" + Sarissa.escape(value) + "\"";
+	this.xml += "\"" + value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") + "\"";
 	return this;
 };
-
 
 /**
  * Writes a namespace declaration in the start tag of the current element.
@@ -198,7 +197,7 @@ WAX.prototype.comment = function(text){
 	if(text.indexOf("--") != -1){
 		throw "WAX: Comments cannot contain '--'";
 	}
-	this.xml += "<!--" + Sarissa.escape(text) + "-->";
+	this.xml += "<!--" + text + "-->";
 	this.dontThinkEmpty();
 	return this;
 };
@@ -214,7 +213,7 @@ WAX.prototype.text = function(text, bNewline, bEscape){
 		throw "WAX: Cannot write text in this context";
 	}
 	this.closeStartTagIfOpen(!bNewline);
-	this.xml += bEscape ? Sarissa.escape(text) : text;
+	this.xml += bEscape ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : text;
 	return this;
 };
 
@@ -238,7 +237,7 @@ WAX.prototype.nlText = function(text, bEscape){
 WAX.prototype.processingInstruction = function(target, data){
 	this.ensureOpen();
 	this.closeStartTagIfOpen();
-	this.xml += "<?" + Sarissa.escape(target) + " " + Sarissa.escape(data) + "?>";
+	this.xml += "<?" + target + " " + data + "?>";
 	this.dontThinkEmpty();
 	return this;
 };
@@ -257,11 +256,7 @@ WAX.prototype.pi = WAX.prototype.processingInstruction;
  * @return {WAX} this WAX instance
  */
 WAX.prototype.xslt = function(src){
-	this.ensureOpen();
-	this.closeStartTagIfOpen();
-	this.xml += "<?xml-stylesheet type=\"text/xsl\" href=\"" + Sarissa.escape(src) + "\"?>";
-	this.dontThinkEmpty();
-	return this;
+	return this.pi("xml-stylesheet", "type=\"text/xsl\" href=\"" + src + "\"");
 };
 
 /**
