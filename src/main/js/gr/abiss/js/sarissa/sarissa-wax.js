@@ -36,9 +36,9 @@
  * @static
  * @param {String} s Optional: the string to write the XML into.
  */
- function WAX(s){
- 	this.xml = s ? s : "";
- 	this.indent = " ";
+ function WAX(){
+ 	this.xml = "";
+ 	this.indent = 2;
  	this.depth = 0;
  	this.trust = false;
  	this.closeStack = [];
@@ -64,7 +64,7 @@
  WAX.CONTEXT_MIXED_CONTENT = 60;
  
  /** @private TODO */
- WAX.validateNameToken(prefix) {
+ WAX.prototype.validateNameToken = function(prefix) {
  	if(prefix.toLowerCase().indexOf("xml") == 0){
  		throw "A name token cannot start with 'XML'";
  	}
@@ -72,7 +72,7 @@
  /** @private */
 WAX.prototype.closeStartTagIfOpen = function(bSkipNewLine){
 	if(this.context ==  WAX.CONTEXT_START_TAG){
-		this.this.xml += ">" 
+		this.xml += ">";
 		this.context =  WAX.CONTEXT_MIXED_CONTENT;
 		// check if prefixes used are in scope
 		for(var i=0; i < this.startTagNamespaces.length; i++){
@@ -86,6 +86,7 @@ WAX.prototype.closeStartTagIfOpen = function(bSkipNewLine){
 		this.blankLine();
 	}
 };
+
 /** @private */
 WAX.prototype.dontThinkEmpty = function(){
 	if(this.context ==  WAX.CONTEXT_EMPTY_DOCUMENT){
@@ -130,12 +131,12 @@ WAX.prototype.isTrustMe = function(){
  * @param {boolean} bNewLine true to write on a new line for readability; false otherwise. Default is false.
  * @return {WAX} this WAX instance
  */
-WAX.prototype.attr = function(prefix, name, value, newLine){
+WAX.prototype.attr = function(prefix, sName, value, bNewLine){
 	this.ensureOpen();
 	if(this.context !=  WAX.CONTEXT_START_TAG){
 		throw "WAX: Cannot add an attribute or namespace in this context. " +
 			"Given prefix: " + prefix +
-			", name: " + name +
+			", name: " + sName +
 			", value: " + value;
 	}
 	if(bNewLine){
@@ -148,7 +149,7 @@ WAX.prototype.attr = function(prefix, name, value, newLine){
 		this.xml += prefix + ":";
 		this.startTagNamespaces.push(prefix);
 	}
-	this.xml += "\"" + value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;") + "\"";
+	this.xml += sName+"=\"" + ((""+value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")) + "\"";
 	return this;
 };
 
@@ -200,8 +201,8 @@ WAX.prototype.getIndent = function(){
 WAX.prototype.blankLine = function(){
 	this.ensureOpen();
 	this.xml += "\n";
-	for(var i=0;i <= this.depth;i++){
-		 this.xml += this.indent;
+	for(var i=0;i < this.depth;i++){
+		 this.xml += " ";
 	}
 	return this;
 };
@@ -312,7 +313,7 @@ WAX.prototype.start = function(prefix, name){
 	this.xml += name;
 	this.closeStack.push(prefix ? prefix + ":" + name : name);
 	this.depth++;
-	this.dontThinkEmpty();
+	this.context =  WAX.CONTEXT_START_TAG;
 	return this;
 };
 
@@ -328,7 +329,7 @@ WAX.prototype.end = function(bForceEndTag){
 		this.xml += " />";
 	}
 	else{
-		this.xml += "</" + this.closeStack.pop + ">";
+		this.xml += "</" + this.closeStack.pop() + ">";
 	}
 	this.depth--;
 	return this;
