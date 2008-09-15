@@ -40,6 +40,7 @@
  	this.xml = s ? s : "";
  	this.indent = " ";
  	this.depth = 0;
+ 	this.trust = false;
  	this.closeStack = [];
  	this.namespaces = [];
  	this.namespaces["xml"] = "http://www.w3.org/XML/1998/namespace";
@@ -100,12 +101,32 @@ WAX.prototype.ensureOpen = function(){
 		throw "WAX: This instance is already closed"
 	}
 };
+
+/**
+ * Enable/disable "trust me" mode.
+ * @param {boolean} bTrustMe True to turn it on, false to turn it off.
+ * @return {WAX} this WAX instance
+ * 
+ */
+WAX.prototype.setTrustMe = function(bTrustMe){
+	this.trust = bTrustMe;
+	return this;
+};
+
+/**
+ * Gets whether "trust me" mode is enabled.
+ */
+WAX.prototype.isTrustMe = function(){
+	return this.trust;
+};
+
  
 /**
  * Write an attribute for the currently open element start tag. The value will be escaped.
  * @param {String} prefix the namespace prefix for the attribute
  * @param {String} name the attribute name 
- * @param {Object} value the attribute value. The characters &, <, > and " will be escaped to their entity equivalents.
+ * @param {Object} value the attribute value object. It will be converted to a String and 
+ * the characters &, <, > and " will be escaped to their entity equivalents.
  * @param {boolean} bNewLine true to write on a new line for readability; false otherwise. Default is false.
  * @return {WAX} this WAX instance
  */
@@ -150,8 +171,23 @@ WAX.prototype.namespace = function(prefix, uri, bNewLine){
 };
         
 /**
+ * Set the indentation characters being used.
+ * @param {Object} num the number of indentation spaces to use (x depth). 
+ * If num is not a number, the length of it's string representation will be used instead  
+ */
+WAX.prototype.setIndent = function(num){
+	this.indent = "";
+	if(isNaN(num)){
+		num = num.length;
+	}
+	for(var i=0;i < num; i++){
+		this.indent += " ";
+	}
+};
+        
+/**
  * Get the indentation characters being used.
- * @return {String} the indentation characters being used
+ * @return {integer} the number of indentation spaces being used
  */
 WAX.prototype.getIndent = function(){
 	return this.indent;
@@ -331,9 +367,6 @@ WAX.prototype.child = function(prefix, name, text){
  PrologWAX 	externalEntityDef(java.lang.String name, java.lang.String filePath)
           Adds an external entity definition to the internal subset of the DOCTYPE.
           
- boolean 	isTrustMe()
-          Gets whether "trust me" mode is enabled.
- 
  StartTagWAX 	namespace(java.lang.String prefix, java.lang.String uri, java.lang.String schemaPath)
           Writes a namespace declaration in the start tag of the current element.
           
@@ -352,18 +385,6 @@ static PrologWAX 	newInstance(java.io.Writer writer)
  void 	setIndent(java.lang.String indent)
           Sets the indentation characters to use.
           
- void 	setTrustMe(boolean trustMe)
-          Gets whether "trust me" mode is enabled.
           
- StartTagWAX 	start(java.lang.String name)
-          Writes the start tag for a given element name, but doesn't terminate it.
- StartTagWAX 	start(java.lang.String prefix, java.lang.String name)
-          Writes the start tag for a given element name, but doesn't terminate it.
- ElementWAX 	text(java.lang.String text)
-          Writes text inside the content of the current element.
- ElementWAX 	text(java.lang.String text, boolean newLine, boolean escape)
-          Writes text inside the content of the current element.
- PrologWAX 	xslt(java.lang.String filePath)
-          Writes an "xml-stylesheet" processing instruction.
           
 */
