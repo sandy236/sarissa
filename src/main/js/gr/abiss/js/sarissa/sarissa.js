@@ -222,9 +222,10 @@ if(Sarissa._SARISSA_IS_IE){
         try{
             converted.resolveExternals = true; 
             converted.setProperty("AllowDocumentFunction", true); 
+            converted.setProperty("AllowXsltScript", true);
         }
         catch(e){
-            // Ignore. "AllowDocumentFunction" is only supported in MSXML 3.0 SP4 and later.
+            // Ignore. "AllowDocumentFunction" and "AllowXsltScript" is only supported in MSXML 3.0 SP4+ and 3.0 SP8+ respectively.
         } 
         if(xslDoc.url && xslDoc.selectSingleNode("//xsl:*[local-name() = 'import' or local-name() = 'include']") != null){
             converted.async = false;
