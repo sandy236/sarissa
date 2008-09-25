@@ -32,8 +32,8 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
 ################################################################################################
 
 0.9.9.5
-    * Fixed an error where AllowXsltScript is false by default in MSXML 6, causing an error
-      when an XSLT file includes <msxsl:script> element(s). Thanks to Glen Di Persio, Web Developer
+    * AllowXsltScript is false by default in MSXML 6, causing an error when an XSLT 
+      file includes <msxsl:script> element(s). Thanks to Glen Di Persio, Web Developer
       and Systems Engineer extraordinaire ;-)
 
 0.9.9.4
