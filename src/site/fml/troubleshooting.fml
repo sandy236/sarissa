@@ -29,6 +29,13 @@
       </answer>
     </faq>
     
+    <faq id="generatedjs">
+      <question>JavaScript ignored when created by XSLT transformation</question>
+      <answer>
+        <p>You need to include the <code>defer</code> attribute in the script tag, use inline scripting instead of remote file sources and keep all this within the <code>head</code> HTML tag.</p>
+      </answer>
+    </faq>
+    
     <faq id="iehttps">
       <question>Problems with IE and secure connections/HTTPS</question>
       <answer>

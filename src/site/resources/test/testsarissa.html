@@ -61,6 +61,7 @@
         runTestCase(new XMLDocumentTestCase());
         runTestCase(new XMLElementTestCase());
         runTestCase(new XSLTProcessorTestCase());
+        runTestCase(new WAXTestCase());
         document.getElementById("reportForm").style.display = "block";
         document.getElementById("report").value = "Sarissa " + Sarissa.VERSION + " tests for " + navigator.userAgent + "\n" + document.body.innerHTML;
         alert("You can now send us the results using the 'Send Report!' button.");

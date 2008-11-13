@@ -76,9 +76,11 @@
           </ul>
             <p>Here are some projects using Sarissa, please let us know if you would like to add yours 
                 here. This is in the credits simply because if Sarissa was not usefull we would not be 
-                working on it. Currently Sarissa has been downloaded more than 56k times so we
+                working on it. Currently Sarissa has been downloaded about 70k times so we
                 will be maintaining it for some time :-)</p>
             <ul>
+            	<li>deCarta's <a href="http://www.decarta.com/products/dds/jsapi.html">JavaScript API</a>,
+            	is used to integrate deCarta's Drill Down Server (DDS) geospatial platform into other applications.</li>
                 <li>Oscom's really cool <a href="http://kupu.oscom.org/">Kupu WYSIWYG Editor</a></li>
                 <li><a href="http://communitymapbuilder.org/">MapBuilder</a>, a modern
                     standards-based web mapping client.</li>
