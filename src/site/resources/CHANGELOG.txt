@@ -35,6 +35,8 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
     * AllowXsltScript is false by default in MSXML 6, causing an error when an XSLT 
       file includes <msxsl:script> element(s). Thanks to Glen Di Persio, Web Developer
       and Systems Engineer extraordinaire ;-)
+    * Fixed Opera bug in  Sarissa.getText, was getting an empty string instead of the 
+      attribute value. Many thanks to Daniel Weber for the report and provided fix.
 
 0.9.9.4
     * Added first attempt on a MediaWiki API

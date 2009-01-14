@@ -560,6 +560,11 @@ if(!Sarissa.getParseErrorText){
 Sarissa.getText = function(oNode, deep){
     var s = "";
     var nodes = oNode.childNodes;
+    // opera fix, finds no child text node for attributes so we use .value
+    if (oNode.nodeType == Node.ATTRIBUTE_NODE && nodes.length == 0) {
+        return oNode.value;
+    }
+    // END opera fix
     for(var i=0; i < nodes.length; i++){
         var node = nodes[i];
         var nodeType = node.nodeType;
