@@ -144,12 +144,19 @@ if(Sarissa._SARISSA_IS_IE){
     // see non-IE version
     Sarissa.getDomDocument = function(sUri, sName){
         if(!_SARISSA_DOM_PROGID){
-            _SARISSA_DOM_PROGID = Sarissa.pickRecentProgID(["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"]);
+        	try{
+        		_SARISSA_DOM_PROGID = Sarissa.pickRecentProgID(["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"]);
+        	}catch(e){
+        		_SARISSA_DOM_PROGID = "noActiveX";
+        	}
         }
-        var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
+
+        // Not sure how far IE can carry this but try to do something useful when ActiveX is disabled
+        var oDoc = _SARISSA_DOM_PROGID == "noActiveX" ? document.createElement("xml") : new ActiveXObject(_SARISSA_DOM_PROGID);
         // set validation off, make sure older IEs dont choke (no time or IEs to test ;-)
         try{
         	oDoc.validateOnParse = false; 
+        	oDoc.resolveExternals = "false";
         	oDoc.setProperty("ProhibitDTD", false);
         }catch(e){}
         

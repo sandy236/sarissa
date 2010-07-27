@@ -41,6 +41,8 @@ IE Emu Series [http://webfx.eae.net/dhtml/ieemu/] and Cross-Browser DOM Wrapper
       ProhibitDTD to false, thanks to matek994 (SF.net username) and 2907778 (SF.net userid) 
     * Sarissa.xmlize now does not try to xmlize functions and can thus handle more
       complex structures without infinite recursion errors thanks to iklotzko (SF.net user)
+    * Not sure how far IE can carry this but try to do something useful when ActiveX is disabled
+      thanks to alexeev.net
       
 0.9.9.4
     * Added first attempt on a MediaWiki API

@@ -36,7 +36,7 @@
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
     or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
     what is lately known as "AJAX" development. Supported browsers are Mozilla - Firefox and family,
-    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari and Opera 9. </description>
+    Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari, Chrome and Opera 9. </description>
   <url>http://dev.abiss.gr/sarissa/</url>
   <inceptionYear>2003</inceptionYear>
   <organization>
