@@ -25,9 +25,9 @@ Projects used when developing Sarissa:
       the documentation.
 
 
-Sarissa was inspired by articles and code available on the web, most notably 
-the IE Emu Series [http://webfx.eae.net/dhtml/ieemu/] and Cross-Browser DOM 
-Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
+Sarissa was inspired by articles and code available on the web, most notably the 
+IE Emu Series [http://webfx.eae.net/dhtml/ieemu/] and Cross-Browser DOM Wrapper 
+[http://www.webreference.com/programming/javascript/domwrapper/] by Nicholas C. Zakas
  
 ################################################################################################
 
@@ -39,8 +39,9 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
       attribute value. Many thanks to Daniel Weber for the report and provided fix.
     * Sarissa now explicitly sets IE's default behavior regarding validateOnParse and  
       ProhibitDTD to false, thanks to matek994 (SF.net username) and 2907778 (SF.net userid) 
+    * Sarissa.xmlize now does not try to xmlize functions and can thus handle more
+      complex structures without infinite recursion errors thanks to iklotzko (SF.net user)
       
-
 0.9.9.4
     * Added first attempt on a MediaWiki API
     * Fixed callback execution in updateContentFromForm and updateContentFromUri

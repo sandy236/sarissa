@@ -717,6 +717,10 @@ Sarissa.xmlize = function(anyObject, objectName, indentSpace, skipEscape){
         s += "\n";
         var isArrayItem = anyObject instanceof Array;
         for(var name in anyObject){
+        	// do not xmlize functions 
+        	if (anyObject[name] instanceof Function){
+        		continue;
+        	} 
             s += Sarissa.xmlize(anyObject[name], (isArrayItem?"array-item key=\""+name+"\"":name), indentSpace + " ");
         }
         s += indentSpace;
