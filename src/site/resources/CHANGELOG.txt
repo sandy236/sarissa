@@ -37,6 +37,9 @@ Wrapper [http://www.webreference.com/programming/javascript/domwrapper/].
       and Systems Engineer extraordinaire ;-)
     * Fixed Opera bug in  Sarissa.getText, was getting an empty string instead of the 
       attribute value. Many thanks to Daniel Weber for the report and provided fix.
+    * Sarissa now explicitly sets IE's default behavior regarding validateOnParse and  
+      ProhibitDTD to false, thanks to matek994 (SF.net username) and 2907778 (SF.net userid) 
+      
 
 0.9.9.4
     * Added first attempt on a MediaWiki API

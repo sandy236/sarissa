@@ -147,6 +147,12 @@ if(Sarissa._SARISSA_IS_IE){
             _SARISSA_DOM_PROGID = Sarissa.pickRecentProgID(["Msxml2.DOMDocument.6.0", "Msxml2.DOMDocument.3.0", "MSXML2.DOMDocument", "MSXML.DOMDocument", "Microsoft.XMLDOM"]);
         }
         var oDoc = new ActiveXObject(_SARISSA_DOM_PROGID);
+        // set validation off, make sure older IEs dont choke (no time or IEs to test ;-)
+        try{
+        	oDoc.validateOnParse = false; 
+        	oDoc.setProperty("ProhibitDTD", false);
+        }catch(e){}
+        
         // if a root tag name was provided, we need to load it in the DOM object
         if (sName){
             // create an artifical namespace prefix 
@@ -481,6 +487,10 @@ if(!window.DOMParser){
         DOMParser = function() { };
         DOMParser.prototype.parseFromString = function(sXml, contentType){
             var doc = Sarissa.getDomDocument();
+            try{
+            	doc.validateOnParse = false; 
+            	doc.setProperty("ProhibitDTD", false);
+            }catch(e){}
             doc.loadXML(sXml);
             return doc;
         };
