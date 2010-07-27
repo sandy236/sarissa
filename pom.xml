@@ -183,6 +183,7 @@
         <version>0.8</version>
         <inherited>false</inherited>
         <configuration>
+          <jsdocHome>/home/manos/Desktop/jsdoc_toolkit-2.0.2/jsdoc_toolkit-2.0.2</jsdocHome>
           <jsDir>${project.build.directory}/classes</jsDir>
           <reportJslintErrorsOnly>true</reportJslintErrorsOnly>
           <excludes>**/*-compressed.js</excludes>
