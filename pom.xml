@@ -180,10 +180,9 @@
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
-        <version>0.8</version>
+        <version>0.9-SNAPSHOT</version>
         <inherited>false</inherited>
         <configuration>
-          <jsdocHome>/home/manos/Desktop/jsdoc_toolkit-2.0.2/jsdoc_toolkit-2.0.2</jsdocHome>
           <jsDir>${project.build.directory}/classes</jsDir>
           <reportJslintErrorsOnly>true</reportJslintErrorsOnly>
           <excludes>**/*-compressed.js</excludes>
@@ -199,16 +198,12 @@
       </plugin>
     </plugins>
   </reporting>
-  <distributionManagement>
-    <site>
-      <id>dev.abiss.gr</id>
-      <url>scp://dev.abiss.gr/home/admispconfig/ispconfig/web/multidoc/edit/dev.abiss.gr/web/${project.artifactId}</url>
-    </site>
-    <repository>
-      <id>sarissa.web.sourceforge.net</id>
-      <url>scp://web.sourceforge.net:/home/groups/s/sa/sarissa/htdocs/repository/releases</url>
-    </repository>
-  </distributionManagement>
+    <distributionManagement>
+        <site>
+            <id>dev.abiss.gr</id>
+            <url>scp://dev.abiss.gr/opt/coolstack/apache2/dev_abiss_gr/sarissa</url>
+        </site>
+    </distributionManagement>
   <repositories>
     <repository>
       <id>Codehaus Snapshots</id>
