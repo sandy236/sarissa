@@ -332,7 +332,11 @@
     "xmlns:xhtml='http://www.w3.org/1999/xhtml' 
     xmlns:xsl='http://www.w3.org/1999/XSL/Transform'");
         </pre>
-        <p>Mozilla does not need any of the above. DOM L3 XPath is always available and namespaces are resolved err... automatically. 
+        <p>In Mozilla/FF, DOM L3 XPath is always available and namespaces are resolved automatically if their scope covers 
+        the whole document (i.e. if declared in the root element node). If the namespace's scope is deeper, 
+        you must use Sarissa.setXpathNamespaces() to inform browsers (including Mozilla/FF) about them.
+        </p>
+        <p>
           Below is an example of using <code>selectNodes</code> and <code>selectSingleNode</code> when Sarissa is available to provide 
           cross browser XPath functionality. For more documentation on these proprietary methods check with the documentation at the MSDN website (<a href="http://msdn.microsoft.com" title="link to Microsoft developer website">http://msdn.microsoft.com</a>).
           I'm not providing a URL for that as they constantly change their URLs.</p>
