@@ -63,6 +63,8 @@ Sarissa._SARISSA_IS_SAFARI_OLD = Sarissa._SARISSA_IS_SAFARI && (parseInt((naviga
 /** @private */
 Sarissa._SARISSA_IS_IE = document.all && window.ActiveXObject && navigator.userAgent.toLowerCase().indexOf("msie") > -1  && navigator.userAgent.toLowerCase().indexOf("opera") == -1;
 /** @private */
+Sarissa._SARISSA_IS_IE9 = Sarissa._SARISSA_IS_IE && navigator.userAgent.toLowerCase().indexOf("msie 9") > -1;
+/** @private */
 Sarissa._SARISSA_IS_OPERA = navigator.userAgent.toLowerCase().indexOf("opera") != -1;
 if(!window.Node || !Node.ELEMENT_NODE){
     Node = {ELEMENT_NODE: 1, ATTRIBUTE_NODE: 2, TEXT_NODE: 3, CDATA_SECTION_NODE: 4, ENTITY_REFERENCE_NODE: 5,  ENTITY_NODE: 6, PROCESSING_INSTRUCTION_NODE: 7, COMMENT_NODE: 8, DOCUMENT_NODE: 9, DOCUMENT_TYPE_NODE: 10, DOCUMENT_FRAGMENT_NODE: 11, NOTATION_NODE: 12};
@@ -471,7 +473,7 @@ if(Sarissa._SARISSA_IS_IE){
 //==========================================
 // Common stuff
 //==========================================
-if(!window.DOMParser){
+if(!window.DOMParser || Sarissa._SARISSA_IS_IE9){
     if(Sarissa._SARISSA_IS_SAFARI){
         /**
          * DOMParser is a utility class, used to construct DOMDocuments from XML strings
