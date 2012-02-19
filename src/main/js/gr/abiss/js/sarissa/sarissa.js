@@ -608,6 +608,17 @@ if(!window.XMLSerializer && Sarissa.getDomDocument && Sarissa.getDomDocument("",
     XMLSerializer.prototype.serializeToString = function(oNode) {
         return oNode.xml;
     };
+} else if (Sarissa._SARISSA_IS_IE9 && window.XMLSerializer) {
+    // We save old object for any futur use with IE Document (not xml)
+    IE9XMLSerializer= XMLSerializer;
+    XMLSerializer = function(){ this._oldSerializer=new IE9XMLSerializer() };
+    XMLSerializer.prototype.serializeToString = function(oNode) {
+        if (typeof(oNode)=='object' && 'xml' in oNode) {
+            return oNode.xml;
+        } else {
+            return this._oldSerializer.serializeToString(oNode);
+        }
+    };
 }
 
 /**
