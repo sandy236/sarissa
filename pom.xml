@@ -67,6 +67,13 @@
       </roles>
       <timezone>+2</timezone>
     </developer>
+    <developer>
+      <id>thepm</id>
+      <name>Aissam Bazzaoui</name>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
   </developers>
   <licenses>
     <license>
