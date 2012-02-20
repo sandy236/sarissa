@@ -208,7 +208,7 @@
     <distributionManagement>
         <site>
             <id>dev.abiss.gr</id>
-            <url>scp://dev.abiss.gr/opt/coolstack/apache2/dev_abiss_gr/sarissa</url>
+            <url>scp://dev.abiss.gr/home2/m/mbatsis/dev_abiss_gr/sarissa</url>
         </site>
     </distributionManagement>
   <repositories>
