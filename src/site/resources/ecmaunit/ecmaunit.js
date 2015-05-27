@@ -203,7 +203,7 @@ TestCase.prototype._getLineNo = function() {
             if (line!=undefined && line.indexOf('ecmaunit') == -1) {
                 // return the first line after we get out of ecmaunit
                 var chunks = line.split(':');
-                var lineno = chunks[chunks.length - 1];
+                var lineno = chunks[chunks.length - 2];
                 if (lineno != '0') {
                     return lineno;
                 };
