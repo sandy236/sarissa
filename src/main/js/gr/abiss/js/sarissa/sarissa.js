@@ -442,6 +442,22 @@ if(Sarissa._SARISSA_IS_IE){
                 */
                 oDoc.readyState = 0;
             }
+            if(!oDoc.load){
+		oDoc.load = function(url) {
+			var xmlhttp=new XMLHttpRequest();
+			xmlhttp.onreadystatechange=oDoc.onreadystatechange;
+			xmlhttp.readyState=oDoc.readyState;
+			xmlhttp.addEventListener("load", function(e) {
+				oDoc.innerHtml=e.target.responseXML;
+				var evt = document.createEvent('Event');  
+				evt.initEvent('load', false, false);
+				oDoc.dispatchEvent(evt);
+			} , false);
+			xmlhttp.open("GET", url, oDoc.async);
+			xmlhttp.send();
+			return oDoc.async?true:xmlhttp.response;
+		}
+            }
             oDoc.addEventListener("load", _sarissa_XMLDocument_onload, false);
             return oDoc;
         };
