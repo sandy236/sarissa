@@ -310,7 +310,11 @@ if(Sarissa._SARISSA_IS_IE){
             f.appendChild(ownerDoc.createTextNode(s));
         } else if (ownerDoc.body && ownerDoc.body.innerHTML) {
             container = ownerDoc.createElement('div');
-            container.innerHTML = s;
+            if (s.substring(0, 5) == '<?xml') {
+                s = s.substring(s.indexOf('?>') + 2);
+            }
+
+            container.innerHTML = s.replace(/\s+$/g, '');
             while (container.hasChildNodes()) {
                 f.appendChild(container.firstChild);
             }
