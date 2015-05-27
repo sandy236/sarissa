@@ -671,7 +671,7 @@ Sarissa.clearChildNodes = function(oNode) {
  * @param {boolean} bPreserveExisting whether to preserve the original content of nodeTo, default is false
  */
 Sarissa.copyChildNodes = function(nodeFrom, nodeTo, bPreserveExisting) {
-    if(Sarissa._SARISSA_IS_SAFARI && nodeTo.nodeType == Node.DOCUMENT_NODE){ // SAFARI_OLD ??
+    if(Sarissa._SARISSA_IS_SAFARI_OLD && nodeTo.nodeType == Node.DOCUMENT_NODE){
     	nodeTo = nodeTo.documentElement; //Apparently there's a bug in safari where you can't appendChild to a document node
     }
     
