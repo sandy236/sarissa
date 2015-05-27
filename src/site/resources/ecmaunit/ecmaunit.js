@@ -197,7 +197,10 @@ TestCase.prototype._getLineNo = function() {
         stack = stack.toString().split('\n');
         for (var i=0; i < stack.length; i++) {
             var line = stack[i].split('@')[1];
-            if (line.indexOf('ecmaunit') == -1) {
+            if (line===undefined) { // fix for chrome
+                line = stack[i].split('at')[1];
+            }
+            if (line!=undefined && line.indexOf('ecmaunit') == -1) {
                 // return the first line after we get out of ecmaunit
                 var chunks = line.split(':');
                 var lineno = chunks[chunks.length - 1];
