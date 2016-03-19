@@ -30,7 +30,7 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.9.6b</version>
+  <version>0.9.9.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
@@ -43,7 +43,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- Plugin versions -->
     <maven-js-plugin.version>1.3.1</maven-js-plugin.version>
-    <maven-jstools-plugin>0.7</maven-jstools-plugin><!-- FIXME: it was initially 0.9-SNAPSHOT ??? -->
+    <maven-jstools-plugin.version>0.7</maven-jstools-plugin.version> <!-- FIXME: it was initially 0.9-SNAPSHOT ??? -->
+    <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
   </properties>
   <url>http://dev.abiss.gr/sarissa/</url>
   <inceptionYear>2003</inceptionYear>
@@ -114,18 +115,34 @@
       <version>1.0-alpha-5</version>
     </extension>
   </extensions>
-    <!--  site plugin -->
-    <resources>
-      <resource>
-        <directory>src/main/js</directory>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/resources/js</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <configuration>
+          <!-- Prevent the '@' symbol from being treated as a placeholder
+               delimiter, since JSDoc tags are prefixed with them and as such
+               would otherwise interfere with Maven resource filtering.
+               This workaround was found at https://stackoverflow.com/q/2315009
+          -->
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+          <delimiters>
+            <!-- Enable only the actually used delimiter. -->
+            <delimiter>${*}</delimiter>
+          </delimiters>
+          <resources>
+            <resource>
+              <directory>src/main/js</directory>
+              <filtering>true</filtering>
+            </resource>
+            <resource>
+              <directory>src/main/resources/js</directory>
+              <filtering>true</filtering>
+            </resource>
+          </resources>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
@@ -203,7 +220,7 @@
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
-        <version>${maven-jstools-plugin}</version>
+        <version>${maven-jstools-plugin.version}</version>
         <inherited>false</inherited>
         <configuration>
           <jsDir>${project.build.directory}/classes</jsDir>
