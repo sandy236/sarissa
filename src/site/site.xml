@@ -46,9 +46,9 @@
             href="http://www.openajax.org/"/>
     </poweredBy>
     <skin>
-        <groupId>gr.abiss.mvn.site</groupId>
-        <artifactId>dev-site-skin</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.5</version>
     </skin>
     <body>
         <links>
@@ -58,8 +58,7 @@
         </links>
         <menu name="Overview">
             <item name="Introduction" href="/index.html"/>
-            <item name="Download" class="external"
-                href="http://sourceforge.net/project/showfiles.php?group_id=75155"/>
+            <item name="Download" href="http://sourceforge.net/project/showfiles.php?group_id=75155"/>
             <item name="Source Code" href="/source-repository.html"/>
             <item name="Credits/Changelog" href="CHANGELOG.txt"/>
         </menu>
