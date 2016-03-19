@@ -1,6 +1,8 @@
 Original Sarissa license information: http://dev.abiss.gr/sarissa/license.html
 
-Sarissa is distributed under the GNU GPL version 2 or higher, GNU LGPL version 2.1 or higher and Apache Software License 2.0 or higher. You can use Sarissa according to any of those licenses.
+## <a name="License"></a>License
+
+Sarissa is distributed under the [GNU GPL](http://dev.abiss.gr/sarissa/licenses/gpl.txt) version 2 or higher, [GNU LGPL](http://dev.abiss.gr/sarissa/licenses/lgpl.txt) version 2.1 or higher and [Apache Software License](http://dev.abiss.gr/sarissa/licenses/asl.txt) 2.0 or higher. You can use Sarissa according to any of those licenses.
 
                                  Apache License
                            Version 2.0, January 2004
