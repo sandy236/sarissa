@@ -2,6 +2,22 @@
 
 I wanted to work on the [Sarissa](http://dev.abiss.gr/sarissa/) project,  but the original source code is still hosted in a CVS repository (ugh...). Therefore I took the liberty of importing the code to Github. I do not intend to formally fork the project, but having the code here will make it easier for me to create branches and diffs and to share my contributions to the project, which I intend to offer back to the upstream developers.
 
+## How to build and test Sarissa
+
+*   mvn clean install
+*   mvn site
+*   mvn site:run
+*   Open the web browser with which you wish to test Sarissa and navigate to http://localhost:8080/test/testsarissa.html
+*   Click on the button "Run Testcases".
+*   Repeat the previous two steps for every other browser that you want to test Sarissa with.
+
+## XSLT Processor issue in Microsoft Edge
+
+**NOTE**: as of 2016-03-19, 5 out of 8 tests in XSLTProcessorTestCase are failing in Microsoft's new Edge browser that comes with Windows 10. Apparently, that is a known issue with Edge, so Sarissa is probably not to blame for that. Also, all other tests pass in Edge without problems. Other browsers I've tested with so far are IE9, IE11, Safari 5 for Windows and recent versions of Firefox and Chrome. All tests seem to pass in all of them. For more details about the XSLT Processor issue in Microsoft Edge, see the following Feedback tickets at Microsoft Connect:
+
+*   https://connect.microsoft.com/IE/Feedback/Details/2030537
+*   https://connect.microsoft.com/IE/Feedback/Details/2049305
+
 ## How I imported the project
 
 Importing a CVS repository into a Git repositoy proved harder than it should be.
