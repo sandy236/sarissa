@@ -2,6 +2,8 @@
 
 I wanted to work on the [Sarissa](http://dev.abiss.gr/sarissa/) project,  but the original source code is still hosted in a CVS repository (ugh...). Therefore I took the liberty of importing the code to Github. I do not intend to formally fork the project, but having the code here will make it easier for me to create branches and diffs and to share my contributions to the project, which I intend to offer back to the upstream developers.
 
+**NOTE:** apart from adding README.md, LICENSE.md and .gitignore files, the master branch is intended to be kept in-sync with the upstream (official Sarissa project) code base. The really interesting stuff in this GitHub repository will be happening in separate branches.
+
 ## How to build and test Sarissa
 
 *   mvn clean install
