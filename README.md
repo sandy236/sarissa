@@ -32,9 +32,9 @@ See [CHANGELOG.txt](http://dev.abiss.gr/sarissa/CHANGELOG.txt) . Please let us k
 
 Projects used when developing Sarissa:
 
-*   Apache [Maven](http://maven.apache.org/) and [Ant](http://maven.apache.org/) are used to build the Sarissa distributions, documentation and website. Sarissa can nowdays be used as a Maven dependency in your Maven-based webapps, [check it out](/installation.html) .
+*   Apache [Maven](http://maven.apache.org/) and [Ant](http://maven.apache.org/) are used to build the Sarissa distributions, documentation and website. Sarissa can nowdays be used as a Maven dependency in your Maven-based webapps, [check it out](http://dev.abiss.gr/sarissa/installation.html) .
 *   The [Maven JSTools Plugin](http://dev.abiss.gr/mvn-jstools/) is used to produce documentation based on [JSLint](http://www.jslint.com/) and [JSDoc Toolkit](http://jsdoctoolkit.org/) . The JSTools Plugin is also used in Maven based java webapps at runtime, to resolve Sarissa or other JS files and resources.
-*   [ECMAUnit](http://kupu.oscom.org/download/) is used for Unit Testing. Check out the Sarissa Unit Tests page [here](/test/testsarissa.html) .
+*   [ECMAUnit](http://kupu.oscom.org/download/) is used for Unit Testing. Check out the Sarissa Unit Tests page [here](http://dev.abiss.gr/sarissa/test/testsarissa.html) .
 *   The [MobilVox Maven JavaScript Plugin](http://www.mobilvox.com/projects/maven-js-plugin/) is used to create the compressed versions of the Sarissa JS files.
 *   The [Syntaxhighlighter](http://code.google.com/p/syntaxhighlighter/) is used for (obviously) syntax highlighting through out the documentation.
 
