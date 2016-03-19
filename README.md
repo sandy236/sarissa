@@ -6,7 +6,7 @@ I wanted to work on the [Sarissa](http://dev.abiss.gr/sarissa/) project,  but th
 
 Importing a CVS repository into a Git repositoy proved harder than it should be.
 
-The various answersm at https://stackoverflow.com/questions/881158/is-there-a-migration-tool-from-cvs-to-git turned out to be quite helpful in accomplishing this. I thank the people who contributed the answers there. **However**, it is important to note that the highest rated answer on that page at the time of this writing contains one crucial error: cvs2git requires a full CVS repository to be cloned using rsync. It will **not** work with just a checked out working copy, not even if you manually create an empty CVSROOT folder in it, as is incorrectly stated in that answer. Kudos to StackOverflow user [mhagger](https://stackoverflow.com/users/24478/mhagger) in particular for pointing that out.
+The various answers at https://stackoverflow.com/questions/881158/is-there-a-migration-tool-from-cvs-to-git turned out to be quite helpful in accomplishing this. I thank the people who contributed the answers there. **However**, it is important to note that the highest rated answer on that page at the time of this writing contains one crucial error: cvs2git requires a full CVS repository to be cloned using rsync. It will **not** work with just a checked out working copy, not even if you manually create an empty CVSROOT folder in it, as is incorrectly stated in that answer. Kudos to StackOverflow user [mhagger](https://stackoverflow.com/users/24478/mhagger) in particular for pointing that out.
 
 # Official project website: [http://dev.abiss.gr/sarissa/](http://dev.abiss.gr/sarissa/)
 
