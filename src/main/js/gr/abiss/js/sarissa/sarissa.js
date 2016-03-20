@@ -91,6 +91,16 @@ if(Sarissa._SARISSA_IS_SAFARI_OLD){
 }
 if(typeof XMLDocument == "undefined" && typeof Document !="undefined"){ XMLDocument = Document; } 
 
+/*
+ * If another version of Sarissa was already loaded, for instance the embedded
+ * Sarissa version in RichFaces/Ajax4jsf, it is better to restore the native
+ * XMLHttpRequest object first, before (re-)evaluating whether it should be
+ * replaced or not in the IE-specific code further below.
+ */
+if (Sarissa.originalXMLHttpRequest) {
+    window.XMLHttpRequest = Sarissa.originalXMLHttpRequest;
+}
+
 // IE initialization
 if(Sarissa._SARISSA_IS_IE){
     // for XSLT parameter names, prefix needed by IE
@@ -136,6 +146,17 @@ if(Sarissa._SARISSA_IS_IE){
     // anyway as IE7 hardcodes it to MSXML3.0 causing version problems 
     // between different activex controls 
     //if(!window.XMLHttpRequest){
+
+    /*
+     * Save a reference to the original XMLHttpRequest object (if any), in
+     * case another Sarissa version gets loaded later, or some other
+     * code (such as jQuery) explicitly requires the native implementation.
+     *
+     * The line below was copied from the Sarissa version that was embedded
+     * in RichFaces 3.3.3 (Ajax4jsf).
+     */
+    Sarissa.originalXMLHttpRequest = window.XMLHttpRequest;
+
     /**
      * Emulate XMLHttpRequest
      * @constructor
