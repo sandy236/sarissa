@@ -30,13 +30,23 @@
   <groupId>gr.abiss.js</groupId>
   <artifactId>sarissa</artifactId>
   <name>Sarissa</name>
-  <version>0.9.9.6</version>
+  <version>0.9.9.7-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description> Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML
     APIs. It offers various XML related goodies like Document instantiation, XML loading from URLs
     or strings, XSLT transformations, XPath queries etc and comes especially handy for people doing
     what is lately known as "AJAX" development. Supported browsers are Mozilla - Firefox and family,
     Internet Explorer with MSXML3.0 and up, Konqueror (KDE 3.3+ for sure), Safari, Chrome and Opera 9. </description>
+  <properties>
+    <!-- General project settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Plugin versions -->
+    <maven-js-plugin.version>1.3.1</maven-js-plugin.version>
+    <maven-jstools-plugin.version>0.7</maven-jstools-plugin.version> <!-- FIXME: it was initially 0.9-SNAPSHOT ??? -->
+    <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
+    <maven-site-plugin.version>3.5</maven-site-plugin.version>
+  </properties>
   <url>http://dev.abiss.gr/sarissa/</url>
   <inceptionYear>2003</inceptionYear>
   <organization>
@@ -45,10 +55,10 @@
   </organization>
   <mailingLists>
     <mailingList>
-      <name>${pom.name} User Mailing list</name>
-      <subscribe>http://lists.sourceforge.net/lists/listinfo/${pom.artifactId}-users</subscribe>
-      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/${pom.artifactId}-users</unsubscribe>
-      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=${pom.artifactId}-users</archive>
+      <name>${project.name} User Mailing list</name>
+      <subscribe>http://lists.sourceforge.net/lists/listinfo/${project.artifactId}-users</subscribe>
+      <unsubscribe>http://lists.sourceforge.net/lists/listinfo/${project.artifactId}-users</unsubscribe>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=${project.artifactId}-users</archive>
     </mailingList>
   </mailingLists>
   <issueManagement>
@@ -74,6 +84,14 @@
         <role>Developer</role>
       </roles>
     </developer>
+    <developer>
+      <id>volkertb</id>
+      <name>Volkert de Buisonjé</name>
+      <email>volkertb@users.noreply.github.com</email>
+      <roles>
+        <role>Contributor</role>
+      </roles>
+    </developer>
   </developers>
   <licenses>
     <license>
@@ -86,11 +104,11 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:cvs:pserver:anonymous:@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</connection>
-    <developerConnection>scm:cvs:ext:${maven.username}@${pom.artifactId}.cvs.sf.net:/cvsroot/${pom.artifactId}:${pom.artifactId}</developerConnection>
-    <url>http://${pom.artifactId}.cvs.sf.net/${pom.artifactId}</url>
+    <connection>scm:cvs:pserver:anonymous:@${project.artifactId}.cvs.sf.net:/cvsroot/${project.artifactId}:${project.artifactId}</connection>
+    <developerConnection>scm:cvs:ext:${maven.username}@${project.artifactId}.cvs.sf.net:/cvsroot/${project.artifactId}:${project.artifactId}</developerConnection>
+    <url>http://${project.artifactId}.cvs.sf.net/${project.artifactId}</url>
   </scm>
-  <build>    
+  <build>
   <extensions>
     <extension>
       <groupId>org.apache.maven.wagon</groupId>
@@ -98,22 +116,38 @@
       <version>1.0-alpha-5</version>
     </extension>
   </extensions>
-    <!--  site plugin -->
-    <resources>
-      <resource>
-        <directory>src/main/js</directory>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/resources/js</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven-resources-plugin.version}</version>
+        <configuration>
+          <!-- Prevent the '@' symbol from being treated as a placeholder
+               delimiter, since JSDoc tags are prefixed with them and as such
+               would otherwise interfere with Maven resource filtering.
+               This workaround was found at https://stackoverflow.com/q/2315009
+          -->
+          <useDefaultDelimiters>false</useDefaultDelimiters>
+          <delimiters>
+            <!-- Enable only the actually used delimiter. -->
+            <delimiter>${*}</delimiter>
+          </delimiters>
+          <resources>
+            <resource>
+              <directory>src/main/js</directory>
+              <filtering>true</filtering>
+            </resource>
+            <resource>
+              <directory>src/main/resources/js</directory>
+              <filtering>true</filtering>
+            </resource>
+          </resources>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>2.0-beta-6</version>
+        <version>${maven-site-plugin.version}</version>
       </plugin>
       <plugin>
         <!--  -->
@@ -125,8 +159,8 @@
             <configuration>
               <tasks>
                 <property name="project.version" value="${project.version}" />
-                <mkdir dir="${project.build.directory}/site/" />
-                <copy todir="${project.build.directory}/site/">
+                <mkdir dir="${project.build.directory}/site-webapp/" />
+                <copy todir="${project.build.directory}/site-webapp/">
                   <fileset dir="${project.build.directory}/classes"/>
                 </copy>
               </tasks>
@@ -142,7 +176,7 @@
               <tasks>
                 <echo message="Running antrun-create-full-dist" />
                 <zip destfile="${project.build.directory}/${project.artifactId}-full-${project.version}.zip">
-                  <zipfileset dir="${project.build.directory}/site" prefix="${project.artifactId}-full-${project.version}"
+                  <zipfileset dir="${project.build.directory}/site-webapp" prefix="${project.artifactId}-full-${project.version}"
                     excludes="apidocs/**/*"
                   />
                 </zip>
@@ -157,7 +191,7 @@
       <plugin>
         <groupId>com.mobilvox.ossi.mojo</groupId>
         <artifactId>maven-js-plugin</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <version>${maven-js-plugin.version}</version>
         <configuration>
           <replaceSiteJavaScript>false</replaceSiteJavaScript>
           <siteClassifier>-compressed</siteClassifier>
@@ -168,7 +202,7 @@
           <outputDirectory>${basedir}/target/classes</outputDirectory>
           <replaceJavaScript>false</replaceJavaScript>
           <licenseFiles>
-            <licenseFile>compressed-js-header.txt</licenseFile>
+            <licenseFile>${basedir}/src/main/resources/js/compressed-js-header.txt</licenseFile>
           </licenseFiles>
         </configuration>      
         <executions>
@@ -187,7 +221,7 @@
       <plugin>
         <groupId>gr.abiss.mvn.plugins</groupId>
         <artifactId>maven-jstools-plugin</artifactId>
-        <version>0.9-SNAPSHOT</version>
+        <version>${maven-jstools-plugin.version}</version>
         <inherited>false</inherited>
         <configuration>
           <jsDir>${project.build.directory}/classes</jsDir>
