@@ -63,7 +63,15 @@ Sarissa._SARISSA_IS_SAFARI_OLD = Sarissa._SARISSA_IS_SAFARI && (parseInt((naviga
 /** @private */
 Sarissa._SARISSA_IS_IE = document.documentMode!=null;
 /** @private */
-Sarissa._SARISSA_IS_IE9 = Sarissa._SARISSA_IS_IE && document.documentMode >= 9;
+Sarissa._SARISSA_IS_IE9_OR_HIGHER = Sarissa._SARISSA_IS_IE && document.documentMode >= 9;
+/** @private */
+Sarissa._SARISSA_IS_IE9 = Sarissa._SARISSA_IS_IE && document.documentMode == 9;
+/** @private */
+Sarissa._SARISSA_IS_IE10 = Sarissa._SARISSA_IS_IE && document.documentMode == 10;
+/** @private */
+Sarissa._SARISSA_IS_IE11 = Sarissa._SARISSA_IS_IE && document.documentMode == 11;
+/** @private */
+Sarissa._SARISSA_IS_EDGE = navigator.userAgent.toLowerCase().indexOf("edge/") > -1;
 /** @private */
 Sarissa._SARISSA_IS_OPERA = navigator.userAgent.toLowerCase().indexOf("opera") != -1;
 if(!window.Node || !Node.ELEMENT_NODE){
@@ -82,6 +90,16 @@ if(Sarissa._SARISSA_IS_SAFARI_OLD){
 	x = null;
 }
 if(typeof XMLDocument == "undefined" && typeof Document !="undefined"){ XMLDocument = Document; } 
+
+/*
+ * If another version of Sarissa was already loaded, for instance the embedded
+ * Sarissa version in RichFaces/Ajax4jsf, it is better to restore the native
+ * XMLHttpRequest object first, before (re-)evaluating whether it should be
+ * replaced or not in the IE-specific code further below.
+ */
+if (Sarissa.originalXMLHttpRequest) {
+    window.XMLHttpRequest = Sarissa.originalXMLHttpRequest;
+}
 
 // IE initialization
 if(Sarissa._SARISSA_IS_IE){
@@ -128,6 +146,17 @@ if(Sarissa._SARISSA_IS_IE){
     // anyway as IE7 hardcodes it to MSXML3.0 causing version problems 
     // between different activex controls 
     //if(!window.XMLHttpRequest){
+
+    /*
+     * Save a reference to the original XMLHttpRequest object (if any), in
+     * case another Sarissa version gets loaded later, or some other
+     * code (such as jQuery) explicitly requires the native implementation.
+     *
+     * The line below was copied from the Sarissa version that was embedded
+     * in RichFaces 3.3.3 (Ajax4jsf).
+     */
+    Sarissa.originalXMLHttpRequest = window.XMLHttpRequest;
+
     /**
      * Emulate XMLHttpRequest
      * @constructor
@@ -493,7 +522,7 @@ if(Sarissa._SARISSA_IS_IE){
 //==========================================
 // Common stuff
 //==========================================
-if(!window.DOMParser || Sarissa._SARISSA_IS_IE9){
+if(!window.DOMParser || Sarissa._SARISSA_IS_IE9_OR_HIGHER){
     if(Sarissa._SARISSA_IS_SAFARI){
         /**
          * DOMParser is a utility class, used to construct DOMDocuments from XML strings
@@ -615,7 +644,7 @@ Sarissa.getText = function(oNode, deep){
     }
     return s;
 };
-if(!window.XMLSerializer && Sarissa.getDomDocument && Sarissa.getDomDocument("","foo", null).xml){
+if((!window.XMLSerializer || Sarissa._SARISSA_IS_IE10 || Sarissa._SARISSA_IS_IE11) && Sarissa.getDomDocument && Sarissa.getDomDocument("","foo", null).xml){
     /**
      * Utility class to serialize DOM Node objects to XML strings
      * @constructor
