@@ -1,3 +1,6 @@
+## Just looking for a recent build of sarissa.js?
+Grab a 0.9.9.7-SNAPSHOT build from 2016-03-21 (with all unit tests passing, except for the XSLTProcessor tests in Microsoft Edge) from https://gist.github.com/volkertb/bd39dad1e7eeb17730e4
+
 # This is not intended as a formal fork
 
 I wanted to work on the [Sarissa](http://dev.abiss.gr/sarissa/) project,  but the original source code is still hosted in a CVS repository (ugh...). Therefore I took the liberty of importing the code to Github. I do not intend to formally fork the project, but having the code here will make it easier for me to create branches and diffs and to share my contributions to the project, which I intend to offer back to the upstream developers.
