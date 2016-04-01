@@ -5,7 +5,7 @@
  * Sarissa is an ECMAScript library acting as a cross-browser wrapper for native XML APIs.
  * The library supports Gecko based browsers like Mozilla and Firefox,
  * Internet Explorer (5.5+ with MSXML3.0+), Konqueror, Safari and Opera
- * @version ${project.version}
+ * @version ${project.version} (build timestamp: ${sarissa.build.timestamp})
  * @author: Copyright 2004-2008 Emmanouil Batsis, mailto: mbatsis at users full stop sourceforge full stop net
  * ====================================================================
  * Licence
@@ -45,6 +45,7 @@ if (typeof Sarissa != 'undefined' && Sarissa.originalXMLHttpRequest) {
  */
 function Sarissa(){}
 Sarissa.VERSION = "${project.version}";
+Sarissa.BUILD_TIMESTAMP = "${sarissa.build.timestamp}";
 Sarissa.PARSED_OK = "Document contains no parsing errors";
 Sarissa.PARSED_EMPTY = "Document is empty";
 Sarissa.PARSED_UNKNOWN_ERROR = "Not well-formed or other error";

@@ -41,6 +41,9 @@
     <!-- General project settings -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Project build information -->
+    <!-- Workaround for Maven bug https://issues.apache.org/jira/browse/MRESOURCES-99 -->
+    <sarissa.build.timestamp>${maven.build.timestamp}</sarissa.build.timestamp>
     <!-- Plugin versions -->
     <maven-js-plugin.version>1.3.1</maven-js-plugin.version>
     <maven-jstools-plugin.version>0.7</maven-jstools-plugin.version> <!-- FIXME: it was initially 0.9-SNAPSHOT ??? -->
