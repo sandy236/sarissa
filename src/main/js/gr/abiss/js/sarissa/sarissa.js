@@ -27,6 +27,16 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+/*
+ * If another version of Sarissa was already loaded, for instance the embedded
+ * Sarissa version in RichFaces/Ajax4jsf, it is better to restore the native
+ * XMLHttpRequest object first, before Sarissa gets overridden en redefined.
+ */
+if (typeof Sarissa != 'undefined' && Sarissa.originalXMLHttpRequest) {
+    window.XMLHttpRequest = Sarissa.originalXMLHttpRequest;
+}
+
 /**
  * <p>Sarissa is a utility class. Provides "static" methods for DOMDocument, 
  * DOM Node serialization to XML strings and other utility goodies.</p>
@@ -90,16 +100,6 @@ if(Sarissa._SARISSA_IS_SAFARI_OLD){
 	x = null;
 }
 if(typeof XMLDocument == "undefined" && typeof Document !="undefined"){ XMLDocument = Document; } 
-
-/*
- * If another version of Sarissa was already loaded, for instance the embedded
- * Sarissa version in RichFaces/Ajax4jsf, it is better to restore the native
- * XMLHttpRequest object first, before (re-)evaluating whether it should be
- * replaced or not in the IE-specific code further below.
- */
-if (Sarissa.originalXMLHttpRequest) {
-    window.XMLHttpRequest = Sarissa.originalXMLHttpRequest;
-}
 
 // IE initialization
 if(Sarissa._SARISSA_IS_IE){
